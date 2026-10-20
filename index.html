@@ -362,7 +362,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--rose-deep)}
     <div class="logo">AB <em>Dance</em> Studio</div>
     <span class="proto">прототип · часть данных для примера</span>
     <span class="sp"></span>
-    <button class="mgr lens" id="mgrBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 3 11l6 2.5M21 4l-3 16-9-6.5M21 4 9 13.5V19l3-3.5"/></svg>Менеджер</button>
+    <button class="mgr lens" id="mgrBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 3 11l6 2.5M21 4l-3 16-9-6.5M21 4 9 13.5V19l3-3.5"/></svg>Контакты</button>
     <div class="seg lens" role="tablist" aria-label="Чей экран">
       <button id="roleClient" class="on" data-role="client">Клиентка</button>
       <button id="roleManager" data-role="manager">Админка</button>
@@ -512,12 +512,21 @@ $('mgrBtn').onclick=()=>contactSheet('Здравствуйте! Хочу узн�
 function render(){renderDock();const v={dirs:vHome,new:vNew,slots:vSlots,rent:vRent,price:vPrice,my:vMy,hall:vHall,rentcal:vRentCal,people:vPeople,base:vBase,pay:vPay,msg:vMsg,svc:vSvc,inbox:vInbox}[tab];$('app').innerHTML=v();bind[tab]&&bind[tab]()}
 const bind={};
 
+const LINKS={manager:'https://t.me/Manager_dance',sasha:'https://t.me/alex_13131313',ig:'https://www.instagram.com/dance.samui/',igSasha:'https://www.instagram.com/__alexis_13__/',yt:'https://www.youtube.com/@Aleksandr_Bobrusov',map:'https://goo.gl/maps/CuC3NceDE4T7xck57',online:''};
 function contactSheet(text){
-  openSheet(`<span class="eyebrow">Связаться с менеджером</span><h2>Напишите нам в Телеграм</h2>
-  <p style="margin:0">Менеджер отвечает с 10:00 до 21:00. В боте кнопка откроет чат сразу с этим текстом:</p>
+  const a=(h,t,s,pri)=>h?`<a class="btn ${pri?'pri ':''}lens" href="${esc(h)}" target="_blank" rel="noopener" style="text-decoration:none;display:flex;justify-content:space-between;gap:10px"><span>${t}</span><span style="opacity:.7;font-weight:600">${s}</span></a>`:`<div class="copy"><span style="flex:1">${t}</span><span class="todo">скоро</span></div>`;
+  openSheet(`<span class="eyebrow">Контакты</span><h2>Как с нами связаться</h2>
   <div class="copy" style="user-select:text;font-weight:600">«${esc(text)}»</div>
-  <div class="copy"><span style="flex:1">${MANAGER}</span></div>
-  <div class="row"><a class="btn pri lens" href="https://t.me/Manager_dance" target="_blank" rel="noopener" style="text-decoration:none">Открыть чат</a><button class="btn lens" id="cpBtn">Скопировать ник</button></div>`);
+  <div style="display:grid;gap:8px">
+    ${a(LINKS.manager+'?text='+encodeURIComponent(text),'Написать менеджеру',MANAGER,1)}
+    ${a(LINKS.sasha,'Написать Саше','Телеграм')}
+    ${a(LINKS.online,'Онлайн-хореография','')}
+    ${a(LINKS.ig,'Инстаграм студии','@dance.samui')}
+    ${a(LINKS.igSasha,'Инстаграм Саши','@__alexis_13__')}
+    ${a(LINKS.yt,'YouTube','Aleksandr_Bobrusov')}
+    ${a(LINKS.map,'Как добраться','Google Карты')}
+  </div>
+  <div class="row"><button class="btn lens" id="cpBtn">Скопировать ник менеджера</button></div>`);
   $('cpBtn').onclick=()=>{navigator.clipboard?.writeText(MANAGER).then(()=>toast('Ник скопирован'),()=>toast(MANAGER))}}
 
 /* ---------- клиентка: главная ---------- */
