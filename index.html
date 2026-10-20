@@ -69,6 +69,10 @@ a{color:var(--rose-deep)}
 .dock{overflow-x:auto;scrollbar-width:none;position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;display:flex;gap:2px;padding:6px;border-radius:999px;max-width:calc(100vw - 20px)}
 .dock button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 13px;border-radius:999px;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;position:relative}
 .dock button svg{width:21px;height:21px}
+.fab{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:41;width:56px;height:56px;border-radius:50%;border:0;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--rose),var(--rose-deep));box-shadow:0 10px 26px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.4);cursor:pointer}
+.fab.on{display:flex}
+.fab:active{transform:scale(.94)}
+.addmenu{display:grid;gap:8px}.addmenu button{display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px}.addmenu button b{display:block}.addmenu button small{display:block;color:var(--muted);font-weight:500;font-size:13px}.addmenu .ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--c);color:#fff;font-size:18px;flex:none}
 .dock button.on{color:var(--rose-deep);background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.6));box-shadow:inset 0 1px 0 #fff,0 4px 14px rgba(100,50,80,.16)}
 .dock .badge{position:absolute;top:3px;right:7px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--rose-deep);color:#fff;font-size:10px;line-height:17px}
 
@@ -190,6 +194,8 @@ table.prices{width:100%;border-collapse:collapse;font-size:14.5px;table-layout:a
 .sched .cell.half{border-top-style:dashed;border-top-color:rgba(120,70,100,.07)}
 .sched button.cell:hover{background:rgba(48,165,103,.12)}
 .sched .avail{background:rgba(48,165,103,.09)}
+.sched.edit .cell{cursor:pointer}.sched.edit .cell.avail{background:rgba(48,165,103,.3)}.sched.edit .ev{opacity:.45;pointer-events:none}
+.wnav{display:flex;align-items:center;gap:8px}.wnav b{flex:1;text-align:center;font-size:14px}.wnav button{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.7);box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),0 2px 8px rgba(0,0,0,.06);font-size:22px;line-height:1;color:var(--ink);cursor:pointer}.wnav button:disabled{opacity:.3}
 .ev{margin:1px 3px;border-radius:10px;padding:4px 7px;font-size:11.5px;line-height:1.25;color:#fff;text-align:left;overflow:hidden;z-index:2;background:var(--c);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 10px -4px rgba(60,20,40,.4);transition:transform .35s var(--spring)}
 .ev:hover{transform:scale(1.03)}
 .ev b{display:block;font-weight:800}
@@ -372,6 +378,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--rose-deep)}
 
 <main class="wrap" id="app"></main>
 <nav class="dock glass" id="dock" aria-label="Разделы"></nav>
+<button class="fab" id="fab" aria-label="Добавить">+</button>
 <div class="scrim" id="scrim"></div>
 <div class="sheet glass" id="sheet" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" role="status"></div>
@@ -399,11 +406,20 @@ const isoD=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Str
 const TD=isoD(NOW);
 // текущая неделя с понедельника; индекс дня 0..6 используется везде вместо даты
 const WK0=new Date(NOW);WK0.setDate(NOW.getDate()-((NOW.getDay()+6)%7));
-const WEEK_ISO=[0,1,2,3,4,5,6].map(i=>{const x=new Date(WK0);x.setDate(WK0.getDate()+i);return isoD(x)});
-const WEEK=WEEK_ISO.map(i=>+i.slice(8)),WD=['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'],TODAY=(NOW.getDay()+6)%7;
+const WEEK_ISO=[],WEEK=[],WD=['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];let TODAY=0,WOFF=0;
+// неделю можно листать: массивы те же, содержимое пересчитывается; TODAY=-1 на чужой неделе
+function setWeek(off){WOFF=Math.max(0,Math.min(8,off));WEEK_ISO.length=WEEK.length=0;
+  for(let i=0;i<7;i++){const x=new Date(WK0);x.setDate(WK0.getDate()+WOFF*7+i);WEEK_ISO.push(isoD(x));WEEK.push(x.getDate())}
+  TODAY=WOFF?-1:(NOW.getDay()+6)%7}
+setWeek(0);
+const tdx=()=>TODAY<0?0:TODAY;
 const wmon=d=>MON[+WEEK_ISO[d].slice(5,7)-1];
 const wlab=d=>WEEK[d]+' '+wmon(d),wlab3=d=>WEEK[d]+' '+wmon(d).slice(0,3);
-const WEEK_RANGE=wmon(0)===wmon(6)?WEEK[0]+'–'+WEEK[6]+' '+wmon(6):wlab(0)+' – '+wlab(6);
+const weekRange=()=>wmon(0)===wmon(6)?WEEK[0]+'–'+WEEK[6]+' '+wmon(6):wlab(0)+' – '+wlab(6);
+const weekNav=()=>`<div class="wnav"><button class="lens" data-wk="-1" aria-label="Неделя назад" ${WOFF?'':'disabled'}>‹</button><b>${WOFF?'':'Эта неделя · '}${weekRange()}</b><button class="lens" data-wk="1" aria-label="Неделя вперёд" ${WOFF>=8?'disabled':''}>›</button></div>`;
+function goWeek(dir){setWeek(WOFF+dir);st.ra=st.rb=null;const jobs=[];LIVEE&&jobs.push(LIVEE.load());LIVEQ&&jobs.push(LIVEQ.load());LIVEA&&jobs.push(LIVEA.load());render();if(jobs.length)Promise.all(jobs).then(render).catch(()=>{})}
+// окна тренера для индивов: набор «дата|час», тренер отмечает их тапом в «Расписании»
+const AVAIL=new Set();const avKey=(d,h)=>WEEK_ISO[d]+'|'+h;
 const nowMin=()=>{if(DEMO)return 11*60;const n=new Date();return n.getHours()*60+n.getMinutes()};
 const DAY_FULL=['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
 let uid=100;
@@ -480,10 +496,10 @@ function conflicts(c,skipId){
   if(c.t&&!out.length)for(const e of all){if(e.id===skipId||e.d!==c.d||e.t!==c.t)continue;
     if(overlap(s,f,m(e.s),m(e.s)+e.dur)){out.push(`тренер в это время занят`);break}}
   if(s<540||f>1320)out.push('студия работает с 09:00 до 22:00');
-  if(c.d<TODAY||(c.d===TODAY&&s<nowMin()))out.push('это время уже прошло');
+  if(WEEK_ISO[c.d]<TD||(WEEK_ISO[c.d]===TD&&s<nowMin()))out.push('это время уже прошло');
   return out}
 // все часы из рабочего окна тренера; занятые показываем серыми, без подробностей
-function trainerHours(t,d){const res=[];for(const[a,b]of(TRAINERS[t].avail[d]||[]))for(let h=a;h<b;h++){const s=hm(h*60);res.push({s,free:!conflicts({d,s,dur:60,t}).length})}return res}
+function trainerHours(t,d){const res=[];for(let h=9;h<22;h++)if(AVAIL.has(avKey(d,h))){const s=hm(h*60);res.push({s,free:!conflicts({d,s,dur:60,t}).length})}return res}
 const hallBusy=(d,h)=>conflicts({d,s:hm(h*60),dur:60}).length>0;
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.k);toast.k=setTimeout(()=>el.classList.remove('on'),2800)}
 let tick;
@@ -510,11 +526,14 @@ const ICON={
 };
 const TABS={client:[['dirs','Главная'],['new','Курсы'],['slots','Индивы'],['rent','Аренда'],['price','Цены'],['my','Мои']],
             manager:[['hall','Зал'],['rentcal','Аренда'],['people','Расписание'],['base','База'],['pay','Оплаты'],['msg','Рассылки'],['inbox','Заявки']]};
-let role='client',tab='dirs',st={age:'adult',trainer:'heels',day:TODAY,mTrainer:'heels',rDay:TODAY,ra:null,rb:null,purpose:'hall'};
+let role='client',tab='dirs',st={age:'adult',trainer:'heels',day:TODAY,mTrainer:'heels',rDay:TODAY,ra:null,rb:null,purpose:'hall',editAv:false};
+// демо: окна из шаблона тренера на 6 недель вперёд; в приложении их заменяет база
+if(DEMO)for(let w=0;w<6;w++)for(const[d,rr]of Object.entries(TRAINERS.heels.avail))for(const[a,b]of rr)for(let h=a;h<b;h++){const x=new Date(WK0);x.setDate(WK0.getDate()+w*7+ +d);AVAIL.add(isoD(x)+'|'+h)}
 
 function renderDock(){
   const n=requests.filter(r=>['check','pay','wait'].includes(r.st)).length;
   const bg={inbox:n,pay:PAYS.filter(p=>pst(p)==='late').length};
+  $('fab').classList.toggle('on',role==='manager');$('fab').onclick=addSheet;
   $('dock').innerHTML=TABS[role].map(([k,l])=>`<button id="tab_${k}" class="${k===tab?'on':''}" data-tab="${k}">${ICON[k]}${l}${bg[k]?`<span class="badge">${bg[k]}</span>`:''}</button>`).join('');
   $('dock').querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.tab))}
 function go(t){tab=t;render();scrollTo({top:0,behavior:'smooth'})}
@@ -522,7 +541,7 @@ document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{role=b.datase
   document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));$('mgrBtn').hidden=role!=='client';render()});
 $('mgrBtn').onclick=()=>contactSheet('Здравствуйте! Хочу узнать про занятия в AB Dance Studio.');
 
-function render(){renderDock();const v={dirs:vHome,new:vNew,slots:vSlots,rent:vRent,price:vPrice,my:vMy,hall:vHall,rentcal:vRentCal,people:vPeople,base:vBase,pay:vPay,msg:vMsg,svc:vSvc,inbox:vInbox}[tab];$('app').innerHTML=v();bind[tab]&&bind[tab]()}
+function render(){renderDock();const v={dirs:vHome,new:vNew,slots:vSlots,rent:vRent,price:vPrice,my:vMy,hall:vHall,rentcal:vRentCal,people:vPeople,base:vBase,pay:vPay,msg:vMsg,svc:vSvc,inbox:vInbox}[tab];$('app').innerHTML=v();bind[tab]&&bind[tab]();document.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>goWeek(+b.dataset.wk))}
 const bind={};
 
 const LINKS={manager:'https://t.me/Manager_dance',sasha:'https://t.me/alex_13131313',ig:'https://www.instagram.com/dance.samui/',igSasha:'https://www.instagram.com/__alexis_13__/',yt:'https://www.youtube.com/@Aleksandr_Bobrusov',tut:'https://t.me/dancetutorials_365in1',tt:'https://www.tiktok.com/@alexandro_1313',map:'https://goo.gl/maps/CuC3NceDE4T7xck57',online:''};
@@ -622,9 +641,10 @@ function vSlots(){
   <div class="panel glass">
         <div class="who-card" style="--c:${t.c}"><div class="ava">${t.ini}</div><div><div style="font-weight:800;color:var(--ink)">Индивидуальные занятия</div><div style="font-size:13.5px">постановка номера, High Heels</div>
       <div style="font-size:13.5px;margin-top:2px"><b style="color:var(--ink)">${rub(t.price)}</b> за час <span class="todo">уточнить</span></div></div></div>
+    ${weekNav()}
     <div class="days">${WEEK.map((n,d)=>`<button id="day_${d}" class="day lens ${d===st.day?'on':''}" data-day="${d}"><span class="w">${WD[d]}</span><span class="n">${n}</span><span class="c ${counts[d]?'':'z'}">${counts[d]?counts[d]+' своб.':'нет'}</span></button>`).join('')}</div>
     <div class="eyebrow">${DAY_FULL[st.day]}, ${wlab(st.day)}</div>
-    <div class="slots">${list.length?list.map(x=>`<button class="slot" id="slot_${x.s.replace(':','')}" data-s="${x.s}" ${x.free?'':'disabled aria-label="'+x.s+', занято"'}>${x.s}<small>${x.free?'свободно':'занято'}</small></button>`).join(''):`<div class="empty">В этот день индивидуальных нет. Посмотрите соседние дни.</div>`}</div>
+    <div class="slots">${list.length?list.map(x=>`<button class="slot" id="slot_${x.s.replace(':','')}" data-s="${x.s}" ${x.free?'':'disabled aria-label="'+x.s+', занято"'}>${x.s}<small>${x.free?'свободно':'занято'}</small></button>`).join(''):`<div class="empty">${AVAIL.size?'В этот день индивидуальных нет. Посмотрите соседние дни или следующую неделю.':'Саша ещё не открыл окна на эту неделю. Загляните позже или напишите менеджеру.'}</div>`}</div>
   </div></section>`}
 bind.slots=()=>{
   document.querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>{st.trainer=b.dataset.tr;if(!trainerHours(st.trainer,st.day).some(x=>x.free)){const f=WEEK.findIndex((_,d)=>trainerHours(st.trainer,d).some(x=>x.free));if(f>=0)st.day=f}render()});
@@ -637,6 +657,7 @@ function vRent(){
   const counts=WEEK.map((_,d)=>{let n=0;for(let h=9;h<22;h++)if(!hallBusy(d,h))n++;return n});
   let seg='';for(let h=9;h<22;h++){const b=hallBusy(st.rDay,h);seg+=`<button class="hr${b?' busy':''}" data-h="${h}" ${b?'aria-disabled="true"':''} aria-label="${hm(h*60)}, ${b?'занято':'свободно'}">${h}</button>`}
   return `<section class="sect"><div class="sect-h"><h2>Аренда зала</h2><span class="note">Большой зал · зеркала, станки, полотна и кольцо, звук <span class="todo">уточнить</span></span></div>
+  ${weekNav()}
   <div class="days">${WEEK.map((n,d)=>`<button id="rday_${d}" class="day lens ${d===st.rDay?'on':''}" data-rday="${d}"><span class="w">${WD[d]}</span><span class="n">${n}</span><span class="c ${counts[d]?'':'z'}">${counts[d]?hrs(counts[d]):'нет'}</span></button>`).join('')}</div>
   <div class="rent">
     <div class="panel glass ribbon-wrap">
@@ -737,12 +758,12 @@ function load(){let busy=0;for(const e of events)if(!e.away)busy+=e.dur;const to
 const MQ=matchMedia('(max-width:720px)'),isM=()=>MQ.matches;
 MQ.onchange=()=>render();
 function grid(opts={}){
-  const start=540,one=isM(),gd=st.gd==null?TODAY:st.gd,col=d=>one?2:d+2;
+  const start=540,one=isM(),gd=st.gd==null?tdx():st.gd,col=d=>one?2:d+2;
   let h=one?`<div class="dpick" role="tablist">${WEEK.map((n,d)=>`<button class="dp ${d===gd?'on':''} ${d===TODAY?'today':''}" data-gd="${d}" role="tab" aria-selected="${d===gd}"><span>${WD[d]}</span><b>${n}</b></button>`).join('')}</div>`:'';
-  h+=`<div class="sched${one?' one':''}"><div></div>`;
+  h+=`<div class="sched${one?' one':''}${opts.edit?' edit':''}"><div></div>`;
   WEEK.forEach((n,d)=>{if(!one)h+=`<div class="hd ${d===TODAY?'today':''}" style="grid-column:${d+2}">${WD[d]}<b>${n}</b></div>`});
   for(let r=0;r<26;r++){const t=start+r*30;if(r%2===0)h+=`<div class="tm" style="grid-row:${r+2}">${hm(t)}</div>`;
-    for(let d=0;d<7;d++){if(one&&d!==gd)continue;let av='';if(opts.trainer){const a=TRAINERS[opts.trainer].avail[d]||[];if(a.some(([x,y])=>t>=x*60&&t<y*60))av=' avail'}
+    for(let d=0;d<7;d++){if(one&&d!==gd)continue;let av='';if(opts.trainer&&AVAIL.has(avKey(d,Math.floor(t/60))))av=' avail'
       h+=`<button class="cell${r%2?' half':''}${av}" style="grid-column:${col(d)};grid-row:${r+2}" data-d="${d}" data-t="${hm(t)}" aria-label="${WD[d]} ${hm(t)}"></button>`}}
   for(const e of events.concat(holds())){if(opts.trainer?e.t!==opts.trainer:e.away)continue;if(one&&e.d!==gd)continue;const r=(m(e.s)-start)/30,d=DIRS[e.dir];
     h+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':''}" style="--c:${d.c};grid-column:${col(e.d)};grid-row:${r+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`}><b>${e.hold?'Бронь · '+esc(e.who):esc(label(e))}</b><span>${e.s}–${hm(m(e.s)+e.dur)}${e.hold?' · ждёт оплату':''}</span></button>`}
@@ -750,24 +771,35 @@ function grid(opts={}){
 const legend=()=>`<div class="legend">${Object.values(DIRS).map(d=>`<span style="--c:${d.c}"><i class="dot"></i>${d.name}</span>`).join('')}<span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>`;
 
 function vHall(){
-  const L=load(),n=requests.filter(r=>['check','pay'].includes(r.st)).length;let fr=0;for(let h=9;h<22;h++)if(!hallBusy(TODAY,h))fr++;
+  const L=load(),n=requests.filter(r=>['check','pay'].includes(r.st)).length;let fr=0;for(let h=9;h<22;h++)if(!hallBusy(tdx(),h))fr++;
   return `<section class="stats">
     <div class="stat glass"><span class="v">${L.pct}%</span><span class="l">загрузка зала на неделю</span></div>
     <div class="stat glass"><span class="v">${Math.round((L.total-L.busy)/60)} ч</span><span class="l">свободно до воскресенья</span></div>
-    <div class="stat glass"><span class="v">${fr} ч</span><span class="l">свободно сегодня, ${DAY_FULL[TODAY]}</span></div>
+    <div class="stat glass"><span class="v">${fr} ч</span><span class="l">${TODAY<0?'свободно в '+DAY_FULL[0]:'свободно сегодня, '+DAY_FULL[TODAY]}</span></div>
     <div class="stat glass"><span class="v">${n}</span><span class="l">брони ждут оплату или проверку</span></div>
     <button class="stat glass" id="goSvc" style="text-align:left"><span class="v">${SERVICES.length}</span><span class="l">услуг и цен · изменить →</span></button>
   </section>
-  <section class="sect"><div class="sect-h"><h2>Потоки курсов</h2><button class="btn lens" id="newCourse">Новый поток</button></div>
+  <section class="sect"><div class="sect-h"><h2>Потоки курсов</h2><button class="btn pri lens" id="newCourse">+ Поток или мастер-класс</button></div>
     ${timeline(upcoming(),'data-mc')}
     <span class="note">Нажмите на поток, чтобы увидеть записанных и отправить анонс. Новый поток сразу появится у клиенток в «Ближайших стартах».</span>
   </section>
-  <section class="sect"><div class="sect-h"><h2>Зал · ${WEEK_RANGE}</h2><button class="btn pri lens" id="addBtn">Добавить занятие</button></div>
+  <section class="sect"><div class="sect-h"><h2>Зал</h2><button class="btn pri lens" id="addBtn">Добавить занятие</button></div>${weekNav()}
     ${legend()}<div class="gridbox">${grid()}</div>
     <span class="note">Нажмите на пустую клетку, чтобы поставить занятие, или на занятие, чтобы перенести его. Пересечения по залу и тренеру система не пропустит. Клиентки видят здесь только «свободно» и «занято».</span>
   </section>`}
-bind.hall=()=>{$('addBtn').onclick=()=>editForm({d:TODAY,s:'14:00',dur:60,dir:'indiv',t:'heels'});bindGrid();
+bind.hall=()=>{$('addBtn').onclick=()=>editForm({d:tdx(),s:'14:00',dur:60,dir:'indiv',t:'heels'});bindGrid();
   $('newCourse').onclick=courseForm;document.querySelectorAll('[data-mc]').forEach(b=>b.onclick=()=>courseSheet(COURSES.find(c=>c.id===b.dataset.mc)))};
+function addSheet(){
+  const it=(k,ic,c,t,sub)=>`<button class="btn lens" data-add="${k}"><span class="ic" style="--c:${c}">${ic}</span><span><b>${t}</b><small>${sub}</small></span></button>`;
+  openSheet(`<span class="eyebrow">Добавить</span><h2>Что создаём?</h2><div class="addmenu">
+    ${it('course','♥','var(--rose)','Поток курса','High Heels или гимнастика: даты, дни, цена, места')}
+    ${it('mc','★','var(--lilac)','Мастер-класс','разовое занятие, свой или приглашённый преподаватель')}
+    ${it('ev','▦','var(--sage)','Занятие в зале','индив, аренда или занятие в другом зале, в сетку расписания')}
+    ${it('ann','✉','var(--rose-deep)','Анонс или рассылка','сообщение клиенткам в бот')}
+  </div>`);
+  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const k=b.dataset.add;closeSheet();
+    if(k==='course')courseForm();else if(k==='mc'){courseForm();document.querySelector('[data-ct="1"]').click()}
+    else if(k==='ev')editForm({d:tdx(),s:'14:00',dur:60,dir:'indiv',t:'heels'});else go('msg')})}
 function courseSheet(c){const d=DIRS[c.dir],left=c.seats-c.taken,wl=requests.filter(r=>r.st==='wait'&&r.what.includes(c.title)).length;
   openSheet(`<span class="tag" style="--c:${d.c}"><i class="dot"></i>${d.name.toUpperCase()}</span><h2>${esc(c.title)}</h2>
   <div class="lines"><div><span>Старт</span><b>${c.start} ${c.month}, ${DAY_FULL[c.wd]}</b></div><div><span>Когда</span><b>${whenTxt(c)}</b></div>
@@ -806,13 +838,15 @@ function courseForm(){
       if(guest&&!nm){$('cErr').textContent='Укажите имя преподавателя.';return}
       const d0=new Date(date+'T00:00'),c=fill({id:'c'+Date.now(),dir:'heels',t:'heels',mc:true,host:guest?nm:'',title:'Мастер-класс'+(ttl?': '+ttl:'')+(guest?', '+nm:''),
         age:'взрослые',date,days:WD[(d0.getDay()+6)%7]+', '+($('cDays').value.trim()||'18:00–20:00'),len:'1 занятие',weeks:1,price:+$('cPrice').value||0,seats:+$('cSeats').value||15,taken:0});
-      COURSES.push(c);closeSheet();render();toast('Мастер-класс добавлен, клиентки видят его в стартах');return}
+      COURSES.push(c);LIVEC&&LIVEC.create(c);closeSheet();render();toast('Мастер-класс добавлен, клиентки видят его в стартах');return}
     const c=fill({id:'c'+Date.now(),dir,t:dir,title:DIRS[dir].name+', поток '+new Date(date+'T00:00').getDate()+' '+MON[new Date(date+'T00:00').getMonth()],
       age:dir==='aerial'?'дети':'взрослые',date,days:$('cDays').value.trim()||'уточнить',len:w===2?'2 недели, 4 занятия':'4 недели, 8 занятий',weeks:w,price:+$('cPrice').value||0,seats:+$('cSeats').value||12,taken:0});
-    COURSES.push(c);closeSheet();render();toast('Поток добавлен, клиентки уже видят его в стартах')}}
+    COURSES.push(c);LIVEC&&LIVEC.create(c);closeSheet();render();toast('Поток добавлен, клиентки уже видят его в стартах')}}
 function bindGrid(){
   document.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{st.gd=+b.dataset.gd;render()});
-  document.querySelectorAll('.sched .cell').forEach(c=>c.onclick=()=>editForm({d:+c.dataset.d,s:c.dataset.t,dur:60,dir:'indiv',t:tab==='people'?st.mTrainer:'heels'}));
+  document.querySelectorAll('.sched .cell').forEach(c=>c.onclick=()=>{const d=+c.dataset.d;
+    if(tab==='people'&&st.editAv){const h=Math.floor(m(c.dataset.t)/60),k=avKey(d,h),on=!AVAIL.has(k);on?AVAIL.add(k):AVAIL.delete(k);LIVEA&&LIVEA.set(st.mTrainer,WEEK_ISO[d],h,on);render();return}
+    editForm({d,s:c.dataset.t,dur:60,dir:'indiv',t:tab==='people'?st.mTrainer:'heels'})});
   document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>evSheet(events.find(e=>e.id==b.dataset.ev)));
   document.querySelectorAll('[data-hold]').forEach(b=>b.onclick=()=>go('inbox'))}
 function evSheet(e){
@@ -850,17 +884,23 @@ function vPeople(){
   const k=st.mTrainer,t=TRAINERS[k],mine=events.filter(e=>e.t===k);
   const hours=mine.reduce((a,e)=>a+e.dur,0)/60,ind=mine.filter(e=>e.dir==='indiv').length;
   const free=WEEK.reduce((a,_,d)=>a+trainerHours(k,d).filter(x=>x.free).length,0);
-  return `<section class="sect"><div class="sect-h"><h2>Расписание тренера</h2>${calBtn('sasha')}</div>
+  return `<section class="sect"><div class="sect-h"><h2>Расписание тренера</h2>${calBtn('sasha')}</div>${weekNav()}
   <div class="stats">
     <div class="stat glass" style="--c:${t.c}"><div class="who-card"><div class="ava">${t.ini}</div><div><div style="font-weight:800;color:var(--ink)">Тренер</div><div style="font-size:13px">High Heels, дети, индивы</div></div></div></div>
     <div class="stat glass"><span class="v">${hours} ч</span><span class="l">ведёт на этой неделе</span></div>
     <div class="stat glass"><span class="v">${ind}</span><span class="l">индивидуальных</span></div>
     <div class="stat glass"><span class="v">${free}</span><span class="l">свободных окон для записи</span></div>
   </div>
-  ${legend()}<div class="gridbox">${grid({trainer:k})}</div>
-  <span class="note">Зелёным отмечены рабочие часы тренера для индивов. Их задают один раз, дальше неделя повторяется сама. Всё, что попало на занятия, аренду или бронь, у клиенток становится «занято».</span>
+  <div class="row"><button class="btn ${st.editAv?'pri':''} lens" id="avEdit">${st.editAv?'Готово':'Отметить окна для индивов'}</button>${st.editAv?`<button class="btn lens" id="avCopy">Повторить на 4 недели вперёд</button><button class="btn ghost lens" id="avClear">Очистить неделю</button>`:''}</div>
+  ${st.editAv?`<span class="note" style="color:var(--free);font-weight:700">Нажимайте на часы, когда вы свободны для индивов: зелёное — открыто для записи, ещё раз — закрыть.</span>`:''}
+  ${legend()}<div class="gridbox">${grid({trainer:k,edit:st.editAv})}</div>
+  <span class="note">Зелёным отмечены окна для индивов, их клиентки видят как «свободно». Всё, что попало на занятия, аренду или бронь, у клиенток становится «занято». Заболели или уезжаете — нажмите «Отметить окна» и снимите часы.</span>
   </section>`}
-bind.people=()=>{document.querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{st.mTrainer=b.dataset.mt;render()});bindGrid()};
+bind.people=()=>{document.querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{st.mTrainer=b.dataset.mt;render()});bindGrid();
+  $('avEdit').onclick=()=>{st.editAv=!st.editAv;render()};
+  if($('avCopy'))$('avCopy').onclick=()=>{for(let w=1;w<=4;w++)for(let d=0;d<7;d++)for(let h=9;h<22;h++){const x=new Date(WEEK_ISO[d]+'T00:00');x.setDate(x.getDate()+w*7);const k=isoD(x)+'|'+h;AVAIL.has(avKey(d,h))?AVAIL.add(k):AVAIL.delete(k)}
+    LIVEA&&LIVEA.copy(st.mTrainer,WEEK_ISO[0],4);toast('Окна этой недели повторены на 4 недели вперёд')};
+  if($('avClear'))$('avClear').onclick=()=>{for(let d=0;d<7;d++)for(let h=9;h<22;h++)AVAIL.delete(avKey(d,h));LIVEA&&LIVEA.clear(st.mTrainer,WEEK_ISO[0],WEEK_ISO[6]);render();toast('Неделя закрыта для индивов')}};
 
 bind.inbox=()=>{
   document.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>{const r=requests.find(x=>x.id==b.dataset.ok);
@@ -1058,7 +1098,7 @@ function vRentCal(){
     for(const e of events.concat(holds()).filter(e=>e.d===d&&!e.away)){const i=(m(e.s)-540)/30,lb=e.hold?'Бронь · '+e.who:label(e);
       g+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':'cls'}" style="--c:${DIRS[e.dir].c};grid-row:${row};grid-column:${i+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`} title="${esc(lb)}"><b>${esc(lb)}</b><span>${e.s}–${hm(m(e.s)+e.dur)}</span></button>`}});
   g+='</div>';
-  if(isM()){const gd=st.gd==null?TODAY:st.gd;
+  if(isM()){const gd=st.gd==null?tdx():st.gd;
     const evs=events.concat(holds()).filter(e=>e.d===gd&&!e.away).sort((a,b)=>m(a.s)-m(b.s));
     let cur=540,L='';const free=(a,b)=>{if(b-a>=30)L+=`<button class="dfree rc-f" data-rd="${gd}" data-rt="${hm(a)}" data-rdur="${Math.min(b-a,120)}"><b>Свободно ${hm(a)}–${hm(b)}</b><span>${(b-a)/60} ч · нажмите, чтобы сдать</span></button>`};
     evs.forEach(e=>{const a=m(e.s),lb=e.hold?'Бронь · '+e.who:label(e);free(cur,a);
@@ -1070,7 +1110,7 @@ function vRentCal(){
     <div class="stat glass"><span class="v">${rub(hrsR*price)}</span><span class="l">по аренде за неделю</span></div>
     <div class="stat glass"><span class="v">${free} ч</span><span class="l">зал свободен до воскресенья</span></div>
     <div class="stat glass"><span class="v">${hold}</span><span class="l">аренды ждут оплату</span></div></section>
-  <section class="sect"><div class="sect-h"><h2>Аренда зала · ${WEEK_RANGE}</h2><div class="row">${calBtn('hall')}<button class="btn pri lens" id="addRent">Сдать зал</button></div></div>
+  <section class="sect"><div class="sect-h"><h2>Аренда зала</h2>${weekNav()}<div class="row">${calBtn('hall')}<button class="btn pri lens" id="addRent">Сдать зал</button></div></div>
     <div class="legend"><span><i class="dot" style="background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px var(--line)"></i>Свободно, можно сдать</span><span style="--c:var(--rose-deep)"><i class="dot"></i>Аренда</span><span><i class="dot" style="background:var(--lilac);opacity:.55"></i>Занятия студии</span><span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>
     <div class="gridbox">${g}</div>
     <span class="note">Свободное время можно сдать одним нажатием, а на занятое нажмите, чтобы увидеть, кто там, и перенести.</span></section>
@@ -1078,7 +1118,7 @@ function vRentCal(){
     <div><span class="who">${esc(e.who)}</span> ${p?payPill(p):'<span class="pill wait">оплата не записана</span>'}</div>
     <div class="what"><b>${DAY_FULL[e.d]}, ${wlab3(e.d)}</b>, ${e.s}–${hm(m(e.s)+e.dur)} · ${e.dur/60} ч · ${rub(e.dur/60*price)}</div>${p&&owe(p)?`<div class="when">долг ${rub(owe(p))}</div>`:''}</div>
     <div class="row">${p?(owe(p)?`<button class="btn lens" data-pa="${p.id}">Принять оплату</button>`:''):`<button class="btn lens" data-rp="${e.id}">Записать оплату</button>`}</div></article>`}).join('')}</div></section>`}
-bind.rentcal=()=>{$('addRent').onclick=()=>editForm({d:TODAY,s:'14:00',dur:120,dir:'rent'});
+bind.rentcal=()=>{$('addRent').onclick=()=>editForm({d:tdx(),s:'14:00',dur:120,dir:'rent'});
   document.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{st.gd=+b.dataset.gd;render()});
   document.querySelectorAll('.rc-f').forEach(c=>c.onclick=()=>editForm({d:+c.dataset.rd,s:c.dataset.rt,dur:+c.dataset.rdur||60,dir:'rent'}));
   document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>evSheet(events.find(e=>e.id==b.dataset.ev)));
@@ -1275,7 +1315,7 @@ const VISITS={},KVIS={},GUEST={},NOTES={},MANUAL=[];
 COURSES.forEach((c,ci)=>{VISITS[c.id]={};sessions(c).filter(s=>s.iso<TD).forEach((s,si)=>{VISITS[c.id][s.iso]=new Set((ROSTER[c.id]||[]).filter((x,i)=>(i*7+si*3+ci)%9!==0).map(x=>x.contact))})});
 for(let d=new Date('2026-09-07T00:00');isoD(d)<TD;d.setDate(d.getDate()+1)){const w=(d.getDay()+6)%7;if([0,2,4].includes(w)){const iso=isoD(d),k=+iso.slice(8);KVIS[iso]=new Set(KIDS.filter((x,i)=>(i*5+k)%4!==0).map(x=>x[1]))}}
 const kidDays=()=>{const out=[];for(let d=new Date('2026-09-07T00:00');isoD(d)<='2026-10-25';d.setDate(d.getDate()+1))if([0,2,4].includes((d.getDay()+6)%7))out.push(isoD(d));return out};
-let LIVE=null,LIVEQ=null,LIVEE=null;
+let LIVE=null,LIVEQ=null,LIVEE=null,LIVEC=null,LIVEA=null;
 function clients(){if(LIVE)return LIVE.list();const M=new Map(),get=(name,contact,kid)=>{const k=String(contact||name).toLowerCase();if(!M.has(k))M.set(k,{key:k,name,contact,kid:!!kid,courses:[],visits:0,pays:[],indiv:0,rent:0,last:null});return M.get(k)};
   const seen=(o,iso)=>{o.visits++;if(!o.last||iso>o.last)o.last=iso};
   COURSES.forEach(c=>(ROSTER[c.id]||[]).forEach(x=>{const o=get(x.name,x.contact);o.courses.push(c.id);Object.entries(VISITS[c.id]||{}).forEach(([iso,set])=>set.has(x.contact)&&seen(o,iso))}));
@@ -1419,11 +1459,12 @@ fetch('https://dancesamui-bot.fly.dev/api/services',{headers:{Authorization:'tma
     if(!s)continue;if(r.price!=null)s.price=+r.price;s.pre=r.prepay_pct;s.name=r.name;s.sub=r.sub||s.sub;s.unit=r.unit||s.unit}
   applyPrices();render()}).catch(()=>{});
 fetch('https://dancesamui-bot.fly.dev/api/courses',{headers:{Authorization:'tma '+Telegram.WebApp.initData}}).then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
-  if(rows.length){COURSES.splice(0,COURSES.length,...rows.map(r=>fill({id:'c'+r.id.slice(0,8),dir:'heels',t:'heels',title:r.title,age:'взрослые',date:r.start_date,days:(r.days||'ВТ и ЧТ')+', 19:30–21:00',len:'2 недели, 4 занятия',price:+r.price,seats:r.seats,taken:r.taken,real:true,group:r.group_link||''})));
+  if(rows.length){COURSES.splice(0,COURSES.length,...rows.map(r=>fill({id:'c'+r.id.slice(0,8),dir:'heels',t:'heels',title:r.title,age:'взрослые',date:r.start_date,days:(r.days||'ВТ и ЧТ')+', '+(r.time||'19:30–21:00'),
+    len:r.kind==='mc'?'1 занятие':(r.weeks===4?'4 недели, 8 занятий':'2 недели, 4 занятия'),weeks:r.kind==='mc'?1:(r.weeks||2),mc:r.kind==='mc',host:r.host||'',price:+r.price,seats:r.seats,taken:r.taken,real:true,group:r.group_link||''})));
   COURSES.forEach(c=>{ROSTER[c.id]=[];VISITS[c.id]={}});
   window.__courseIds={};rows.forEach(r=>window.__courseIds['c'+r.id.slice(0,8)]=r.id);
   applyPrices();render()}
-  LIVEQ_INIT();LIVEE_INIT();if(ME_MANAGER)LIVE_INIT()}).catch(()=>{});
+  LIVEQ_INIT();LIVEE_INIT();LIVEA_INIT();if(ME_MANAGER)LIVE_INIT()}).catch(()=>{});
 function LIVEQ_INIT(){/* заявки: настоящие, через API бота (клиентка видит свои, менеджер все) */
 (()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
   const call=(m,p,b)=>fetch(API+p,{method:m,headers:H,body:b?JSON.stringify(b):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
@@ -1462,6 +1503,18 @@ function LIVEE_INIT(){/* расписание зала: настоящие за�
 })();
 
 LIVEE.load().then(()=>render()).catch(()=>{})}
+function LIVEA_INIT(){/* окна тренера для индивов: из базы, менеджер/тренер правит тапом в «Расписании» */
+(()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
+  const call=(m,p,b)=>fetch(API+p,{method:m,headers:H,body:b?JSON.stringify(b):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
+  const err=()=>toast('Не сохранилось, попробуйте ещё раз');
+  LIVEA={
+    load:()=>call('GET','/availability?from='+WEEK_ISO[0]+'&to='+WEEK_ISO[6]).then(rows=>{for(const k of [...AVAIL])if(k.slice(0,10)>=WEEK_ISO[0]&&k.slice(0,10)<=WEEK_ISO[6])AVAIL.delete(k);rows.forEach(r=>AVAIL.add(r.day+'|'+r.hour))}),
+    set:(trainer,day,hour,on)=>call('PUT','/availability',{trainer,day,hour,on}).catch(err),
+    copy:(trainer,monday,weeks)=>call('POST','/availability/copy',{trainer,monday,weeks}).catch(err),
+    clear:(trainer,from,to)=>call('DELETE','/availability?trainer='+trainer+'&from='+from+'&to='+to).catch(err)};
+})();
+
+LIVEA.load().then(()=>render()).catch(()=>{})}
 function LIVE_INIT(){/* справочник клиенток: настоящие данные из базы (только менеджер) */
 (()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
   const call=(m,p,b)=>fetch(API+p,{method:m,headers:H,body:b?JSON.stringify(b):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
@@ -1493,6 +1546,14 @@ function LIVE_INIT(){/* справочник клиенток: настоящи�
       $('lAdd').onclick=()=>{if(!$('lN').value.trim()){toast('Нужно имя');return}
         const ids=[...document.querySelectorAll('[data-lc]:checked')].map(b=>LIVE.ids[b.dataset.lc]).filter(Boolean);
         call('POST','/clients',{...val(),is_child:$('lKid').checked,course_ids:ids}).then(load).then(()=>{closeSheet();render();toast('Добавлена в справочник')}).catch(()=>toast('Не получилось добавить'))}}};
+})();
+/* новые потоки и мастер-классы из формы менеджера уходят в базу (и сразу в расписание) */
+(()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
+  LIVEC={create(c){const i=c.days.indexOf(',');
+    fetch(API+'/courses',{method:'POST',headers:H,body:JSON.stringify({title:c.title,start_date:c.date,days:i<0?c.days:c.days.slice(0,i),time:i<0?'':c.days.slice(i+1).trim(),
+      price:c.price,seats:c.seats,kind:c.mc?'mc':'course',weeks:c.weeks||2,host:c.host||null})})
+      .then(r=>r.ok?r.json():Promise.reject()).then(r=>{window.__courseIds=window.__courseIds||{};window.__courseIds[c.id]=r.id;LIVEE&&LIVEE.load().then(()=>render())})
+      .catch(()=>toast('Не сохранилось в базу, попробуйте ещё раз'))}};
 })();
 
 LIVE.load().then(()=>render()).catch(()=>{})}
