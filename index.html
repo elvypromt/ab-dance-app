@@ -390,7 +390,7 @@ const TRAINERS={
 };
 const RENT={hall:{name:'Аренда зала',sub:'просто зал, почасово',price:350}};
 const PREPAY={course:1,indiv:.5,rent:.3};
-const MANAGER='@abdance_manager';
+const MANAGER='@Manager_dance';
 const WEEK=[19,20,21,22,23,24,25],WD=['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'],TODAY=1;
 const DAY_FULL=['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
 let uid=100;
@@ -516,8 +516,8 @@ function contactSheet(text){
   openSheet(`<span class="eyebrow">Связаться с менеджером</span><h2>Напишите нам в Телеграм</h2>
   <p style="margin:0">Менеджер отвечает с 10:00 до 21:00. В боте кнопка откроет чат сразу с этим текстом:</p>
   <div class="copy" style="user-select:text;font-weight:600">«${esc(text)}»</div>
-  <div class="copy"><span style="flex:1">${MANAGER}</span><span class="todo">уточнить</span></div>
-  <div class="row"><a class="btn pri lens" href="https://t.me/" target="_blank" rel="noopener" style="text-decoration:none">Открыть чат</a><button class="btn lens" id="cpBtn">Скопировать ник</button></div>`);
+  <div class="copy"><span style="flex:1">${MANAGER}</span></div>
+  <div class="row"><a class="btn pri lens" href="https://t.me/Manager_dance" target="_blank" rel="noopener" style="text-decoration:none">Открыть чат</a><button class="btn lens" id="cpBtn">Скопировать ник</button></div>`);
   $('cpBtn').onclick=()=>{navigator.clipboard?.writeText(MANAGER).then(()=>toast('Ник скопирован'),()=>toast(MANAGER))}}
 
 /* ---------- клиентка: главная ---------- */
