@@ -1122,15 +1122,15 @@ function vRentCal(){
       L+=`<button class="dev ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':'cls'}" style="--c:${DIRS[e.dir].c}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`}><b>${esc(lb)}</b><span>${e.s}–${hm(a+e.dur)}${e.hold?' · ждёт оплату':e.dir==='rent'?' · аренда':' · занятия студии'}</span></button>`;cur=Math.max(cur,a+e.dur)});
     free(cur,1320);
     g=`<div class="dpick" role="tablist">${WEEK.map((n,d)=>`<button class="dp ${d===gd?'on':''} ${d===TODAY?'today':''}" data-gd="${d}" role="tab"><span>${WD[d]}</span><b>${n}</b></button>`).join('')}</div><div class="dlist">${L}</div>`}
-  return `<section class="stats">
+  return `  <section class="sect"><div class="sect-h"><h2>Аренда зала</h2>${weekNav()}<div class="row">${calBtn('hall')}<button class="btn pri lens" id="addRent">Сдать зал</button></div></div>
+    <div class="legend"><span><i class="dot" style="background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px var(--line)"></i>Свободно, можно сдать</span><span style="--c:var(--rose-deep)"><i class="dot"></i>Аренда</span><span><i class="dot" style="background:var(--lilac);opacity:.55"></i>Занятия студии</span><span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>
+    <div class="gridbox">${g}</div>
+    <span class="note">Свободное время можно сдать одним нажатием, а на занятое нажмите, чтобы увидеть, кто там, и перенести.</span></section>
+<section class="stats">
     <div class="stat glass"><span class="v">${hrsR} ч</span><span class="l">аренды на этой неделе</span></div>
     <div class="stat glass"><span class="v">${rub(hrsR*price)}</span><span class="l">по аренде за неделю</span></div>
     <div class="stat glass"><span class="v">${free} ч</span><span class="l">зал свободен до воскресенья</span></div>
     <div class="stat glass"><span class="v">${hold}</span><span class="l">аренды ждут оплату</span></div></section>
-  <section class="sect"><div class="sect-h"><h2>Аренда зала</h2>${weekNav()}<div class="row">${calBtn('hall')}<button class="btn pri lens" id="addRent">Сдать зал</button></div></div>
-    <div class="legend"><span><i class="dot" style="background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px var(--line)"></i>Свободно, можно сдать</span><span style="--c:var(--rose-deep)"><i class="dot"></i>Аренда</span><span><i class="dot" style="background:var(--lilac);opacity:.55"></i>Занятия студии</span><span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>
-    <div class="gridbox">${g}</div>
-    <span class="note">Свободное время можно сдать одним нажатием, а на занятое нажмите, чтобы увидеть, кто там, и перенести.</span></section>
   <section class="sect"><h2 style="font-size:30px">Кто арендует</h2><div style="display:grid;gap:10px">${rents.map(e=>{const p=PAYS.find(x=>x.ev===e.id);return `<article class="req glass"><div style="display:grid;gap:3px;min-width:0">
     <div><span class="who">${esc(e.who)}</span> ${p?payPill(p):'<span class="pill wait">оплата не записана</span>'}</div>
     <div class="what"><b>${DAY_FULL[e.d]}, ${wlab3(e.d)}</b>, ${e.s}–${hm(m(e.s)+e.dur)} · ${e.dur/60} ч · ${rub(e.dur/60*price)}</div>${p&&owe(p)?`<div class="when">долг ${rub(owe(p))}</div>`:''}</div>
