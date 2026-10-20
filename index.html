@@ -28,7 +28,7 @@
   --spring:cubic-bezier(.34,1.56,.64,1);
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--body);font:500 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+body{background:var(--bg);color:var(--body);font:500 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:calc(140px + env(safe-area-inset-bottom,0px))}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none}
 button:disabled{cursor:default}
@@ -747,6 +747,10 @@ function courseSheet(c){const d=DIRS[c.dir],left=c.seats-c.taken,wl=requests.fil
 function courseForm(){
   openSheet(`<span class="eyebrow">Новый поток</span><h2>Запланировать курс</h2>
   <form id="cForm" style="display:grid;gap:12px" novalidate>
+    <div class="row" role="group"><button type="button" class="chip lens on" data-ct="0">Курс</button><button type="button" class="chip lens" data-ct="1">Мастер-класс</button></div>
+    <div id="mcBox" style="display:none;gap:12px"><div class="two"><div class="fld"><label for="mcWho">Ведёт</label><select id="mcWho"><option value="own">Наш тренер</option><option value="guest">Другой преподаватель</option></select></div>
+      <div class="fld" id="mcNameBox" style="display:none"><label for="mcName">Имя преподавателя</label><input id="mcName" placeholder="Имя"></div></div>
+      <div class="fld"><label for="mcTitle">Название</label><input id="mcTitle" placeholder="О чём мастер-класс"></div></div>
     <div class="two"><div class="fld"><label for="cDir">Направление</label><select id="cDir">${['heels','aerial'].map(k=>`<option value="${k}">${DIRS[k].name}</option>`).join('')}</select></div>
       <div class="fld"><label for="cDate">Дата старта</label><input id="cDate" type="date" value="2026-12-15" min="2026-10-21"></div></div>
     <div class="fld"><label for="cDays">Дни и время</label><input id="cDays" value="ВТ и ЧТ, 19:30–21:00"></div>
@@ -756,8 +760,18 @@ function courseForm(){
     <div class="err" id="cErr"></div>
     <button class="btn pri lens" type="submit">Добавить поток</button>
   </form>`);
+  let mc=0;
+  const sync=()=>{mc=+document.querySelector('[data-ct].on').dataset.ct;$('mcBox').style.display=mc?'grid':'none';$('cDir').parentElement.style.display=mc?'none':'';$('cLen').parentElement.style.display=mc?'none':'';
+    $('cDays').previousElementSibling.textContent=mc?'Время':'Дни и время';$('cDays').value=mc?'18:00–20:00':'ВТ и ЧТ, 19:30–21:00';$('cPrice').value=mc?'':2200;$('cSeats').value=mc?15:12;$('cForm').querySelector('button[type=submit]').textContent=mc?'Добавить мастер-класс':'Добавить поток'};
+  document.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-ct]').forEach(x=>x.classList.toggle('on',x===b));sync()});
+  $('mcWho').onchange=()=>{$('mcNameBox').style.display=$('mcWho').value==='guest'?'':'none'};
   $('cForm').onsubmit=e=>{e.preventDefault();const date=$('cDate').value,dir=$('cDir').value,w=+$('cLen').value;
     if(!date||new Date(date+'T00:00')<=NOW){$('cErr').textContent='Выберите дату после сегодняшней.';return}
+    if(mc){const guest=$('mcWho').value==='guest',nm=$('mcName').value.trim(),ttl=$('mcTitle').value.trim();
+      if(guest&&!nm){$('cErr').textContent='Укажите имя преподавателя.';return}
+      const d0=new Date(date+'T00:00'),c=fill({id:'c'+Date.now(),dir:'heels',t:'heels',mc:true,host:guest?nm:'',title:'Мастер-класс'+(ttl?': '+ttl:'')+(guest?', '+nm:''),
+        age:'взрослые',date,days:WD[(d0.getDay()+6)%7]+', '+($('cDays').value.trim()||'18:00–20:00'),len:'1 занятие',weeks:1,price:+$('cPrice').value||0,seats:+$('cSeats').value||15,taken:0});
+      COURSES.push(c);closeSheet();render();toast('Мастер-класс добавлен, клиентки видят его в стартах');return}
     const c=fill({id:'c'+Date.now(),dir,t:dir,title:DIRS[dir].name+', поток '+new Date(date+'T00:00').getDate()+' '+MON[new Date(date+'T00:00').getMonth()],
       age:dir==='aerial'?'дети':'взрослые',date,days:$('cDays').value.trim()||'уточнить',len:w===2?'2 недели, 4 занятия':'4 недели, 8 занятий',weeks:w,price:+$('cPrice').value||0,seats:+$('cSeats').value||12,taken:0});
     COURSES.push(c);closeSheet();render();toast('Поток добавлен, клиентки уже видят его в стартах')}}
@@ -844,7 +858,7 @@ function applyPrices(){for(const s of SERVICES){if(!s.key)continue;const[k,v]=s.
   if(k==='course'){PREPAY.course=s.pre/100;COURSES.filter(c=>c.dir===v&&daysTo(c)>0).forEach(c=>c.price=p);GROUPS.filter(g=>g.dir===v&&/^курс/.test(g.per)).forEach(g=>g.price=p)}}}
 let FAQ=[['Нужен ли опыт?','Нет. В каждом потоке есть новички, хореограф объясняет с нуля.'],
   ['Какие нужны каблуки?','На первое занятие подойдут свои, устойчивый каблук 7–10 см. Наколенники обязательно.'],
-  ['Что если пропущу занятие?','Нажмите «Не смогу» в напоминании бота. Пропуск можно отработать на открытом классе в воскресенье.'],
+  ['Что если пропущу занятие?','Нажмите «Не смогу» в напоминании бота, менеджер увидит. Отработать пропуск нельзя.'],
   ['Можно вернуть деньги?','Если отменить за 24 часа до старта курса, вернём предоплату. Позже перенесём на следующий поток.'],
   ['Как оплатить?','По QR через PromptPay прямо в боте, или наличными и переводом в студии.'],
   ['Где студия?','Адрес и точка на карте придут в боте сразу после записи.']];
@@ -1228,7 +1242,8 @@ const VISITS={},KVIS={},GUEST={},NOTES={},MANUAL=[];
 COURSES.forEach((c,ci)=>{VISITS[c.id]={};sessions(c).filter(s=>s.iso<TD).forEach((s,si)=>{VISITS[c.id][s.iso]=new Set((ROSTER[c.id]||[]).filter((x,i)=>(i*7+si*3+ci)%9!==0).map(x=>x.contact))})});
 for(let d=new Date('2026-09-07T00:00');isoD(d)<TD;d.setDate(d.getDate()+1)){const w=(d.getDay()+6)%7;if([0,2,4].includes(w)){const iso=isoD(d),k=+iso.slice(8);KVIS[iso]=new Set(KIDS.filter((x,i)=>(i*5+k)%4!==0).map(x=>x[1]))}}
 const kidDays=()=>{const out=[];for(let d=new Date('2026-09-07T00:00');isoD(d)<='2026-10-25';d.setDate(d.getDate()+1))if([0,2,4].includes((d.getDay()+6)%7))out.push(isoD(d));return out};
-function clients(){const M=new Map(),get=(name,contact,kid)=>{const k=String(contact||name).toLowerCase();if(!M.has(k))M.set(k,{key:k,name,contact,kid:!!kid,courses:[],visits:0,pays:[],indiv:0,rent:0,last:null});return M.get(k)};
+let LIVE=null;
+function clients(){if(LIVE)return LIVE.list();const M=new Map(),get=(name,contact,kid)=>{const k=String(contact||name).toLowerCase();if(!M.has(k))M.set(k,{key:k,name,contact,kid:!!kid,courses:[],visits:0,pays:[],indiv:0,rent:0,last:null});return M.get(k)};
   const seen=(o,iso)=>{o.visits++;if(!o.last||iso>o.last)o.last=iso};
   COURSES.forEach(c=>(ROSTER[c.id]||[]).forEach(x=>{const o=get(x.name,x.contact);o.courses.push(c.id);Object.entries(VISITS[c.id]||{}).forEach(([iso,set])=>set.has(x.contact)&&seen(o,iso))}));
   KIDS.forEach(([n,ct])=>{const o=get(n,ct,1);Object.entries(KVIS).forEach(([iso,set])=>set.has(ct)&&seen(o,iso))});
@@ -1244,13 +1259,13 @@ function vBase(){const v=st.bv||'cl';
 function baseClients(){const f=st.cf||'all',q=(st.cq||'').toLowerCase();
   let list=clients();const n=list.length;
   list=list.filter(o=>f==='all'||(f==='course'&&o.courses.length)||(f==='kid'&&o.kid)||(f==='indiv'&&o.indiv)||(f==='rent'&&o.rent)||(f==='debt'&&cOwe(o)>0)||(f==='lost'&&o.last&&daysAgo(o.last)>21&&!o.kid));
-  if(q)list=list.filter(o=>(o.name+' '+o.contact).toLowerCase().includes(q));
-  return `<div class="row"><input class="srch" id="cq" value="${esc(st.cq||'')}" placeholder="Поиск по имени или @нику" aria-label="Поиск"><button class="btn lens" id="csv">Скачать базу</button><button class="btn pri lens" id="addCl">+ Клиентка</button></div>
+  if(q)list=list.filter(o=>(o.name+' '+o.contact+' '+(o.extra||'')).toLowerCase().includes(q));
+  return `<div class="row"><input class="srch" id="cq" value="${esc(st.cq||'')}" placeholder="Поиск: имя, ник, инстаграм, телефон" aria-label="Поиск"><button class="btn lens" id="csv">Скачать базу</button><button class="btn pri lens" id="addCl">+ Клиентка</button></div>
   <div class="row">${[['all','Все '+n],['course','Курсы'],['kid','Дети'],['indiv','Индивы'],['rent','Аренда'],['debt','Должны'],['lost','Давно не были']].map(([k,l])=>`<button class="chip lens ${f===k?'on':''}" data-cf="${k}">${l}</button>`).join('')}</div>
   <div style="display:grid;gap:8px">${list.map(o=>`<button class="req glass cl" data-cl="${esc(o.key)}"><div style="display:grid;gap:3px;min-width:0;text-align:left">
     <div><span class="who">${esc(o.name)}</span> ${ctag(o).map(t=>`<span class="pill ${t==='дети'?'check':t.startsWith('курсы')?'ok':'wait'}">${t}</span>`).join(' ')}${cOwe(o)?` <span class="pill check">долг ${rub(cOwe(o))}</span>`:''}</div>
     <div class="when">${esc(o.contact||'без контакта')} · посещений ${o.visits} · ${o.last?'была '+dlabel(o.last):'ещё не была'}${cPaid(o)?' · оплатила '+rub(cPaid(o)):''}</div></div><span class="note">→</span></button>`).join('')||'<div class="note">Никого не нашли.</div>'}</div>`}
-function clientSheet(k){const o=clients().find(x=>x.key===k);if(!o)return;const u=/^@/.test(o.contact||'')?o.contact.slice(1):null;
+function clientSheet(k){if(LIVE)return LIVE.sheet(k);const o=clients().find(x=>x.key===k);if(!o)return;const u=/^@/.test(o.contact||'')?o.contact.slice(1):null;
   openSheet(`<span class="eyebrow">${o.kid?'Ребёнок · пишем родителю':'Клиентка'}</span><h2>${esc(o.name)}</h2>
   <div class="row">${u?`<a class="btn pri lens" href="https://t.me/${encodeURIComponent(u)}" target="_blank" rel="noopener" style="text-decoration:none">Написать в Телеграм</a>`:''}<span class="copy" style="flex:1;user-select:text">${esc(o.contact||'нет контакта')}</span></div>
   <div class="lines"><div><span>Курсов</span><b>${o.courses.length}</b></div><div><span>Посещений</span><b>${o.visits}</b></div><div><span>Оплатила всего</span><b>${rub(cPaid(o))}</b></div>${cOwe(o)?`<div><span>Должна</span><b style="color:var(--warn)">${rub(cOwe(o))}</b></div>`:''}<div><span>Последний раз</span><b>${o.last?dlabel(o.last):'—'}</b></div></div>
@@ -1303,7 +1318,7 @@ bind.base=()=>{
   if($('cq'))$('cq').onkeyup=e=>{if(e.key==='Enter'){st.cq=$('cq').value;render();$('cq').focus()}};
   if($('csv'))$('csv').onclick=()=>{const rows=[['Имя','Контакт','Что','Курсов','Посещений','Последний раз','Оплатила','Долг']].concat(clients().map(o=>[o.name,o.contact,ctag(o).join(', '),o.courses.length,o.visits,o.last||'',cPaid(o),cOwe(o)]));
     const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(';')).join('\n')],{type:'text/csv'}));a.download='ab-dance-baza.csv';a.click();toast('База скачана, откроется в Excel или Google Таблицах')};
-  if($('addCl'))$('addCl').onclick=()=>{openSheet(`<span class="eyebrow">База</span><h2>Новая клиентка</h2><form id="clForm" style="display:grid;gap:12px" novalidate>
+  if($('addCl'))$('addCl').onclick=()=>{if(LIVE)return LIVE.add();openSheet(`<span class="eyebrow">База</span><h2>Новая клиентка</h2><form id="clForm" style="display:grid;gap:12px" novalidate>
     <div class="row" role="group"><button type="button" class="chip lens on" data-ck="0">Взрослая</button><button type="button" class="chip lens" data-ck="1">Ребёнок</button></div>
     <div class="fld"><label for="clN">Имя</label><input id="clN" placeholder="Имя"></div><div class="fld"><label for="clC">Телеграм или телефон</label><input id="clC" placeholder="@username"></div>
     <div class="err" id="clErr"></div><button class="btn pri lens" type="submit">Добавить</button></form>`);let kid=0;
@@ -1373,7 +1388,44 @@ fetch('https://dancesamui-bot.fly.dev/api/services',{headers:{Authorization:'tma
 fetch('https://dancesamui-bot.fly.dev/api/courses',{headers:{Authorization:'tma '+Telegram.WebApp.initData}}).then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
   if(!rows.length)return;
   COURSES.splice(0,COURSES.length,...rows.map(r=>fill({id:'c'+r.id.slice(0,8),dir:'heels',t:'heels',title:r.title,age:'взрослые',date:r.start_date,days:(r.days||'ВТ и ЧТ')+', 19:30–21:00',len:'2 недели, 4 занятия',price:+r.price,seats:r.seats,taken:r.taken,real:true,group:r.group_link||''})));
-  COURSES.forEach(c=>{ROSTER[c.id]=[];VISITS[c.id]={}});applyPrices();render()}).catch(()=>{});
+  COURSES.forEach(c=>{ROSTER[c.id]=[];VISITS[c.id]={}});
+  window.__courseIds={};rows.forEach(r=>window.__courseIds['c'+r.id.slice(0,8)]=r.id);
+  applyPrices();render();
+  if(MANAGER_IDS.includes(TGU.id))LIVE_INIT()}).catch(()=>{});
+function LIVE_INIT(){/* справочник клиенток: настоящие данные из базы (только менеджер) */
+(()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
+  const call=(m,p,b)=>fetch(API+p,{method:m,headers:H,body:b?JSON.stringify(b):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
+  let rows=[];const cid=id=>'c'+id.slice(0,8);
+  const map=r=>({key:r.id,name:r.name,kid:r.is_child,tg:r.tg_username||'',ig:r.instagram||'',phone:r.phone||'',note:r.note||'',
+    contact:[r.tg_username&&'@'+r.tg_username,r.instagram&&'ig @'+r.instagram,r.phone].filter(Boolean).join(' · '),
+    extra:[r.tg_username,r.instagram,r.phone,r.note].filter(Boolean).join(' '),
+    courses:(r.enrollments||[]).filter(e=>!e.waitlist).map(e=>cid(e.course_id)),visits:0,pays:[],indiv:0,rent:0,last:null});
+  const load=()=>call('GET','/clients').then(x=>{rows=x.map(map)});
+  const fields=o=>`<div class="fld"><label for="lN">Имя</label><input id="lN" value="${esc(o.name||'')}"></div>
+    <div class="fld"><label for="lT">Ник в Телеграме</label><input id="lT" placeholder="@username" value="${esc(o.tg?'@'+o.tg:'')}"></div>
+    <div class="fld"><label for="lI">Инстаграм</label><input id="lI" placeholder="@instagram" value="${esc(o.ig?'@'+o.ig:'')}"></div>
+    <div class="fld"><label for="lP">Телефон</label><input id="lP" inputmode="tel" placeholder="+66 …" value="${esc(o.phone||'')}"></div>
+    <div class="fld"><label for="lK">Заметка</label><textarea id="lK" rows="3" placeholder="Что важно помнить">${esc(o.note||'')}</textarea></div>`;
+  const val=()=>({name:$('lN').value,tg_username:$('lT').value,instagram:$('lI').value,phone:$('lP').value,note:$('lK').value});
+  const picker=sel=>`<div style="display:grid;gap:6px"><b>Был на курсах</b>${COURSES.map(c=>`<label class="copy" style="cursor:pointer"><input type="checkbox" data-lc="${c.id}" ${sel.includes(c.id)?'checked':''}> <span style="flex:1">${esc(c.title)}</span></label>`).join('')||'<div class="note">Потоков пока нет.</div>'}</div>`;
+  window.__courseIds=window.__courseIds||{};
+  LIVE={ids:window.__courseIds,load,
+    list:()=>rows.slice(),
+    sheet(k){const o=rows.find(x=>x.key===k);if(!o)return;
+      openSheet(`<span class="eyebrow">${o.kid?'Ребёнок · пишем родителю':'Клиентка'}</span><h2>${esc(o.name)}</h2>
+        ${o.tg?`<a class="btn pri lens" href="https://t.me/${encodeURIComponent(o.tg)}" target="_blank" rel="noopener" style="text-decoration:none">Написать в Телеграм</a>`:''}
+        ${fields(o)}${picker(o.courses)}<button class="btn pri lens" id="lSave">Сохранить</button>`);
+      document.querySelectorAll('[data-lc]').forEach(b=>b.onchange=()=>{call('POST','/enroll',{client_id:o.key,course_id:LIVE.ids[b.dataset.lc],on:b.checked}).then(()=>{b.checked?o.courses.push(b.dataset.lc):o.courses.splice(o.courses.indexOf(b.dataset.lc),1);toast(b.checked?'Добавлена в курс':'Убрана из курса')}).catch(()=>{b.checked=!b.checked;toast('Не получилось, попробуйте ещё раз')})});
+      $('lSave').onclick=()=>{if(!$('lN').value.trim()){toast('Нужно имя');return}call('PATCH','/clients/'+o.key,val()).then(load).then(()=>{closeSheet();render();toast('Сохранено')}).catch(()=>toast('Не получилось сохранить'))}},
+    add(){openSheet(`<span class="eyebrow">Справочник</span><h2>Новая клиентка</h2>${fields({})}
+        <label class="copy" style="cursor:pointer"><input type="checkbox" id="lKid"> <span>Ребёнок (контакт родителя)</span></label>${picker([])}
+        <button class="btn pri lens" id="lAdd">Добавить</button>`);
+      $('lAdd').onclick=()=>{if(!$('lN').value.trim()){toast('Нужно имя');return}
+        const ids=[...document.querySelectorAll('[data-lc]:checked')].map(b=>LIVE.ids[b.dataset.lc]).filter(Boolean);
+        call('POST','/clients',{...val(),is_child:$('lKid').checked,course_ids:ids}).then(load).then(()=>{closeSheet();render();toast('Добавлена в справочник')}).catch(()=>toast('Не получилось добавить'))}}};
+})();
+
+LIVE.load().then(()=>render()).catch(()=>{})}
 </script>
 
 </body>
