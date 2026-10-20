@@ -376,6 +376,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--rose-deep)}
 <div class="sheet glass" id="sheet" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" role="status"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
 /* ---------- данные: High Heels по ВТ/ЧТ 19:30–21:00 и курс 2 недели настоящие (курс 2 200 ฿), остальные цены примерные, остальное пример ---------- */
 const DIRS={
@@ -686,14 +687,14 @@ function bookFlow(o){
     payStep(o,r)}}
 function payStep(o,r){
   openSheet(`<div class="steps"><i class="on"></i><i class="on"></i><i></i></div><span class="eyebrow">Шаг 2 из 3 · предоплата</span><h2>Оплатите по QR</h2>
-  <div class="qr"><canvas id="qrc" width="136" height="136" aria-label="QR-код для оплаты PromptPay"></canvas>
-    <div style="display:grid;gap:6px"><span class="amount">${rub(r.sum)}</span><span style="font-size:13.5px">Наведите камеру телефона или откройте QR в приложении банка. Оплата через PromptPay.</span>
-    <span class="todo" style="justify-self:start">здесь будет QR студии</span></div></div>
+  <div class="qr"><canvas id="qrc" width="168" height="168" aria-label="QR-код для оплаты PromptPay"></canvas>
+    <div style="display:grid;gap:6px"><span class="amount">${rub(r.sum)}</span><span style="font-size:13.5px">Откройте QR в приложении банка: сумма подставится сама. PromptPay, Bangkok Bank.</span>
+    <span style="font-size:13px;color:var(--muted)">Получатель: MR ALEKSANDR BOBRUSOV · 095-xxx-6131</span></div></div>
   <div class="copy" style="font-weight:600;user-select:text">Время держится за вами <span class="timer" id="tmr" style="margin-left:auto">30:00</span></div>
   <div class="fld"><label for="rqCheck">Чек об оплате, по желанию</label><input id="rqCheck" type="file" accept="image/*,application/pdf"></div>
   <button class="btn pri lens" id="paidBtn">Я оплатила</button>
   <button class="btn lens" id="askBtn">Вопрос менеджеру</button>`);
-  drawQR($('qrc'),r.id);
+  drawQR($('qrc'),r.sum);
   let left=1800;tick=setInterval(()=>{left--;const el=$('tmr');if(!el)return clearInterval(tick);if(left<=0){clearInterval(tick);el.textContent='время вышло';return}el.textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0')},1000);
   $('askBtn').onclick=()=>contactSheet(`Здравствуйте! Вопрос по записи: ${r.what}${r.s?', '+WD[r.d]+' '+r.s:''}.`);
   $('paidBtn').onclick=()=>{r.st='check';r.receipt=!!$('rqCheck').files.length;renderDock();
@@ -701,12 +702,16 @@ function payStep(o,r){
     <p style="margin:0">Менеджер проверит оплату и подтвердит запись в боте. За день до занятия придёт напоминание.</p>
     <div class="lines"><div><span>${esc(r.what)}</span><b>${r.s?WD[r.d]+' '+WEEK[r.d]+' окт, '+r.s:''}</b></div><div><span>Предоплата</span><b>${rub(r.sum)}</b></div></div>
     <button class="btn pri lens" id="doneBtn">Хорошо</button>`);$('doneBtn').onclick=closeSheet}}
-// декоративный QR-узор для прототипа, настоящий код даст банк студии
-function drawQR(cv,seed){const g=cv.getContext('2d'),N=25,s=cv.width/N;let x=seed%2147483647||7;const rnd=()=>(x=x*16807%2147483647)/2147483647;
-  g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.fillStyle='#2E1B28';
-  const fin=(cx,cy)=>{g.fillRect(cx*s,cy*s,7*s,7*s);g.fillStyle='#fff';g.fillRect((cx+1)*s,(cy+1)*s,5*s,5*s);g.fillStyle='#2E1B28';g.fillRect((cx+2)*s,(cy+2)*s,3*s,3*s)};
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++){const inF=(i<8&&j<8)||(i>N-9&&j<8)||(i<8&&j>N-9);if(!inF&&rnd()>.52)g.fillRect(i*s,j*s,s,s)}
-  fin(0,0);fin(N-7,0);fin(0,N-7);g.fillStyle='#B86F82';g.beginPath();g.arc(cv.width/2,cv.height/2,s*2.2,0,7);g.fill()}
+// настоящий PromptPay QR (EMVCo) на номер студии, с суммой
+const PROMPTPAY_ID='0066959476131';
+function ppPayload(amount){const f=(id,v)=>id+String(v.length).padStart(2,'0')+v;
+  let s=f('00','01')+f('01','12')+f('29',f('00','A000000677010111')+f('01',PROMPTPAY_ID))+f('53','764')+(amount?f('54',amount.toFixed(2)):'')+f('58','TH')+'6304';
+  let c=0xFFFF;for(const ch of s){c^=ch.charCodeAt(0)<<8;for(let i=0;i<8;i++)c=c&0x8000?(c<<1)^0x1021:c<<1;c&=0xFFFF}
+  return s+c.toString(16).toUpperCase().padStart(4,'0')}
+function drawQR(cv,amount){const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);
+  if(typeof qrcode!=='function'){g.fillStyle='#2E1B28';g.font='13px sans-serif';g.textAlign='center';g.fillText('PromptPay',cv.width/2,cv.height/2-8);g.fillText('095-947-6131',cv.width/2,cv.height/2+12);return}
+  const q=qrcode(0,'M');q.addData(ppPayload(amount));q.make();const N=q.getModuleCount(),s=Math.floor(cv.width/(N+2)),o=Math.floor((cv.width-s*N)/2);
+  g.fillStyle='#000';for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(q.isDark(r,c))g.fillRect(o+c*s,o+r*s,s,s)}
 
 /* ---------- админка ---------- */
 function load(){let busy=0;for(const e of events)if(!e.away)busy+=e.dur;const total=7*13*60;return{busy,total,pct:Math.round(busy/total*100)}}
