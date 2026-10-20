@@ -333,6 +333,25 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--rose-deep)}
 .cols small{position:absolute;bottom:-17px;left:-4px;right:-4px;text-align:center;font-size:9.5px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden}
 .cols{margin-bottom:18px}
 @media (max-width:560px){.dock button{padding:8px 9px;font-size:10px}.bar{grid-template-columns:90px 1fr auto}}
+
+.dpick{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.dp{display:grid;gap:2px;justify-items:center;padding:8px 0;border-radius:14px;background:rgba(255,255,255,.5);color:var(--muted);font-weight:800;font-size:11px;letter-spacing:.06em}
+.dp b{font-family:var(--serif);font-size:19px;font-weight:400;color:var(--ink);letter-spacing:0;line-height:1}
+.dp.on{background:var(--ink);color:#fff}.dp.on b{color:#fff}
+.dp.today:not(.on) b{color:var(--rose-deep)}
+.sched.one{grid-template-columns:44px 1fr;grid-template-rows:0 repeat(26,30px);min-width:0}
+.sched.one .ev{margin:1px 0 1px 4px;padding:6px 10px;font-size:13px;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.sched.one .ev b{font-size:14px;white-space:normal;line-height:1.2}
+.sched.one .ev span{font-size:12px}
+.sched.one .tm{transform:translateY(-8px)}
+.gridbox:has(.sched.one){overflow:visible;padding:12px 10px}
+.rent-tag{white-space:nowrap}
+@media (max-width:720px){.legend{gap:6px 12px;font-size:12px}}
+.dlist{display:grid;gap:8px}
+.dlist .dev{position:static;margin:0;display:grid;gap:2px;padding:12px 14px;border-radius:14px;font-size:13px}
+.dlist .dev b{font-size:15px}
+.dfree{display:grid;gap:2px;text-align:left;padding:12px 14px;border-radius:14px;border:1.5px dashed rgba(120,70,100,.3);background:rgba(255,255,255,.4);color:var(--ink)}
+.dfree b{font-size:14px}.dfree span{font-size:12px;color:var(--muted);font-weight:600}
 </style>
 
 <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
@@ -681,14 +700,18 @@ function drawQR(cv,seed){const g=cv.getContext('2d'),N=25,s=cv.width/N;let x=see
 
 /* ---------- админка ---------- */
 function load(){let busy=0;for(const e of events)if(!e.away)busy+=e.dur;const total=7*13*60;return{busy,total,pct:Math.round(busy/total*100)}}
+const MQ=matchMedia('(max-width:720px)'),isM=()=>MQ.matches;
+MQ.onchange=()=>render();
 function grid(opts={}){
-  const start=540;let h=`<div class="sched"><div></div>`;
-  WEEK.forEach((n,d)=>h+=`<div class="hd ${d===TODAY?'today':''}" style="grid-column:${d+2}">${WD[d]}<b>${n}</b></div>`);
+  const start=540,one=isM(),gd=st.gd==null?TODAY:st.gd,col=d=>one?2:d+2;
+  let h=one?`<div class="dpick" role="tablist">${WEEK.map((n,d)=>`<button class="dp ${d===gd?'on':''} ${d===TODAY?'today':''}" data-gd="${d}" role="tab" aria-selected="${d===gd}"><span>${WD[d]}</span><b>${n}</b></button>`).join('')}</div>`:'';
+  h+=`<div class="sched${one?' one':''}"><div></div>`;
+  WEEK.forEach((n,d)=>{if(!one)h+=`<div class="hd ${d===TODAY?'today':''}" style="grid-column:${d+2}">${WD[d]}<b>${n}</b></div>`});
   for(let r=0;r<26;r++){const t=start+r*30;if(r%2===0)h+=`<div class="tm" style="grid-row:${r+2}">${hm(t)}</div>`;
-    for(let d=0;d<7;d++){let av='';if(opts.trainer){const a=TRAINERS[opts.trainer].avail[d]||[];if(a.some(([x,y])=>t>=x*60&&t<y*60))av=' avail'}
-      h+=`<button class="cell${r%2?' half':''}${av}" style="grid-column:${d+2};grid-row:${r+2}" data-d="${d}" data-t="${hm(t)}" aria-label="${WD[d]} ${hm(t)}"></button>`}}
-  for(const e of events.concat(holds())){if(opts.trainer?e.t!==opts.trainer:e.away)continue;const r=(m(e.s)-start)/30,d=DIRS[e.dir];
-    h+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':''}" style="--c:${d.c};grid-column:${e.d+2};grid-row:${r+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`}><b>${e.hold?'Бронь · '+esc(e.who):esc(label(e))}</b><span>${e.s}–${hm(m(e.s)+e.dur)}${e.hold?' · ждёт оплату':e.t?' · '+TRAINERS[e.t].short:''}</span></button>`}
+    for(let d=0;d<7;d++){if(one&&d!==gd)continue;let av='';if(opts.trainer){const a=TRAINERS[opts.trainer].avail[d]||[];if(a.some(([x,y])=>t>=x*60&&t<y*60))av=' avail'}
+      h+=`<button class="cell${r%2?' half':''}${av}" style="grid-column:${col(d)};grid-row:${r+2}" data-d="${d}" data-t="${hm(t)}" aria-label="${WD[d]} ${hm(t)}"></button>`}}
+  for(const e of events.concat(holds())){if(opts.trainer?e.t!==opts.trainer:e.away)continue;if(one&&e.d!==gd)continue;const r=(m(e.s)-start)/30,d=DIRS[e.dir];
+    h+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':''}" style="--c:${d.c};grid-column:${col(e.d)};grid-row:${r+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`}><b>${e.hold?'Бронь · '+esc(e.who):esc(label(e))}</b><span>${e.s}–${hm(m(e.s)+e.dur)}${e.hold?' · ждёт оплату':e.t?' · '+TRAINERS[e.t].short:''}</span></button>`}
   return h+'</div>'}
 const legend=()=>`<div class="legend">${Object.values(DIRS).map(d=>`<span style="--c:${d.c}"><i class="dot"></i>${d.name}</span>`).join('')}<span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>`;
 
@@ -740,6 +763,7 @@ function courseForm(){
       age:dir==='aerial'?'дети':'взрослые',date,days:$('cDays').value.trim()||'уточнить',len:w===2?'2 недели, 4 занятия':'4 недели, 8 занятий',weeks:w,price:+$('cPrice').value||0,seats:+$('cSeats').value||12,taken:0});
     COURSES.push(c);closeSheet();render();toast('Поток добавлен, клиентки уже видят его в стартах')}}
 function bindGrid(){
+  document.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{st.gd=+b.dataset.gd;render()});
   document.querySelectorAll('.sched .cell').forEach(c=>c.onclick=()=>editForm({d:+c.dataset.d,s:c.dataset.t,dur:60,dir:'indiv',t:tab==='people'?st.mTrainer:'heels'}));
   document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>evSheet(events.find(e=>e.id==b.dataset.ev)));
   document.querySelectorAll('[data-hold]').forEach(b=>b.onclick=()=>go('inbox'))}
@@ -988,6 +1012,13 @@ function vRentCal(){
     for(const e of events.concat(holds()).filter(e=>e.d===d&&!e.away)){const i=(m(e.s)-540)/30,lb=e.hold?'Бронь · '+e.who:label(e);
       g+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':'cls'}" style="--c:${DIRS[e.dir].c};grid-row:${row};grid-column:${i+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`} title="${esc(lb)}"><b>${esc(lb)}</b><span>${e.s}–${hm(m(e.s)+e.dur)}</span></button>`}});
   g+='</div>';
+  if(isM()){const gd=st.gd==null?TODAY:st.gd;
+    const evs=events.concat(holds()).filter(e=>e.d===gd&&!e.away).sort((a,b)=>m(a.s)-m(b.s));
+    let cur=540,L='';const free=(a,b)=>{if(b-a>=30)L+=`<button class="dfree rc-f" data-rd="${gd}" data-rt="${hm(a)}" data-rdur="${Math.min(b-a,120)}"><b>Свободно ${hm(a)}–${hm(b)}</b><span>${(b-a)/60} ч · нажмите, чтобы сдать</span></button>`};
+    evs.forEach(e=>{const a=m(e.s),lb=e.hold?'Бронь · '+e.who:label(e);free(cur,a);
+      L+=`<button class="dev ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':'cls'}" style="--c:${DIRS[e.dir].c}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`}><b>${esc(lb)}</b><span>${e.s}–${hm(a+e.dur)}${e.hold?' · ждёт оплату':e.dir==='rent'?' · аренда':' · занятия студии'}</span></button>`;cur=Math.max(cur,a+e.dur)});
+    free(cur,1320);
+    g=`<div class="dpick" role="tablist">${WEEK.map((n,d)=>`<button class="dp ${d===gd?'on':''} ${d===TODAY?'today':''}" data-gd="${d}" role="tab"><span>${WD[d]}</span><b>${n}</b></button>`).join('')}</div><div class="dlist">${L}</div>`}
   return `<section class="stats">
     <div class="stat glass"><span class="v">${hrsR} ч</span><span class="l">аренды на этой неделе</span></div>
     <div class="stat glass"><span class="v">${rub(hrsR*price)}</span><span class="l">по аренде за неделю</span></div>
@@ -996,13 +1027,14 @@ function vRentCal(){
   <section class="sect"><div class="sect-h"><h2>Аренда зала · 19–25 октября</h2><div class="row">${calBtn('hall')}<button class="btn pri lens" id="addRent">Сдать зал</button></div></div>
     <div class="legend"><span><i class="dot" style="background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px var(--line)"></i>Свободно, можно сдать</span><span style="--c:var(--rose-deep)"><i class="dot"></i>Аренда</span><span><i class="dot" style="background:var(--lilac);opacity:.55"></i>Занятия студии</span><span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>
     <div class="gridbox">${g}</div>
-    <span class="note">Белые клетки по 30 минут свободны. Нажмите на свободную, чтобы вписать аренду, на занятую, чтобы увидеть, кто там, и перенести.</span></section>
+    <span class="note">Свободное время можно сдать одним нажатием, а на занятое нажмите, чтобы увидеть, кто там, и перенести.</span></section>
   <section class="sect"><h2 style="font-size:30px">Кто арендует</h2><div style="display:grid;gap:10px">${rents.map(e=>{const p=PAYS.find(x=>x.ev===e.id);return `<article class="req glass"><div style="display:grid;gap:3px;min-width:0">
     <div><span class="who">${esc(e.who)}</span> ${p?payPill(p):'<span class="pill wait">оплата не записана</span>'}</div>
     <div class="what"><b>${DAY_FULL[e.d]}, ${WEEK[e.d]} окт</b>, ${e.s}–${hm(m(e.s)+e.dur)} · ${e.dur/60} ч · ${rub(e.dur/60*price)}</div>${p&&owe(p)?`<div class="when">долг ${rub(owe(p))}</div>`:''}</div>
     <div class="row">${p?(owe(p)?`<button class="btn lens" data-pa="${p.id}">Принять оплату</button>`:''):`<button class="btn lens" data-rp="${e.id}">Записать оплату</button>`}</div></article>`}).join('')}</div></section>`}
 bind.rentcal=()=>{$('addRent').onclick=()=>editForm({d:TODAY,s:'14:00',dur:120,dir:'rent'});
-  document.querySelectorAll('.rc-f').forEach(c=>c.onclick=()=>editForm({d:+c.dataset.rd,s:c.dataset.rt,dur:60,dir:'rent'}));
+  document.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{st.gd=+b.dataset.gd;render()});
+  document.querySelectorAll('.rc-f').forEach(c=>c.onclick=()=>editForm({d:+c.dataset.rd,s:c.dataset.rt,dur:+c.dataset.rdur||60,dir:'rent'}));
   document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>evSheet(events.find(e=>e.id==b.dataset.ev)));
   document.querySelectorAll('[data-hold]').forEach(b=>b.onclick=()=>go('inbox'));
   document.querySelectorAll('[data-pa]').forEach(b=>b.onclick=()=>acceptSheet(PAYS.find(p=>p.id==b.dataset.pa)));
@@ -1321,7 +1353,7 @@ function calSheet(k){const c=CALS[k],mine=k==='me';
     <span class="note">Откроется окно Google: войти и разрешить «только просмотр занятости». Названия событий и заметки мы не видим.</span>`}</div>`}
   <div class="step"><b>${mine?'':'2. '}Показывать расписание студии в телефоне</b>
     <span class="note">${mine?'Подпишитесь один раз: все ваши занятия, переносы и съёмка сами появятся и обновятся в календаре телефона.':'Подписка на расписание: все занятия, индивы и аренда сами появятся в календаре на телефоне и будут обновляться.'}</span>
-    <div class="row"><a class="btn lens" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(feed(k))}" target="_blank" rel="noopener" style="text-decoration:none">В Google Календарь</a><a class="btn lens" href="${feed(k)}" style="text-decoration:none">В iPhone (Apple)</a><button class="btn lens" id="calCopy">Скопировать ссылку</button></div></div>`);
+    <div class="row"><a class="btn lens" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(feed(k))}" target="_blank" rel="noopener" style="text-decoration:none">В Google Календарь</a>${mine?`<a class="btn lens" href="${feed(k)}" style="text-decoration:none">Если iPhone</a>`:''}<button class="btn lens" id="calCopy">Скопировать ссылку</button></div></div>`);
   $('calCopy').onclick=()=>{navigator.clipboard?.writeText(feed(k)).catch(()=>{});toast('Ссылка скопирована')};
   if($('calOn'))$('calOn').onclick=()=>{const a=$('calAcc').value.trim();if(!/^\S+@\S+\.\S+$/.test(a)){$('calErr').textContent='Укажите почту Google.';return}
     c.on=1;c.acc=a;c.imp.forEach(e=>events.push({...e,dir:'ext',src:k,id:++uid}));closeSheet();render();toast('Календарь подключён, занятость подтянута')};
