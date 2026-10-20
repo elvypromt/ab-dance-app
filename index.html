@@ -865,7 +865,8 @@ function editForm(e){
   <form id="evForm" style="display:grid;gap:12px" novalidate>
     <div class="two"><div class="fld"><label for="fDir">Что</label><select id="fDir">${opt(DIRS,e.dir)}</select></div>
       <div class="fld"><label for="fT">Тренер</label><select id="fT"><option value="">без тренера</option>${opt(TRAINERS,e.t)}</select></div></div>
-    <div class="fld"><label for="fTitle">Название или клиент</label><input id="fTitle" value="${esc(e.title||e.who||'')}" placeholder="Например, Анна Белова"></div>
+    <div class="fld"><label for="fTitle">Название или клиент</label><input id="fTitle" list="fCl" value="${esc(e.title||e.who||'')}" placeholder="Начните вводить имя клиентки"><datalist id="fCl">${(role==='manager'?clients():[]).map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist></div>
+    <span class="note" id="fHint"></span>
     <div class="two"><div class="fld"><label for="fD">День</label><select id="fD">${WEEK.map((n,d)=>`<option value="${d}" ${d===e.d?'selected':''}>${WD[d]}, ${wlab3(d)}</option>`).join('')}</select></div>
       <div class="fld"><label for="fS">Начало</label><select id="fS">${times.map(t=>`<option ${t===e.s?'selected':''}>${t}</option>`).join('')}</select></div></div>
     <div class="fld"><label for="fDur">Длительность</label><select id="fDur">${[30,60,90,120,180,240].map(x=>`<option value="${x}" ${x===e.dur?'selected':''}>${x<60?x+' минут':x/60+' ч'}</option>`).join('')}</select></div>
@@ -875,6 +876,9 @@ function editForm(e){
   const read=()=>({d:+$('fD').value,s:$('fS').value,dur:+$('fDur').value,dir:$('fDir').value,t:$('fDir').value==='rent'?'':$('fT').value});
   const check=()=>{const cf=conflicts(read(),e.id);$('fErr').textContent=cf.length?'Нельзя: '+cf[0]+'.':'';return cf};
   ['fD','fS','fDur','fT','fDir'].forEach(id=>$(id).onchange=check);check();
+  const hint=()=>{const v=$('fDir').value,nm=$('fTitle').value.trim(),known=nm&&clients().some(c=>c.name.toLowerCase()===nm.toLowerCase());
+    $('fHint').textContent=v==='indiv'||v==='rent'?(known?'Клиентка есть в справочнике: бот напишет ей о записи, переносе и отмене.':'Если имя совпадёт со справочником, бот напишет клиентке сам. Второму менеджеру сообщение придёт в любом случае.'):''};
+  $('fTitle').oninput=hint;$('fDir').addEventListener('change',hint);hint();
   $('evForm').onsubmit=ev=>{ev.preventDefault();if(check().length)return;const c=read(),name=$('fTitle').value.trim(),rec={...c,t:c.t||undefined};
     if(c.dir==='indiv'||c.dir==='rent'){rec.who=name||'Клиент';rec.title=undefined}else rec.title=name||DIRS[c.dir].name;
     if(isNew){const ev={...rec,id:++uid};events.push(ev);LIVEE&&LIVEE.create(ev)}else{const ev=events.find(x=>x.id===e.id);Object.assign(ev,rec);LIVEE&&LIVEE.update(ev)}
@@ -1501,6 +1505,10 @@ function LIVEE_INIT(){/* расписание зала: настоящие за�
     update(e){(e.src==='session'?call('PATCH','/sessions/'+e.sid,{day:WEEK_ISO[e.d],time_from:e.s,time_to:hm(m(e.s)+e.dur)}):call('PATCH','/events/'+e.eid,body(e))).catch(()=>toast('Не сохранилось, попробуйте ещё раз'))},
     remove(e){(e.src==='session'?call('DELETE','/sessions/'+e.sid):call('DELETE','/events/'+e.eid)).catch(()=>toast('Не удалилось, попробуйте ещё раз'))}};
 })();
+/* второй человек видит изменения без перезахода: раз в минуту, пока приложение открыто и нет открытой формы */
+setInterval(()=>{if(document.visibilityState!=='visible'||$('sheet').classList.contains('on'))return;
+  Promise.all([LIVEE.load(),LIVEA?LIVEA.load():null,LIVEQ?LIVEQ.load():null]).then(render).catch(()=>{})},60000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')Promise.all([LIVEE.load(),LIVEA?LIVEA.load():null]).then(render).catch(()=>{})});
 
 LIVEE.load().then(()=>render()).catch(()=>{})}
 function LIVEA_INIT(){/* окна тренера для индивов: из базы, менеджер/тренер правит тапом в «Расписании» */
