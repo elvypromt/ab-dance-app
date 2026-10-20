@@ -396,8 +396,12 @@ const TRAINERS={
   heels:{name:'Саша',short:'Саша',ins:'Сашей',role:'High Heels, воздушная гимнастика для детей, индивы',c:'var(--rose)',price:3000,ini:'♥',
     avail:{0:[[11,17]],2:[[11,17]],4:[[11,17]],5:[[11,16]]}}
 };
-const RENT={hall:{name:'Аренда зала',sub:'просто зал, почасово',price:350}};
-const PREPAY={course:1,indiv:.5,rent:.3};
+const RENT={hall:{name:'Аренда зала',sub:'почасово',price:350}};
+const PREPAY={course:{fix:500},indiv:.5,rent:.3};
+// предоплата: доля от суммы или фиксированная сумма {fix:бат}
+const preOf=v=>typeof v==='string'&&v[0]==='f'?{fix:+v.slice(1)}:v/100;
+const preSum=(k,total)=>{const p=PREPAY[k];return p&&typeof p==='object'?Math.min(p.fix,total):Math.round(total*(p||0))};
+const preLbl=k=>{const p=PREPAY[k];return p&&typeof p==='object'?'Предоплата':'Предоплата '+Math.round(p*100)+'%'};
 const MANAGER='@Manager_dance';
 const DEMO=false;
 const NOW=DEMO?new Date(2026,9,20):new Date();NOW.setHours(0,0,0,0);
@@ -616,7 +620,7 @@ bind.dirs=()=>{document.querySelectorAll('[data-age]').forEach(b=>b.onclick=()=>
 
 /* ---------- курсы ---------- */
 function vNew(){
-  return `<section class="sect"><div class="sect-h"><h2>Курсы и наборы</h2><span class="note">${PREPAY.course?'Предоплата '+Math.round(PREPAY.course*100)+'%, место за вами сразу после оплаты':'Оплата на месте'}</span></div>
+  return `<section class="sect"><div class="sect-h"><h2>Курсы и наборы</h2><span class="note">${PREPAY.course?(typeof PREPAY.course==='object'?'Предоплата '+rub(PREPAY.course.fix):'Предоплата '+Math.round(PREPAY.course*100)+'%')+', место за вами сразу после оплаты':'Оплата на месте'}</span></div>
   ${timeline(upcoming())}
   <div class="cards">${upcoming().map(c=>{const d=DIRS[c.dir],left=c.seats-c.taken,full=left<=0;return `
     <article class="card glass" style="--c:${d.c}">
@@ -658,7 +662,7 @@ bind.slots=()=>{
 function vRent(){
   const counts=WEEK.map((_,d)=>{let n=0;for(let h=9;h<22;h++)if(!hallBusy(d,h))n++;return n});
   let seg='';for(let h=9;h<22;h++){const b=hallBusy(st.rDay,h);seg+=`<button class="hr${b?' busy':''}" data-h="${h}" ${b?'aria-disabled="true"':''} aria-label="${hm(h*60)}, ${b?'занято':'свободно'}">${h}</button>`}
-  return `<section class="sect"><div class="sect-h"><h2>Аренда зала</h2><span class="note">Большой зал · зеркала, станки, полотна и кольцо, звук <span class="todo">уточнить</span></span></div>
+  return `<section class="sect"><div class="sect-h"><h2>Аренда зала</h2></div>
   ${weekNav()}
   <div class="days">${WEEK.map((n,d)=>`<button id="rday_${d}" class="day lens ${d===st.rDay?'on':''}" data-rday="${d}"><span class="w">${WD[d]}</span><span class="n">${n}</span><span class="c ${counts[d]?'':'z'}">${counts[d]?hrs(counts[d]):'нет'}</span></button>`).join('')}</div>
   <div class="rent">
@@ -708,21 +712,27 @@ bind.rent=()=>{
   paintRent()};
 
 /* ---------- запись: данные → QR → готово ---------- */
+function myTg(){try{const u=Telegram.WebApp.initDataUnsafe.user;return u&&u.username?'@'+u.username:''}catch(e){return''}}
 function bookFlow(o){
   const steps=n=>o.wait?'':`<div class="steps"><i class="on"></i><i class="${n>1?'on':''}"></i><i class="${n>2?'on':''}"></i></div>`;
   openSheet(`${steps(1)}<span class="eyebrow">${o.wait?(o.msg?'Предзапись':'Лист ожидания'):'Шаг 1 из 3 · контакты'}</span><h2>${esc(o.title)}</h2><p style="margin:0">${esc(o.sub)}</p>
-  ${o.total?`<div class="lines"><div><span>Стоимость</span><b>${rub(o.total)}</b></div><div><span>Предоплата ${Math.round(PREPAY[o.kind]*100)}%</span><b>${rub(o.total*PREPAY[o.kind])}</b></div></div>`:''}
+  ${o.total?`<div class="lines"><div><span>Стоимость</span><b>${rub(o.total)}</b></div><div><span>${preLbl(o.kind)}</span><b>${rub(preSum(o.kind,o.total))}</b></div></div>`:''}
   <form id="rqForm" style="display:grid;gap:12px" novalidate>
     <div class="fld"><label for="rqName">Имя</label><input id="rqName" autocomplete="name" placeholder="Как к вам обращаться"></div>
-    <div class="fld"><label for="rqContact">Телеграм или телефон</label><input id="rqContact" placeholder="@username"></div>
+    <div class="fld"><label for="rqTg">Телеграм</label><input id="rqTg" autocomplete="off" placeholder="@username" value="${esc(myTg())}"></div>
+    <div class="fld"><label for="rqPhone">WhatsApp или телефон</label><input id="rqPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+66 …"></div>
+    <p style="margin:-4px 0 0;font-size:13px;color:var(--muted)">Хватит одного из двух. Телеграм мы подставили сами.</p>
     <div class="err" id="rqErr"></div>
     <button class="btn pri lens" type="submit">${o.msg?'Записаться заранее':o.wait?'Встать в очередь':'Дальше, к оплате'}</button>
   </form>`);
-  $('rqForm').onsubmit=e=>{e.preventDefault();const n=$('rqName').value.trim(),c=$('rqContact').value.trim();
-    if(!n||!c){$('rqErr').textContent='Заполните имя и контакт, чтобы менеджер мог ответить.';return}
+  $('rqForm').onsubmit=e=>{e.preventDefault();const n=$('rqName').value.trim();let tg=$('rqTg').value.trim().replace(/\s+/g,''),ph=$('rqPhone').value.trim();
+    if(tg&&!tg.startsWith('@')&&!/^https?:/.test(tg))tg='@'+tg;
+    const c=[tg,ph&&('WhatsApp '+ph)].filter(Boolean).join(' · ');
+    if(!n){$('rqErr').textContent='Напишите, как к вам обращаться.';return}
+    if(!c){$('rqErr').textContent='Оставьте Телеграм или WhatsApp, чтобы менеджер мог ответить.';return}
     if(o.wait){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,ago:'только что',st:'wait',mine:true});LIVEQ&&LIVEQ.create(requests[0],o);closeSheet();renderDock();toast(o.msg||'Вы в листе ожидания. Бот напишет, когда освободится место');return}
     if(o.d!=null&&conflicts({d:o.d,s:o.s,dur:o.dur,t:o.t}).length){$('rqErr').textContent='Это время только что заняли. Выберите другое.';return}
-    const sum=Math.round(o.total*PREPAY[o.kind]);
+    const sum=preSum(o.kind,o.total);
     if(!sum){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,d:o.d,s:o.s,dur:o.dur,t:o.t,dir:o.dir,sum:0,course:o.course&&o.course.id,ago:'только что',st:'check',mine:true});LIVEQ&&LIVEQ.create(requests[0],o);closeSheet();renderDock();render();toast('Записали! Оплата на месте, менеджер подтвердит в чате');return}
     const r={id:Date.now(),who:n,contact:c,what:o.what,d:o.d,s:o.s,dur:o.dur,t:o.t,dir:o.dir,sum,course:o.course&&o.course.id,ago:'только что',st:'pay',mine:true};
     requests.unshift(r);LIVEQ&&LIVEQ.create(r,o);renderDock();if(tab==='rent'){st.ra=st.rb=null;render()}else if(tab==='slots')render();
@@ -923,7 +933,7 @@ bind.inbox=()=>{
   document.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>{const r=requests.find(x=>x.id==b.dataset.ok);
     if(r.d!=null)events.push({id:++uid,d:r.d,s:r.s,dur:r.dur||60,dir:r.dir,t:r.t,who:r.who});
     if(r.course){const c=COURSES.find(x=>x.id===r.course);if(c)c.taken++}
-    const full=r.dir==='rent'||r.dir==='indiv'?(PREPAY[r.dir]?Math.round(r.sum/PREPAY[r.dir]):r.sum):r.sum;
+    const cc=r.course&&COURSES.find(x=>x.id===r.course),pp=PREPAY[r.dir],full=cc&&cc.price?cc.price:(r.dir==='rent'||r.dir==='indiv')&&typeof pp==='number'&&pp?Math.round(r.sum/pp):r.sum;
     PAYS.unshift({id:Date.now(),who:r.who,contact:r.contact,what:r.what,amount:full,due:r.d!=null?WEEK_ISO[r.d]:null,log:[{d:TD,sum:r.sum,m:'qr'}]});
     if(r.course)(ROSTER[r.course]=ROSTER[r.course]||[]).push({name:r.who,contact:r.contact,att:null});
     r.st='ok';LIVEQ&&LIVEQ.set(r,'ok');render();toast(r.d!=null?'Поставлено в зал, клиентке ушло подтверждение':'Место в курсе закреплено')});
@@ -937,17 +947,17 @@ const CATS=['Курсы','Детям','Индивидуальные','Аренд
 const UNITS=[['разово','разово'],['час','за час'],['курс','за курс'],['месяц','в месяц']];
 const unitTxt=u=>({разово:'разово',час:'/ час',курс:'за курс',месяц:'в месяц'}[u]||'');
 const priceTxt=(p,u)=>p==null||p===''?'<span class="todo">цена: уточнить</span>':rub(p)+' '+unitTxt(u);
-const preTxt=s=>s.pre?`предоплата ${s.pre}%`:'без предоплаты';
+const preTxt=s=>!s.pre?'без предоплаты':typeof s.pre==='string'?`предоплата ${rub(+s.pre.slice(1))}`:`предоплата ${s.pre}%`;
 let SERVICES=[
-  {id:'s1',cat:'Курсы',name:'High Heels, курс',sub:'2 недели, 4 занятия, ВТ и ЧТ 19:30–21:00',price:2200,unit:'курс',real:1,key:'course:heels',pre:100,rem:1},
+  {id:'s1',cat:'Курсы',name:'High Heels, курс',sub:'2 недели, 4 занятия, ВТ и ЧТ 19:30–21:00',price:2200,unit:'курс',real:1,key:'course:heels',pre:'f500',rem:1},
   {id:'s2',cat:'Детям',name:'Воздушная гимнастика для детей',sub:'в другом зале, группы 3 раза в неделю по вечерам, дни уточнить',price:null,unit:'месяц',pre:0,rem:1,
     vars:[{n:'Разовое занятие',price:null},{n:'Абонемент на месяц',price:null}]}
 ].concat(Object.entries(TRAINERS).map(([k,t])=>({id:'i_'+k,cat:'Индивидуальные',name:'Индивидуальное занятие',sub:'High Heels, постановка номера. Детские индивы: уточнить',price:t.price,unit:'час',key:'indiv:'+k,pre:50,rem:1})),
-  [{id:'r_hall',cat:'Аренда зала',name:'Аренда зала',sub:'просто зал, почасово',price:350,unit:'час',real:1,key:'rent:hall',pre:30,rem:1}]);
+  [{id:'r_hall',cat:'Аренда зала',name:'Аренда зала',sub:'почасово',price:350,unit:'час',real:1,key:'rent:hall',pre:30,rem:1}]);
 function applyPrices(){for(const s of SERVICES){if(!s.key)continue;const[k,v]=s.key.split(':'),p=s.price||0;
-  if(k==='indiv'){TRAINERS[v].price=p;if(v==='heels')PREPAY.indiv=s.pre/100}
-  if(k==='rent'){RENT[v].price=p;PREPAY.rent=s.pre/100}
-  if(k==='course'){PREPAY.course=s.pre/100;COURSES.filter(c=>c.dir===v&&daysTo(c)>0).forEach(c=>c.price=p);GROUPS.filter(g=>g.dir===v&&/^курс/.test(g.per)).forEach(g=>g.price=p)}}}
+  if(k==='indiv'){TRAINERS[v].price=p;if(v==='heels')PREPAY.indiv=preOf(s.pre)}
+  if(k==='rent'){RENT[v].price=p;PREPAY.rent=preOf(s.pre)}
+  if(k==='course'){PREPAY.course=preOf(s.pre);COURSES.filter(c=>c.dir===v&&daysTo(c)>0).forEach(c=>c.price=p);GROUPS.filter(g=>g.dir===v&&/^курс/.test(g.per)).forEach(g=>g.price=p)}}}
 let FAQ=[['Нужен ли опыт?','Нет. В каждом потоке есть новички, хореограф объясняет с нуля.'],
   ['Какие нужны каблуки?','На первое занятие подойдут свои, устойчивый каблук 7–10 см. Наколенники обязательно.'],
   ['Что если пропущу занятие?','Нажмите «Не смогу» в напоминании бота, менеджер увидит. Отработать пропуск нельзя.'],
@@ -1088,14 +1098,14 @@ function svcForm(s){const isNew=!s;
       <div class="vars">${f.vars.map((v,i)=>`<div class="var"><input data-vn="${i}" value="${esc(v.n)}" placeholder="Вариант, например «4 занятия»"><label class="pin"><input data-vp="${i}" type="number" min="0" step="50" value="${v.price??''}" placeholder="?"><span>฿</span></label><button type="button" class="btn ghost lens sm" data-vx="${i}" aria-label="Убрать вариант">×</button></div>`).join('')}</div>
       <button type="button" class="btn lens sm" id="addVar" style="justify-self:start">+ ${hasV?'Ещё вариант':'Несколько вариантов цены'}</button>
       <span class="note">Цену можно оставить пустой, клиентки увидят «уточнить».</span></div>
-    <div class="step"><span class="sn">4</span><b>Предоплата</b>${chips('pre',[[0,'Не нужна'],[30,'30%'],[50,'50%'],[100,'Вся сумма']])}
+    <div class="step"><span class="sn">4</span><b>Предоплата</b>${chips('pre',[[0,'Не нужна'],['f500','500 ฿'],[30,'30%'],[50,'50%'],[100,'Вся сумма']])}
       <label class="ck"><input type="checkbox" id="sRem" ${f.rem?'checked':''}> Напоминать об оплате, если не заплатили</label></div>
     <div class="err" id="sErr"></div>
     <div class="row"><button class="btn pri lens" type="submit">${isNew?'Добавить':'Сохранить'}</button>${!isNew&&!s.key?'<button class="btn ghost lens" type="button" id="sDel">Убрать услугу</button>':''}</div>
   </form>`);
     const keep=()=>{f.name=$('sName').value;f.sub=$('sSub').value;if($('sPrice'))f.price=$('sPrice').value===''?null:+$('sPrice').value;f.rem=$('sRem').checked;
       document.querySelectorAll('[data-vn]').forEach(i=>f.vars[+i.dataset.vn].n=i.value);document.querySelectorAll('[data-vp]').forEach(i=>f.vars[+i.dataset.vp].price=i.value===''?null:+i.value)};
-    document.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{keep();const v=b.dataset.fv;f[b.dataset.fk]=b.dataset.fk==='pre'?+v:v;draw()});
+    document.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{keep();const v=b.dataset.fv;f[b.dataset.fk]=b.dataset.fk==='pre'?(v[0]==='f'?v:+v):v;draw()});
     $('addVar').onclick=()=>{keep();if(!f.vars.length)f.vars.push({n:'Основной',price:f.price});f.vars.push({n:'',price:null});draw()};
     document.querySelectorAll('[data-vx]').forEach(b=>b.onclick=()=>{keep();f.vars.splice(+b.dataset.vx,1);if(f.vars.length===1){f.price=f.vars[0].price;f.vars=[]}draw()});
     $('sForm').onsubmit=e=>{e.preventDefault();keep();const n=f.name.trim();if(!n){$('sErr').textContent='Напишите название.';return}
