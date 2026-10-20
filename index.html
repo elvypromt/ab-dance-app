@@ -872,7 +872,7 @@ function bindGrid(){
     editForm({d,s:c.dataset.t,dur:60,dir:'indiv',t:tab==='people'?st.mTrainer:'heels'})});
   document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>evSheet(events.find(e=>e.id==b.dataset.ev)));
   document.querySelectorAll('[data-hold]').forEach(b=>b.onclick=()=>go('inbox'))}
-function evSheet(e){
+function evSheet(e){if(!e){render();return}
   const d=DIRS[e.dir];
   openSheet(`<span class="tag" style="--c:${d.c}"><i class="dot"></i>${d.name.toUpperCase()}</span><h2>${esc(label(e))}</h2>
   <div class="meta"><span><b>${DAY_FULL[e.d]}, ${wlab(e.d)}</b>, ${e.s}–${hm(m(e.s)+e.dur)}</span></div>
@@ -880,7 +880,7 @@ function evSheet(e){
   <div class="err" id="evMsg"></div>`);
   $('evMove').onclick=()=>editForm({...e});
   $('evDel').onclick=()=>{const b=$('evDel');if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Да, отменить';$('evMsg').textContent=e.dir==='rent'||e.dir==='indiv'?'Бот напишет клиенту об отмене.':'Бот напишет всем записанным.';return}
-    events=events.filter(x=>x.id!==e.id);LIVEE&&LIVEE.remove(e);closeSheet();render();toast('Отменено, клиенты получат сообщение')}}
+    events=events.filter(x=>x!==e);LIVEE&&LIVEE.remove(e);closeSheet();render();toast('Отменено, клиенты получат сообщение')}}
 function editForm(e){
   const isNew=!e.id,opt=(obj,cur)=>Object.entries(obj).map(([k,v])=>`<option value="${k}" ${k===cur?'selected':''}>${v.name}</option>`).join('');
   const times=[];for(let t=540;t<1320;t+=30)times.push(hm(t));
@@ -1035,7 +1035,7 @@ function vMy(){const P={ok:'оплачено',pay:'ждёт оплату',check:
 bind.my=()=>{const find=id=>myAll().find(k=>k.id===id),tgt=x=>x.req||MY.find(k=>k.id===x.id);
   document.querySelectorAll('[data-att]').forEach(b=>b.onclick=()=>{const[id,v]=b.dataset.att.split(':');tgt(find(id)).att=v;render();toast(v==='yes'?'Отлично, ждём вас! Менеджер видит отметку':'Поняли. Менеджер получил, что вы не придёте')});
   document.querySelectorAll('[data-sa]').forEach(b=>b.onclick=()=>{const[id,v]=b.dataset.sa.split(':');tgt(find(id)).sh=v;render();toast(v==='yes'?'Записали на съёмку!':'Поняли, менеджер увидит')});
-  document.querySelectorAll('[data-ics]').forEach(b=>b.onclick=()=>icsFile(COURSES.find(c=>c.id===b.dataset.ics)));
+  document.querySelectorAll('[data-ics]').forEach(b=>b.onclick=()=>window.__calMe?openCal():icsFile(COURSES.find(c=>c.id===b.dataset.ics)));
   document.querySelectorAll('[data-quit]').forEach(b=>b.onclick=()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Да, отменить';return}
     const x=find(b.dataset.quit),o=tgt(x),c=x.course&&COURSES.find(k=>k.id===x.course);if(c&&x.st==='ok')c.taken=Math.max(0,c.taken-1);o.st=x.req?'no':'cancel';if(x.req&&LIVEQ)LIVEQ.cancel(o);render();toast('Менеджер получил отмену и напишет вам в чат')})};
 
@@ -1458,7 +1458,10 @@ const CALS={sasha:{on:0,acc:'',title:'Календарь тренера',sub:'Л
     imp:[{d:0,s:'14:00',dur:120,t:'heels',away:1,title:'Занят (личное)'},{d:2,s:'11:00',dur:60,t:'heels',away:1,title:'Занят (личное)'}]},
   hall:{on:0,acc:'',title:'Календарь зала',sub:'Если аренду уже записывают в Google Календарь, мы подтянем оттуда. В эти часы зал не сдаётся и не бронируется.',
     imp:[{d:5,s:'11:00',dur:120,title:'Занято (из календаря)'},{d:6,s:'10:00',dur:180,title:'Занято (из календаря)'}]}};
-const feed=k=>'webcal://abdance.app/cal/'+k+'.ics';
+const feed=k=>k==='me'&&window.__calMe?window.__calMe.replace(/^https?:/,'webcal:'):'webcal://abdance.app/cal/'+k+'.ics';
+// открыть ленту календаря во внешнем браузере: на iPhone Safari сразу предлагает «Подписаться»
+function openCal(){const u=window.__calMe;if(!u){toast('Календарь подключится, когда откроете приложение из бота');return}
+  const w=u.replace(/^https?:/,'webcal:');try{if(window.Telegram&&Telegram.WebApp.openLink){Telegram.WebApp.openLink(u.replace(/\.ics$/,''));return}}catch(e){}location.href=w}
 function calSheet(k){const c=CALS[k],mine=k==='me';
   openSheet(`<span class="eyebrow">Календарь</span><h2>${mine?'Мои занятия в телефоне':c.title}</h2>
   ${mine?'':`<div class="step"><b>1. Подтянуть занятость из Google Календаря</b><span class="note">${c.sub}</span>
@@ -1467,8 +1470,9 @@ function calSheet(k){const c=CALS[k],mine=k==='me';
     <span class="note">Откроется окно Google: войти и разрешить «только просмотр занятости». Названия событий и заметки мы не видим.</span>`}</div>`}
   <div class="step"><b>${mine?'':'2. '}Показывать расписание студии в телефоне</b>
     <span class="note">${mine?'Подпишитесь один раз: все ваши занятия, переносы и съёмка сами появятся и обновятся в календаре телефона.':'Подписка на расписание: все занятия, индивы и аренда сами появятся в календаре на телефоне и будут обновляться.'}</span>
-    <div class="row"><a class="btn lens" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(feed(k))}" target="_blank" rel="noopener" style="text-decoration:none">В Google Календарь</a>${mine?`<a class="btn lens" href="${feed(k)}" style="text-decoration:none">Если iPhone</a>`:''}<button class="btn lens" id="calCopy">Скопировать ссылку</button></div></div>`);
+    <div class="row"><a class="btn lens" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(feed(k))}" target="_blank" rel="noopener" style="text-decoration:none">В Google Календарь</a>${mine?`<button class="btn pri lens" id="calIos">iPhone</button>`:''}<button class="btn lens" id="calCopy">Скопировать ссылку</button></div></div>`);
   $('calCopy').onclick=()=>{navigator.clipboard?.writeText(feed(k)).catch(()=>{});toast('Ссылка скопирована')};
+  if($('calIos'))$('calIos').onclick=openCal;
   if($('calOn'))$('calOn').onclick=()=>{const a=$('calAcc').value.trim();if(!/^\S+@\S+\.\S+$/.test(a)){$('calErr').textContent='Укажите почту Google.';return}
     c.on=1;c.acc=a;c.imp.forEach(e=>events.push({...e,dir:'ext',src:k,id:++uid}));closeSheet();render();toast('Календарь подключён, занятость подтянута')};
   if($('calOff'))$('calOff').onclick=()=>{c.on=0;events=events.filter(e=>e.src!==k);closeSheet();render();toast('Календарь отключён')}}
@@ -1503,6 +1507,7 @@ function LIVEQ_INIT(){/* заявки: настоящие, через API бот
     dir:['wait','pre','online'].includes(r.kind)?undefined:r.kind,t:r.kind==='indiv'?'heels':undefined,sum:+r.sum||0,
     course:r.course_id?local(r.course_id):undefined,ago:ago(r.created_at),st:r.status==='cancel'?'no':r.status,receipt:r.receipt,mine:r.tg_id===TGU.id});
   MY.length=0;
+  call('GET','/me').then(x=>{if(x&&x.cal)window.__calMe=x.cal}).catch(()=>{});
   LIVEQ={
     load:()=>call('GET',ME_MANAGER?'/requests':'/my').then(rows=>{requests.splice(0,requests.length,...rows.map(map))}),
     create(r,o){const kind=o.wait?(o.msg?'pre':'wait'):o.kind;
@@ -1524,7 +1529,7 @@ function LIVEE_INIT(){/* расписание зала: настоящие за�
   const body=e=>({kind:e.dir,day:WEEK_ISO[e.d],time_from:e.s,duration_min:e.dur,in_hall:!e.away,title:e.title||e.who||null,trainer:e.t||null});
   LIVEE={
     load:()=>call('GET','/schedule?from='+WEEK_ISO[0]+'&to='+WEEK_ISO[6]).then(x=>{events.splice(0,events.length,...x.sessions.map(mapS).concat(x.events.map(mapE)).filter(e=>e.d!=null))}),
-    create(e){call('POST','/events',body(e)).then(r=>{e.id='e'+r.id;e.eid=r.id;e.src='event'}).catch(()=>toast('Не сохранилось, попробуйте ещё раз'))},
+    create(e){call('POST','/events',body(e)).then(r=>{e.id='e'+r.id;e.eid=r.id;e.src='event';if(!$('sheet').classList.contains('on'))render()}).catch(()=>toast('Не сохранилось, попробуйте ещё раз'))},
     update(e){(e.src==='session'?call('PATCH','/sessions/'+e.sid,{day:WEEK_ISO[e.d],time_from:e.s,time_to:hm(m(e.s)+e.dur)}):call('PATCH','/events/'+e.eid,body(e))).catch(()=>toast('Не сохранилось, попробуйте ещё раз'))},
     remove(e){(e.src==='session'?call('DELETE','/sessions/'+e.sid):call('DELETE','/events/'+e.eid)).catch(()=>toast('Не удалилось, попробуйте ещё раз'))}};
 })();
