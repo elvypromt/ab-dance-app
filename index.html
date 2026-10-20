@@ -1365,6 +1365,11 @@ const MANAGER_IDS=[7043604610,221314723];
 const TGU=(window.Telegram&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user)||{};
 if(!MANAGER_IDS.includes(TGU.id))document.querySelector('.bar .seg').style.display='none';
 render();
+fetch('https://dancesamui-bot.fly.dev/api/services',{headers:{Authorization:'tma '+Telegram.WebApp.initData}}).then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+  const by={'Курсы':'s1','Аренда зала':'r_hall'};
+  for(const r of rows){const s=SERVICES.find(x=>x.id===by[r.category]||(r.category==='Индивидуальные'&&x.cat==='Индивидуальные')||(r.category==='Детям'&&x.id==='s2'));
+    if(!s)continue;if(r.price!=null)s.price=+r.price;s.pre=r.prepay_pct;s.name=r.name;s.sub=r.sub||s.sub;s.unit=r.unit||s.unit}
+  applyPrices();render()}).catch(()=>{});
 </script>
 
 </body>
