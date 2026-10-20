@@ -376,15 +376,15 @@ const DAY_FULL=['понедельник','вторник','среда','четв
 let uid=100;
 let events=[
   {d:0,s:'12:00',dur:60,dir:'indiv',t:'heels',who:'Ксения П.'},
-  {d:0,s:'17:30',dur:60,dir:'aerial',t:'heels',title:'Воздушная гимнастика, дети'},
+  {d:0,s:'17:30',dur:60,dir:'aerial',t:'heels',away:1,title:'Воздушная гимнастика, дети · другой зал'},
   {d:0,s:'19:30',dur:90,dir:'rent',who:'Бачата, внешний тренер'},
   {d:1,s:'19:30',dur:90,dir:'heels',t:'heels',title:'High Heels, курс'},
   {d:2,s:'14:00',dur:60,dir:'indiv',t:'heels',who:'Марина Д.'},
-  {d:2,s:'17:30',dur:60,dir:'aerial',t:'heels',title:'Воздушная гимнастика, дети'},
+  {d:2,s:'17:30',dur:60,dir:'aerial',t:'heels',away:1,title:'Воздушная гимнастика, дети · другой зал'},
   {d:2,s:'19:00',dur:120,dir:'rent',who:'Группа «Пульс»'},
   {d:3,s:'19:30',dur:90,dir:'heels',t:'heels',title:'High Heels, курс'},
   {d:4,s:'15:00',dur:60,dir:'indiv',t:'heels',who:'Полина'},
-  {d:4,s:'17:30',dur:60,dir:'aerial',t:'heels',title:'Воздушная гимнастика, дети'},
+  {d:4,s:'17:30',dur:60,dir:'aerial',t:'heels',away:1,title:'Воздушная гимнастика, дети · другой зал'},
   {d:4,s:'19:00',dur:120,dir:'rent',who:'Лиза'},
   {d:5,s:'16:00',dur:180,dir:'rent',who:'Мария'}
 ].map(e=>({...e,id:++uid}));
@@ -422,7 +422,7 @@ function timeline(list,attr='data-c'){const nx=nextOpen();
     </button>`}).join('')}</div>`}
 const GROUPS=[
   {dir:'heels',t:'heels',kid:0,age:'взрослые, любой уровень',when:'ВТ и ЧТ 19:30–21:00, курс 2 недели',price:2200,per:'курс 2 недели',real:true},
-  {dir:'aerial',t:'heels',kid:1,age:'дети, группы',when:'3 раза в неделю по вечерам, дни и время уточнить',price:null,per:''}
+  {dir:'aerial',t:'heels',kid:1,age:'дети, группы',when:'в другом зале, 3 раза в неделю по вечерам, адрес, дни и время уточнить',price:null,per:''}
 ];
 let requests=[
   {id:1,who:'Анна Белова',contact:'@anna_bel',what:'Индивидуальное, High Heels',d:2,s:'15:00',dur:60,t:'heels',dir:'indiv',sum:1500,ago:'12 минут назад',st:'check'},
@@ -444,7 +444,7 @@ const overlap=(a1,a2,b1,b2)=>a1<b2&&b1<a2;
 const holds=()=>requests.filter(r=>r.d!=null&&(r.st==='pay'||r.st==='check')).map(r=>({id:'h'+r.id,d:r.d,s:r.s,dur:r.dur||60,t:r.t,dir:r.dir,who:r.who,hold:true}));
 function conflicts(c,skipId){
   const s=m(c.s),f=s+c.dur,out=[],all=events.concat(holds());
-  for(const e of all){if(e.id===skipId||e.d!==c.d)continue;if(overlap(s,f,m(e.s),m(e.s)+e.dur)){out.push(`зал занят: ${e.hold?'бронь ждёт оплаты':label(e)}, ${e.s}–${hm(m(e.s)+e.dur)}`);break}}
+  for(const e of all){if(e.id===skipId||e.d!==c.d||e.away)continue;if(overlap(s,f,m(e.s),m(e.s)+e.dur)){out.push(`зал занят: ${e.hold?'бронь ждёт оплаты':label(e)}, ${e.s}–${hm(m(e.s)+e.dur)}`);break}}
   if(c.t&&!out.length)for(const e of all){if(e.id===skipId||e.d!==c.d||e.t!==c.t)continue;
     if(overlap(s,f,m(e.s),m(e.s)+e.dur)){out.push(`${TRAINERS[c.t].short} в это время занят`);break}}
   if(s<540||f>1320)out.push('студия работает с 09:00 до 22:00');
@@ -509,7 +509,7 @@ function vHome(){
     <div class="l">
       <span class="eyebrow">Новый поток · старт ${c.start} ${c.month}</span>
       <h1>Каблуки, сцена<em>и ты в центре зала</em></h1>
-      <p>Курсы High Heels, воздушная гимнастика для детей, индивы и аренда зала. Всё здесь. Выберите время, оплатите предоплату по QR, и вы записаны.</p>
+      <p>Курсы High Heels, индивы и аренда зала здесь, в студии. Воздушная гимнастика для детей проходит в другом зале. Выберите время, оплатите предоплату по QR, и вы записаны.</p>
       <div class="row"><button class="btn lens" id="goSlots">Индив с тренером</button><button class="btn lens" id="goRent">Арендовать зал</button></div>
     </div>
     <div class="ticket" style="--c:var(--rose)">
@@ -680,14 +680,14 @@ function drawQR(cv,seed){const g=cv.getContext('2d'),N=25,s=cv.width/N;let x=see
   fin(0,0);fin(N-7,0);fin(0,N-7);g.fillStyle='#B86F82';g.beginPath();g.arc(cv.width/2,cv.height/2,s*2.2,0,7);g.fill()}
 
 /* ---------- админка ---------- */
-function load(){let busy=0;for(const e of events)busy+=e.dur;const total=7*13*60;return{busy,total,pct:Math.round(busy/total*100)}}
+function load(){let busy=0;for(const e of events)if(!e.away)busy+=e.dur;const total=7*13*60;return{busy,total,pct:Math.round(busy/total*100)}}
 function grid(opts={}){
   const start=540;let h=`<div class="sched"><div></div>`;
   WEEK.forEach((n,d)=>h+=`<div class="hd ${d===TODAY?'today':''}" style="grid-column:${d+2}">${WD[d]}<b>${n}</b></div>`);
   for(let r=0;r<26;r++){const t=start+r*30;if(r%2===0)h+=`<div class="tm" style="grid-row:${r+2}">${hm(t)}</div>`;
     for(let d=0;d<7;d++){let av='';if(opts.trainer){const a=TRAINERS[opts.trainer].avail[d]||[];if(a.some(([x,y])=>t>=x*60&&t<y*60))av=' avail'}
       h+=`<button class="cell${r%2?' half':''}${av}" style="grid-column:${d+2};grid-row:${r+2}" data-d="${d}" data-t="${hm(t)}" aria-label="${WD[d]} ${hm(t)}"></button>`}}
-  for(const e of events.concat(holds())){if(opts.trainer&&e.t!==opts.trainer)continue;const r=(m(e.s)-start)/30,d=DIRS[e.dir];
+  for(const e of events.concat(holds())){if(opts.trainer?e.t!==opts.trainer:e.away)continue;const r=(m(e.s)-start)/30,d=DIRS[e.dir];
     h+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':''}" style="--c:${d.c};grid-column:${e.d+2};grid-row:${r+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`}><b>${e.hold?'Бронь · '+esc(e.who):esc(label(e))}</b><span>${e.s}–${hm(m(e.s)+e.dur)}${e.hold?' · ждёт оплату':e.t?' · '+TRAINERS[e.t].short:''}</span></button>`}
   return h+'</div>'}
 const legend=()=>`<div class="legend">${Object.values(DIRS).map(d=>`<span style="--c:${d.c}"><i class="dot"></i>${d.name}</span>`).join('')}<span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>`;
@@ -778,8 +778,7 @@ function vPeople(){
   const k=st.mTrainer,t=TRAINERS[k],mine=events.filter(e=>e.t===k);
   const hours=mine.reduce((a,e)=>a+e.dur,0)/60,ind=mine.filter(e=>e.dir==='indiv').length;
   const free=WEEK.reduce((a,_,d)=>a+trainerHours(k,d).filter(x=>x.free).length,0);
-  return `<section class="sect"><div class="sect-h"><h2>Тренеры</h2>
-    <div class="row">${Object.entries(TRAINERS).map(([key,x])=>`<button id="mt_${key}" class="chip lens ${key===k?'on':''}" data-mt="${key}">${x.short}</button>`).join('')}</div></div>
+  return `<section class="sect"><div class="sect-h"><h2>Расписание Саши</h2>${calBtn('sasha')}</div>
   <div class="stats">
     <div class="stat glass" style="--c:${t.c}"><div class="who-card"><div class="ava">${t.ini}</div><div><div style="font-weight:800;color:var(--ink)">${t.name}</div><div style="font-size:13px">${t.role}</div></div></div></div>
     <div class="stat glass"><span class="v">${hours} ч</span><span class="l">ведёт на этой неделе</span></div>
@@ -812,7 +811,7 @@ const priceTxt=(p,u)=>p==null||p===''?'<span class="todo">цена: уточни
 const preTxt=s=>s.pre?`предоплата ${s.pre}%`:'без предоплаты';
 let SERVICES=[
   {id:'s1',cat:'Курсы',name:'High Heels, курс',sub:'2 недели, 4 занятия, ВТ и ЧТ 19:30–21:00',price:2200,unit:'курс',real:1,key:'course:heels',pre:100,rem:1},
-  {id:'s2',cat:'Детям',name:'Воздушная гимнастика для детей',sub:'группы, 3 раза в неделю по вечерам, дни уточнить',price:null,unit:'месяц',pre:0,rem:1,
+  {id:'s2',cat:'Детям',name:'Воздушная гимнастика для детей',sub:'в другом зале, группы 3 раза в неделю по вечерам, дни уточнить',price:null,unit:'месяц',pre:0,rem:1,
     vars:[{n:'Разовое занятие',price:null},{n:'Абонемент на месяц',price:null}]}
 ].concat(Object.entries(TRAINERS).map(([k,t])=>({id:'i_'+k,cat:'Индивидуальные',name:'Индив с '+t.ins,sub:'High Heels, постановка номера. Детские индивы: уточнить',price:t.price,unit:'час',key:'indiv:'+k,pre:50,rem:1})),
   [{id:'r_hall',cat:'Аренда зала',name:'Аренда зала',sub:'просто зал, почасово',price:350,unit:'час',real:1,key:'rent:hall',pre:30,rem:1}]);
@@ -879,7 +878,7 @@ const methOpts=`<option value="cash">Наличные</option><option value="tra
 function myAll(){return MY.concat(requests.filter(r=>r.mine).map(r=>({id:'r'+r.id,what:r.what,dir:r.dir,d:r.d,s:r.s,dur:r.dur,course:r.course,st:r.st==='no'?'cancel':r.st,att:r.att,req:r})))}
 function vMy(){const P={ok:'оплачено',pay:'ждёт оплату',check:'оплата на проверке',wait:'лист ожидания',cancel:'отменено'},PC={ok:'ok',pay:'pay',check:'check',wait:'wait',cancel:'no'};
   const list=myAll();
-  return `<section class="sect"><div class="sect-h"><h2>Мои записи</h2><span class="note">Бот присылает то же в чат и напоминает перед каждым занятием</span></div>
+  return `<section class="sect"><div class="sect-h"><h2>Мои записи</h2>${calBtn('me')}</div><span class="note">Бот присылает то же в чат и напоминает перед каждым занятием</span>
   ${list.length?`<div class="cards">${list.map(x=>{const c=x.course&&COURSES.find(k=>k.id===x.course),dir=c?c.dir:x.dir||'heels',live=x.st!=='cancel'&&x.st!=='wait';
     const ch=c&&Object.values(c.changes||{})[0];
     const when=c?`старт ${c.start} ${c.month} · ${c.days}`:x.d!=null?`${DAY_FULL[x.d]}, ${WEEK[x.d]} октября, ${x.s}–${hm(m(x.s)+(x.dur||60))}`:'';
@@ -986,7 +985,7 @@ function vRentCal(){
   for(let h=9;h<22;h++)g+=`<div class="hh" style="grid-column:${(h-9)*2+2}/span 2">${String(h).padStart(2,'0')}:00</div>`;
   WEEK.forEach((n,d)=>{const row=d+2;g+=`<div class="rd ${d===TODAY?'today':''}" style="grid-row:${row}">${WD[d]}<b>${n}</b></div>`;
     for(let i=0;i<26;i++){const t=540+i*30;if(!conflicts({d,s:hm(t),dur:30}).length)g+=`<button class="rc-f" style="grid-row:${row};grid-column:${i+2}" data-rd="${d}" data-rt="${hm(t)}" aria-label="Свободно: ${WD[d]} ${hm(t)}"></button>`}
-    for(const e of events.concat(holds()).filter(e=>e.d===d)){const i=(m(e.s)-540)/30,lb=e.hold?'Бронь · '+e.who:label(e);
+    for(const e of events.concat(holds()).filter(e=>e.d===d&&!e.away)){const i=(m(e.s)-540)/30,lb=e.hold?'Бронь · '+e.who:label(e);
       g+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':'cls'}" style="--c:${DIRS[e.dir].c};grid-row:${row};grid-column:${i+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`} title="${esc(lb)}"><b>${esc(lb)}</b><span>${e.s}–${hm(m(e.s)+e.dur)}</span></button>`}});
   g+='</div>';
   return `<section class="stats">
@@ -994,7 +993,7 @@ function vRentCal(){
     <div class="stat glass"><span class="v">${rub(hrsR*price)}</span><span class="l">по аренде за неделю</span></div>
     <div class="stat glass"><span class="v">${free} ч</span><span class="l">зал свободен до воскресенья</span></div>
     <div class="stat glass"><span class="v">${hold}</span><span class="l">аренды ждут оплату</span></div></section>
-  <section class="sect"><div class="sect-h"><h2>Аренда зала · 19–25 октября</h2><button class="btn pri lens" id="addRent">Сдать зал</button></div>
+  <section class="sect"><div class="sect-h"><h2>Аренда зала · 19–25 октября</h2><div class="row">${calBtn('hall')}<button class="btn pri lens" id="addRent">Сдать зал</button></div></div>
     <div class="legend"><span><i class="dot" style="background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px var(--line)"></i>Свободно, можно сдать</span><span style="--c:var(--rose-deep)"><i class="dot"></i>Аренда</span><span><i class="dot" style="background:var(--lilac);opacity:.55"></i>Занятия студии</span><span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>
     <div class="gridbox">${g}</div>
     <span class="note">Белые клетки по 30 минут свободны. Нажмите на свободную, чтобы вписать аренду, на занятую, чтобы увидеть, кто там, и перенести.</span></section>
@@ -1230,7 +1229,7 @@ function clientSheet(k){const o=clients().find(x=>x.key===k);if(!o)return;const 
   $('cNote').onchange=()=>{NOTES[k]=$('cNote').value;toast('Заметка сохранена')}}
 function baseVisits(){
   const S=[];COURSES.forEach(c=>sessions(c).forEach(s=>S.push({k:c.id+'|'+s.iso,iso:s.iso,tm:s.tm,ttl:'High Heels',c})));
-  kidDays().forEach(iso=>S.push({k:'kids|'+iso,iso,tm:'17:30',ttl:'Дети, воздушная'}));
+  kidDays().forEach(iso=>S.push({k:'kids|'+iso,iso,tm:'17:30',ttl:'Дети, воздушная (др. зал)'}));
   const list=S.filter(s=>s.iso<=TD&&s.iso>='2026-10-05').sort((a,b)=>b.iso.localeCompare(a.iso));
   const cur=list.find(s=>s.k===st.vk)||list[0],kid=!cur.c;
   const people=kid?KIDS.map(([name,contact])=>({name,contact})):(ROSTER[cur.c.id]||[]);
@@ -1306,6 +1305,29 @@ function vInbox(){
   <div class="row">${[['all','Все'],...G].filter(([k])=>k==='all'||cnt(k)).map(([k,l])=>`<button class="chip lens ${f===k?'on':''}" data-inf="${k}">${l}${k==='all'?'':' · '+cnt(k)}</button>`).join('')}</div>
   ${G.filter(([k])=>(f==='all'||f===k)&&cnt(k)).map(([k,l])=>`<div style="display:grid;gap:10px"><h3 class="ph">${l} · ${cnt(k)}</h3>${requests.filter(r=>r.st===k).map(card).join('')}</div>`).join('')||'<div class="note">Заявок нет.</div>'}</section>`}
 const bindInboxBase=bind.inbox;bind.inbox=()=>{bindInboxBase();document.querySelectorAll('[data-inf]').forEach(b=>b.onclick=()=>{st.inF=b.dataset.inf;render()})};
+
+/* ---------- подключение календарей ---------- */
+DIRS.ext={name:'Из календаря',c:'#9a8fa6'};
+const CALS={sasha:{on:0,acc:'',title:'Календарь Саши',sub:'Его личные дела и воздушная гимнастика в другом зале. В эти часы к нему нельзя записаться на индив.',
+    imp:[{d:0,s:'14:00',dur:120,t:'heels',away:1,title:'Занят (личное)'},{d:2,s:'11:00',dur:60,t:'heels',away:1,title:'Занят (личное)'}]},
+  hall:{on:0,acc:'',title:'Календарь зала',sub:'Если аренду уже записывают в Google Календарь, мы подтянем оттуда. В эти часы зал не сдаётся и не бронируется.',
+    imp:[{d:5,s:'11:00',dur:120,title:'Занято (из календаря)'},{d:6,s:'10:00',dur:180,title:'Занято (из календаря)'}]}};
+const feed=k=>'webcal://abdance.app/cal/'+k+'.ics';
+function calSheet(k){const c=CALS[k],mine=k==='me';
+  openSheet(`<span class="eyebrow">Календарь</span><h2>${mine?'Мои занятия в телефоне':c.title}</h2>
+  ${mine?'':`<div class="step"><b>1. Подтянуть занятость из Google Календаря</b><span class="note">${c.sub}</span>
+    ${c.on?`<div class="copy"><span style="flex:1">Подключён: ${esc(c.acc)}<br><small>обновляется сам каждые 5 минут · подтянуто ${c.imp.length} событий на этой неделе</small></span><button class="btn lens sm" id="calOff">Отключить</button></div>`
+    :`<div class="fld"><label for="calAcc">Gmail, где ведётся календарь</label><input id="calAcc" type="email" placeholder="sasha@gmail.com"></div><div class="err" id="calErr"></div><button class="btn pri lens" id="calOn">Подключить Google Календарь</button>
+    <span class="note">Откроется окно Google: войти и разрешить «только просмотр занятости». Названия событий и заметки мы не видим.</span>`}</div>`}
+  <div class="step"><b>${mine?'':'2. '}Показывать расписание студии в телефоне</b>
+    <span class="note">${mine?'Подпишитесь один раз: все ваши занятия, переносы и съёмка сами появятся и обновятся в календаре телефона.':'Подписка на расписание: все занятия, индивы и аренда сами появятся в календаре на телефоне и будут обновляться.'}</span>
+    <div class="row"><a class="btn lens" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(feed(k))}" target="_blank" rel="noopener" style="text-decoration:none">В Google Календарь</a><a class="btn lens" href="${feed(k)}" style="text-decoration:none">В iPhone (Apple)</a><button class="btn lens" id="calCopy">Скопировать ссылку</button></div></div>`);
+  $('calCopy').onclick=()=>{navigator.clipboard?.writeText(feed(k)).catch(()=>{});toast('Ссылка скопирована')};
+  if($('calOn'))$('calOn').onclick=()=>{const a=$('calAcc').value.trim();if(!/^\S+@\S+\.\S+$/.test(a)){$('calErr').textContent='Укажите почту Google.';return}
+    c.on=1;c.acc=a;c.imp.forEach(e=>events.push({...e,dir:'ext',src:k,id:++uid}));closeSheet();render();toast('Календарь подключён, занятость подтянута')};
+  if($('calOff'))$('calOff').onclick=()=>{c.on=0;events=events.filter(e=>e.src!==k);closeSheet();render();toast('Календарь отключён')}}
+const calBtn=k=>`<button class="btn lens" data-cal="${k}">${k!=='me'&&CALS[k].on?'Календарь подключён ✓':k==='me'?'Подписаться в календаре':'Подключить календарь'}</button>`;
+['people','rentcal','my'].forEach(t=>{const b=bind[t];bind[t]=()=>{b&&b();document.querySelectorAll('[data-cal]').forEach(x=>x.onclick=()=>calSheet(x.dataset.cal))}});
 
 try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
 const MANAGER_IDS=[7043604610,221314723];
