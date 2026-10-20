@@ -755,6 +755,9 @@ bind.inbox=()=>{
   document.querySelectorAll('[data-off]').forEach(b=>b.onclick=()=>toast('Бот написал: освободилось место, берёте?'))};
 
 try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
+const MANAGER_IDS=[7043604610,221314723];
+const TGU=(window.Telegram&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user)||{};
+if(!MANAGER_IDS.includes(TGU.id))document.querySelector('.bar .seg').style.display='none';
 render();
 </script>
 
