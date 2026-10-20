@@ -346,10 +346,10 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--rose-deep)}
 .dp b{font-family:var(--serif);font-size:19px;font-weight:400;color:var(--ink);letter-spacing:0;line-height:1}
 .dp.on{background:var(--ink);color:#fff}.dp.on b{color:#fff}
 .dp.today:not(.on) b{color:var(--rose-deep)}
-.sched.one{grid-template-columns:44px 1fr;grid-template-rows:0 repeat(26,30px);min-width:0}
-.sched.one .ev{margin:1px 0 1px 4px;padding:6px 10px;font-size:13px;display:flex;flex-direction:column;justify-content:center;gap:1px}
-.sched.one .ev b{font-size:14px;white-space:normal;line-height:1.2}
-.sched.one .ev span{font-size:12px}
+.sched.one{grid-template-columns:44px 1fr;grid-template-rows:0 repeat(26,max(15px,calc((100dvh - 330px)/26)));min-width:0}
+.sched.one .ev{margin:1px 0 1px 4px;padding:3px 10px;font-size:12px;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.sched.one .ev b{font-size:13px;white-space:normal;line-height:1.15;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sched.one .ev span{font-size:11px}
 .sched.one .tm{transform:translateY(-8px)}
 .gridbox:has(.sched.one){overflow:visible;padding:12px 10px}
 .rent-tag{white-space:nowrap}
@@ -454,6 +454,8 @@ const daysTo=c=>Math.round((c.dt-NOW)/864e5);
 // курс идёт, если старт был не раньше, чем его длина в неделях
 const running=c=>daysTo(c)<=0&&-daysTo(c)<c.weeks*7;
 const upcoming=()=>COURSES.filter(c=>daysTo(c)>0||running(c)).sort((a,b)=>a.dt-b.dt);
+const finished=c=>daysTo(c)<=0&&!running(c);
+const pastCourses=()=>COURSES.filter(finished).sort((a,b)=>b.dt-a.dt);
 const nextOpen=()=>upcoming().find(c=>daysTo(c)>0&&c.seats>c.taken&&!c.pre);
 function whenTxt(c){const n=daysTo(c);if(running(c))return n===0?'идёт · сегодня первое занятие':'идёт сейчас';
   return n===1?'завтра':'через '+n+' '+plural(n,'день','дня','дней')}
@@ -772,7 +774,11 @@ const legend=()=>`<div class="legend">${Object.values(DIRS).map(d=>`<span style=
 
 function vHall(){
   const L=load(),n=requests.filter(r=>['check','pay'].includes(r.st)).length;let fr=0;for(let h=9;h<22;h++)if(!hallBusy(tdx(),h))fr++;
-  return `<section class="stats">
+  return `  <section class="sect"><div class="sect-h"><h2>Зал</h2><button class="btn pri lens" id="addBtn">Добавить занятие</button></div>${weekNav()}
+    ${legend()}<div class="gridbox">${grid()}</div>
+    <span class="note">Нажмите на пустую клетку, чтобы поставить занятие, или на занятие, чтобы перенести его. Пересечения по залу и тренеру система не пропустит. Клиентки видят здесь только «свободно» и «занято».</span>
+  </section>
+<section class="stats">
     <div class="stat glass"><span class="v">${L.pct}%</span><span class="l">загрузка зала на неделю</span></div>
     <div class="stat glass"><span class="v">${Math.round((L.total-L.busy)/60)} ч</span><span class="l">свободно до воскресенья</span></div>
     <div class="stat glass"><span class="v">${fr} ч</span><span class="l">${TODAY<0?'свободно в '+DAY_FULL[0]:'свободно сегодня, '+DAY_FULL[TODAY]}</span></div>
@@ -783,10 +789,11 @@ function vHall(){
     ${timeline(upcoming(),'data-mc')}
     <span class="note">Нажмите на поток, чтобы увидеть записанных и отправить анонс. Новый поток сразу появится у клиенток в «Ближайших стартах».</span>
   </section>
-  <section class="sect"><div class="sect-h"><h2>Зал</h2><button class="btn pri lens" id="addBtn">Добавить занятие</button></div>${weekNav()}
-    ${legend()}<div class="gridbox">${grid()}</div>
-    <span class="note">Нажмите на пустую клетку, чтобы поставить занятие, или на занятие, чтобы перенести его. Пересечения по залу и тренеру система не пропустит. Клиентки видят здесь только «свободно» и «занято».</span>
-  </section>`}
+  ${pastCourses().length?`<section class="sect"><div class="sect-h"><h2>Прошедшие потоки</h2></div>
+    ${timeline(pastCourses(),'data-mc')}
+    <span class="note">История: кто на каком потоке был. Нажмите на поток, чтобы увидеть список.</span>
+  </section>`:''}
+`}
 bind.hall=()=>{$('addBtn').onclick=()=>editForm({d:tdx(),s:'14:00',dur:60,dir:'indiv',t:'heels'});bindGrid();
   $('newCourse').onclick=courseForm;document.querySelectorAll('[data-mc]').forEach(b=>b.onclick=()=>courseSheet(COURSES.find(c=>c.id===b.dataset.mc)))};
 function addSheet(){
@@ -800,15 +807,20 @@ function addSheet(){
   document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const k=b.dataset.add;closeSheet();
     if(k==='course')courseForm();else if(k==='mc'){courseForm();document.querySelector('[data-ct="1"]').click()}
     else if(k==='ev')editForm({d:tdx(),s:'14:00',dur:60,dir:'indiv',t:'heels'});else go('msg')})}
+function liveRoster(c){if(typeof LIVE==='undefined'||!LIVE.list)return '';const r=LIVE.list().filter(o=>o.courses.includes(c.id));
+  return `<div style="display:grid;gap:4px"><span class="note" style="font-weight:800">${finished(c)?'Ходили':'Записаны'} · ${r.length}</span>
+  ${r.length?`<div class="roster">${r.map(x=>`<button class="lens" data-lcl="${x.key}" style="all:unset;display:flex;justify-content:space-between;gap:8px;cursor:pointer;width:100%"><span>${esc(x.name)} <span class="note">${esc(x.contact)}</span></span><span class="pill ${x.res==='tourist'?'wait':'ok'}">${x.kid?'ребёнок':x.res==='tourist'?'турист':'клиентка'}</span></button>`).join('')}</div>`:'<span class="note">Пока никого. Запись через бот попадёт сюда сама, вручную — через «База».</span>'}</div>`}
 function courseSheet(c){const d=DIRS[c.dir],left=c.seats-c.taken,wl=requests.filter(r=>r.st==='wait'&&r.what.includes(c.title)).length;
   openSheet(`<span class="tag" style="--c:${d.c}"><i class="dot"></i>${d.name.toUpperCase()}</span><h2>${esc(c.title)}</h2>
   <div class="lines"><div><span>Старт</span><b>${c.start} ${c.month}, ${DAY_FULL[c.wd]}</b></div><div><span>Когда</span><b>${whenTxt(c)}</b></div>
     <div><span>Расписание</span><b>${c.days}</b></div><div><span>Записано</span><b>${c.taken} из ${c.seats}</b></div>
     <div><span>Свободно</span><b>${Math.max(0,left)}</b></div><div><span>В листе ожидания</span><b>${wl}</b></div><div><span>Цена</span><b>${rub(c.price)}</b></div></div>
   <div style="display:grid;gap:6px"><span class="note" style="font-weight:800">Даты занятий</span>${sessList(c)}</div>
+  ${liveRoster(c)}
   ${(ROSTER[c.id]||[]).length?`<div style="display:grid;gap:4px"><span class="note" style="font-weight:800">Ответ на «Вы идёте на курс?»</span><div class="roster">${ROSTER[c.id].map(x=>`<div><span>${esc(x.name)} <span class="note">${esc(x.contact)}</span></span><span class="pill ${x.att==='yes'?'ok':x.att==='no'?'no':'wait'}">${x.att==='yes'?'идёт':x.att==='no'?'не идёт':'не ответила'}</span></div>`).join('')}</div></div>`:''}
   <div class="row"><button class="btn pri lens" id="annBtn">Анонс в бот</button><button class="btn lens" id="chBtn">Перенос, тренер заболел</button>${c.pre?'<button class="btn lens" id="openBtn">Открыть набор</button>':''}</div>
   <div class="err" id="annMsg" style="color:var(--body)"></div>`);
+  document.querySelectorAll('[data-lcl]').forEach(b=>b.onclick=()=>LIVE.sheet(b.dataset.lcl));
   $('annBtn').onclick=()=>{$('annMsg').textContent=`Черновик готов: «Новый поток ${d.name} стартует ${c.start} ${c.month}, ${c.days}. Осталось ${Math.max(0,left)} мест». Уйдёт подписчикам бота только после вашего «Отправить».`};
   $('chBtn').onclick=()=>changeSheet(c);if(c.pre)$('openBtn').onclick=()=>{c.pre=false;closeSheet();render();toast('Набор открыт, оплата доступна клиенткам')}}
 function courseForm(){
@@ -819,7 +831,7 @@ function courseForm(){
       <div class="fld" id="mcNameBox" style="display:none"><label for="mcName">Имя преподавателя</label><input id="mcName" placeholder="Имя"></div></div>
       <div class="fld"><label for="mcTitle">Название</label><input id="mcTitle" placeholder="О чём мастер-класс"></div></div>
     <div class="two"><div class="fld"><label for="cDir">Направление</label><select id="cDir">${['heels','aerial'].map(k=>`<option value="${k}">${DIRS[k].name}</option>`).join('')}</select></div>
-      <div class="fld"><label for="cDate">Дата старта</label><input id="cDate" type="date" value="${isoD(new Date(NOW.getTime()+28*864e5))}" min="${isoD(new Date(NOW.getTime()+864e5))}"></div></div>
+      <div class="fld"><label for="cDate">Дата старта</label><input id="cDate" type="date" value="${isoD(new Date(NOW.getTime()+28*864e5))}"></div></div>
     <div class="fld"><label for="cDays">Дни и время</label><input id="cDays" value="ВТ и ЧТ, 19:30–21:00"></div>
     <div class="two"><div class="fld"><label for="cLen">Длительность</label><select id="cLen"><option value="2">2 недели, 4 занятия</option><option value="4">4 недели, 8 занятий</option></select></div>
       <div class="fld"><label for="cSeats">Мест</label><input id="cSeats" type="number" min="1" max="30" value="12"></div></div>
@@ -833,7 +845,8 @@ function courseForm(){
   document.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-ct]').forEach(x=>x.classList.toggle('on',x===b));sync()});
   $('mcWho').onchange=()=>{$('mcNameBox').style.display=$('mcWho').value==='guest'?'':'none'};
   $('cForm').onsubmit=e=>{e.preventDefault();const date=$('cDate').value,dir=$('cDir').value,w=+$('cLen').value;
-    if(!date||new Date(date+'T00:00')<=NOW){$('cErr').textContent='Выберите дату после сегодняшней.';return}
+    if(!date){$('cErr').textContent='Укажите дату старта.';return}
+    const isPast=new Date(date+'T00:00')<NOW;if(isPast&&!$('cForm').dataset.past){$('cForm').dataset.past=1;$('cErr').textContent='Дата уже прошла. Нажмите ещё раз, если заводите прошедший поток для базы: клиентки его не увидят, сообщений не будет.';return}
     if(mc){const guest=$('mcWho').value==='guest',nm=$('mcName').value.trim(),ttl=$('mcTitle').value.trim();
       if(guest&&!nm){$('cErr').textContent='Укажите имя преподавателя.';return}
       const d0=new Date(date+'T00:00'),c=fill({id:'c'+Date.now(),dir:'heels',t:'heels',mc:true,host:guest?nm:'',title:'Мастер-класс'+(ttl?': '+ttl:'')+(guest?', '+nm:''),
@@ -889,15 +902,15 @@ function vPeople(){
   const hours=mine.reduce((a,e)=>a+e.dur,0)/60,ind=mine.filter(e=>e.dir==='indiv').length;
   const free=WEEK.reduce((a,_,d)=>a+trainerHours(k,d).filter(x=>x.free).length,0);
   return `<section class="sect"><div class="sect-h"><h2>Расписание тренера</h2>${calBtn('sasha')}</div>${weekNav()}
+  <div class="row"><button class="btn ${st.editAv?'pri':''} lens" id="avEdit">${st.editAv?'Готово':'Отметить окна для индивов'}</button>${st.editAv?`<button class="btn lens" id="avCopy">Повторить на 4 недели вперёд</button><button class="btn ghost lens" id="avClear">Очистить неделю</button>`:''}</div>
+  ${st.editAv?`<span class="note" style="color:var(--free);font-weight:700">Нажимайте на часы, когда вы свободны для индивов: зелёное — открыто для записи, ещё раз — закрыть.</span>`:''}
+  <div class="gridbox">${grid({trainer:k,edit:st.editAv})}</div>${legend()}
   <div class="stats">
     <div class="stat glass" style="--c:${t.c}"><div class="who-card"><div class="ava">${t.ini}</div><div><div style="font-weight:800;color:var(--ink)">Тренер</div><div style="font-size:13px">High Heels, дети, индивы</div></div></div></div>
     <div class="stat glass"><span class="v">${hours} ч</span><span class="l">ведёт на этой неделе</span></div>
     <div class="stat glass"><span class="v">${ind}</span><span class="l">индивидуальных</span></div>
     <div class="stat glass"><span class="v">${free}</span><span class="l">свободных окон для записи</span></div>
   </div>
-  <div class="row"><button class="btn ${st.editAv?'pri':''} lens" id="avEdit">${st.editAv?'Готово':'Отметить окна для индивов'}</button>${st.editAv?`<button class="btn lens" id="avCopy">Повторить на 4 недели вперёд</button><button class="btn ghost lens" id="avClear">Очистить неделю</button>`:''}</div>
-  ${st.editAv?`<span class="note" style="color:var(--free);font-weight:700">Нажимайте на часы, когда вы свободны для индивов: зелёное — открыто для записи, ещё раз — закрыть.</span>`:''}
-  ${legend()}<div class="gridbox">${grid({trainer:k,edit:st.editAv})}</div>
   <span class="note">Зелёным отмечены окна для индивов, их клиентки видят как «свободно». Всё, что попало на занятия, аренду или бронь, у клиенток становится «занято». Заболели или уезжаете — нажмите «Отметить окна» и снимите часы.</span>
   </section>`}
 bind.people=()=>{document.querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{st.mTrainer=b.dataset.mt;render()});bindGrid();
@@ -1343,7 +1356,7 @@ function baseClients(){const f=st.cf||'all',q=(st.cq||'').toLowerCase();
     <div><span class="who">${esc(o.name)}</span> ${ctag(o).map(t=>`<span class="pill ${t==='дети'?'check':t.startsWith('курсы')?'ok':'wait'}">${t}</span>`).join(' ')}${cOwe(o)?` <span class="pill check">долг ${rub(cOwe(o))}</span>`:''}</div>
     <div class="when">${esc(o.contact||'без контакта')} · посещений ${o.visits} · ${o.last?'была '+dlabel(o.last):'ещё не была'}${cPaid(o)?' · оплатила '+rub(cPaid(o)):''}</div></div><span class="note">→</span></button>`).join('')||'<div class="note">Никого не нашли.</div>'}</div>`}
 function clientSheet(k){if(LIVE)return LIVE.sheet(k);const o=clients().find(x=>x.key===k);if(!o)return;const u=/^@/.test(o.contact||'')?o.contact.slice(1):null;
-  openSheet(`<span class="eyebrow">${o.kid?'Ребёнок · пишем родителю':'Клиентка'}</span><h2>${esc(o.name)}</h2>
+  openSheet(`<span class="eyebrow">${o.kid?'Ребёнок':'Клиентка'}</span><h2>${esc(o.name)}</h2>
   <div class="row">${u?`<a class="btn pri lens" href="https://t.me/${encodeURIComponent(u)}" target="_blank" rel="noopener" style="text-decoration:none">Написать в Телеграм</a>`:''}<span class="copy" style="flex:1;user-select:text">${esc(o.contact||'нет контакта')}</span></div>
   <div class="lines"><div><span>Курсов</span><b>${o.courses.length}</b></div><div><span>Посещений</span><b>${o.visits}</b></div><div><span>Оплатила всего</span><b>${rub(cPaid(o))}</b></div>${cOwe(o)?`<div><span>Должна</span><b style="color:var(--warn)">${rub(cOwe(o))}</b></div>`:''}<div><span>Последний раз</span><b>${o.last?dlabel(o.last):'—'}</b></div></div>
   ${o.courses.length?`<div style="display:grid;gap:6px"><b>Курсы</b>${o.courses.map(id=>{const c=COURSES.find(x=>x.id===id),ss=sessions(c).filter(s=>s.iso<TD),v=ss.filter(s=>(VISITS[id][s.iso]||new Set).has(o.contact)).length;return `<div class="copy"><span style="flex:1">${esc(c.title)}</span><b>${ss.length?v+' из '+ss.length:'ещё не начался'}</b></div>`}).join('')}</div>`:''}
@@ -1527,33 +1540,41 @@ function LIVE_INIT(){/* справочник клиенток: настоящи�
 (()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
   const call=(m,p,b)=>fetch(API+p,{method:m,headers:H,body:b?JSON.stringify(b):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
   let rows=[];const cid=id=>'c'+id.slice(0,8);
-  const map=r=>({key:r.id,name:r.name,kid:r.is_child,tg:r.tg_username||'',ig:r.instagram||'',phone:r.phone||'',note:r.note||'',
-    contact:[r.tg_username&&'@'+r.tg_username,r.instagram&&'ig @'+r.instagram,r.phone].filter(Boolean).join(' · '),
-    extra:[r.tg_username,r.instagram,r.phone,r.note].filter(Boolean).join(' '),
+  const RES={local:'живёт на Самуи',tourist:'турист'};
+  const map=r=>({key:r.id,name:r.name,kid:r.is_child,res:r.residence||'',tg:r.tg_username||'',ig:r.instagram||'',phone:r.phone||'',note:r.note||'',
+    contact:[r.tg_username&&'@'+r.tg_username,r.instagram&&'ig @'+r.instagram,r.phone,r.residence==='tourist'&&'турист'].filter(Boolean).join(' · '),
+    extra:[r.tg_username,r.instagram,r.phone,r.note,RES[r.residence]].filter(Boolean).join(' '),
     courses:(r.enrollments||[]).filter(e=>!e.waitlist).map(e=>cid(e.course_id)),visits:0,pays:[],indiv:0,rent:0,last:null});
   const load=()=>call('GET','/clients').then(x=>{rows=x.map(map)});
-  const fields=o=>`<div class="fld"><label for="lN">Имя</label><input id="lN" value="${esc(o.name||'')}"></div>
-    <div class="fld"><label for="lT">Ник в Телеграме</label><input id="lT" placeholder="@username" value="${esc(o.tg?'@'+o.tg:'')}"></div>
+  const chips=(id,opts,cur)=>`<div class="row" role="group" id="${id}">${opts.map(([v,l])=>`<button type="button" class="chip lens ${String(cur)===String(v)?'on':''}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const chipVal=id=>{const b=document.querySelector('#'+id+' .chip.on');return b?b.dataset.v:''};
+  const bindChips=()=>document.querySelectorAll('[id^="lc"] .chip').forEach(b=>b.onclick=()=>{b.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===b))});
+  const fields=o=>`<div class="fld"><label for="lN">Имя</label><input id="lN" value="${esc(o.name||'')}" placeholder="Как записать"></div>
+    <div class="two"><div class="fld"><label for="lP">Телефон</label><input id="lP" inputmode="tel" placeholder="+66 …" value="${esc(o.phone||'')}"></div>
+    <div class="fld"><label for="lT">Телеграм</label><input id="lT" placeholder="@username" value="${esc(o.tg?'@'+o.tg:'')}"></div></div>
     <div class="fld"><label for="lI">Инстаграм</label><input id="lI" placeholder="@instagram" value="${esc(o.ig?'@'+o.ig:'')}"></div>
-    <div class="fld"><label for="lP">Телефон</label><input id="lP" inputmode="tel" placeholder="+66 …" value="${esc(o.phone||'')}"></div>
-    <div class="fld"><label for="lK">Заметка</label><textarea id="lK" rows="3" placeholder="Что важно помнить">${esc(o.note||'')}</textarea></div>`;
-  const val=()=>({name:$('lN').value,tg_username:$('lT').value,instagram:$('lI').value,phone:$('lP').value,note:$('lK').value});
-  const picker=sel=>`<div style="display:grid;gap:6px"><b>Был на курсах</b>${COURSES.map(c=>`<label class="copy" style="cursor:pointer"><input type="checkbox" data-lc="${c.id}" ${sel.includes(c.id)?'checked':''}> <span style="flex:1">${esc(c.title)}</span></label>`).join('')||'<div class="note">Потоков пока нет.</div>'}</div>`;
+    <div class="fld"><label>Кто</label>${chips('lcKid',[['0','Взрослая'],['1','Ребёнок']],o.kid?'1':'0')}<span class="note">У ребёнка контакт может быть свой или родителя, как удобнее.</span></div>
+    <div class="fld"><label>Где живёт</label>${chips('lcRes',[['local','На Самуи'],['tourist','Турист'],['','Не знаем']],o.res||'')}<span class="note">Туристки уезжают: по ним не ждём на новый поток и не считаем «пропавшими».</span></div>`;
+  const noteFld=o=>`<div class="fld"><label for="lK">Заметка</label><textarea id="lK" rows="2" placeholder="Что важно помнить">${esc(o.note||'')}</textarea></div>`;
+  const val=()=>({name:$('lN').value,tg_username:$('lT').value,instagram:$('lI').value,phone:$('lP').value,note:$('lK').value,is_child:chipVal('lcKid')==='1',residence:chipVal('lcRes')||null});
+  const past=c=>c.date<TD;
+  const picker=sel=>{const L=COURSES.slice().sort((a,b)=>b.date<a.date?-1:1);
+    return `<div style="display:grid;gap:6px"><b>Была на потоках</b><span class="note">Можно отметить и прошедшие: так база заводится задним числом. Прошедшего потока нет в списке — создайте его через «+» с той датой.</span>
+    ${L.map(c=>`<label class="copy" style="cursor:pointer"><input type="checkbox" data-lc="${c.id}" ${sel.includes(c.id)?'checked':''}> <span style="flex:1">${esc(c.title)}${past(c)?' <span class="note">· прошёл</span>':''}</span></label>`).join('')||'<div class="note">Потоков пока нет.</div>'}</div>`};
   window.__courseIds=window.__courseIds||{};
   LIVE={ids:window.__courseIds,load,
     list:()=>rows.slice(),
     sheet(k){const o=rows.find(x=>x.key===k);if(!o)return;
-      openSheet(`<span class="eyebrow">${o.kid?'Ребёнок · пишем родителю':'Клиентка'}</span><h2>${esc(o.name)}</h2>
+      openSheet(`<span class="eyebrow">${[o.kid?'Ребёнок':'Клиентка',RES[o.res]].filter(Boolean).join(' · ')}</span><h2>${esc(o.name)}</h2>
         ${o.tg?`<a class="btn pri lens" href="https://t.me/${encodeURIComponent(o.tg)}" target="_blank" rel="noopener" style="text-decoration:none">Написать в Телеграм</a>`:''}
-        ${fields(o)}${picker(o.courses)}<button class="btn pri lens" id="lSave">Сохранить</button>`);
-      document.querySelectorAll('[data-lc]').forEach(b=>b.onchange=()=>{call('POST','/enroll',{client_id:o.key,course_id:LIVE.ids[b.dataset.lc],on:b.checked}).then(()=>{b.checked?o.courses.push(b.dataset.lc):o.courses.splice(o.courses.indexOf(b.dataset.lc),1);toast(b.checked?'Добавлена в курс':'Убрана из курса')}).catch(()=>{b.checked=!b.checked;toast('Не получилось, попробуйте ещё раз')})});
+        ${fields(o)}${picker(o.courses)}${noteFld(o)}<button class="btn pri lens" id="lSave">Сохранить</button>`);bindChips();
+      document.querySelectorAll('[data-lc]').forEach(b=>b.onchange=()=>{call('POST','/enroll',{client_id:o.key,course_id:LIVE.ids[b.dataset.lc],on:b.checked}).then(()=>{b.checked?o.courses.push(b.dataset.lc):o.courses.splice(o.courses.indexOf(b.dataset.lc),1);toast(b.checked?'Добавлена в поток':'Убрана из потока')}).catch(()=>{b.checked=!b.checked;toast('Не получилось, попробуйте ещё раз')})});
       $('lSave').onclick=()=>{if(!$('lN').value.trim()){toast('Нужно имя');return}call('PATCH','/clients/'+o.key,val()).then(load).then(()=>{closeSheet();render();toast('Сохранено')}).catch(()=>toast('Не получилось сохранить'))}},
-    add(){openSheet(`<span class="eyebrow">Справочник</span><h2>Новая клиентка</h2>${fields({})}
-        <label class="copy" style="cursor:pointer"><input type="checkbox" id="lKid"> <span>Ребёнок (контакт родителя)</span></label>${picker([])}
-        <button class="btn pri lens" id="lAdd">Добавить</button>`);
+    add(){openSheet(`<span class="eyebrow">Справочник</span><h2>Новая клиентка</h2>${fields({})}${picker([])}${noteFld({})}
+        <button class="btn pri lens" id="lAdd">Добавить</button>`);bindChips();
       $('lAdd').onclick=()=>{if(!$('lN').value.trim()){toast('Нужно имя');return}
         const ids=[...document.querySelectorAll('[data-lc]:checked')].map(b=>LIVE.ids[b.dataset.lc]).filter(Boolean);
-        call('POST','/clients',{...val(),is_child:$('lKid').checked,course_ids:ids}).then(load).then(()=>{closeSheet();render();toast('Добавлена в справочник')}).catch(()=>toast('Не получилось добавить'))}}};
+        call('POST','/clients',{...val(),course_ids:ids}).then(load).then(()=>{closeSheet();render();toast('Добавлена в справочник')}).catch(()=>toast('Не получилось добавить'))}}};
 })();
 /* новые потоки и мастер-классы из формы менеджера уходят в базу (и сразу в расписание) */
 (()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
