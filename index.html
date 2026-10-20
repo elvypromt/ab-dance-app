@@ -513,7 +513,7 @@ $('mgrBtn').onclick=()=>contactSheet('Здравствуйте! Хочу узн�
 function render(){renderDock();const v={dirs:vHome,new:vNew,slots:vSlots,rent:vRent,price:vPrice,my:vMy,hall:vHall,rentcal:vRentCal,people:vPeople,base:vBase,pay:vPay,msg:vMsg,svc:vSvc,inbox:vInbox}[tab];$('app').innerHTML=v();bind[tab]&&bind[tab]()}
 const bind={};
 
-const LINKS={manager:'https://t.me/Manager_dance',sasha:'https://t.me/alex_13131313',ig:'https://www.instagram.com/dance.samui/',igSasha:'https://www.instagram.com/__alexis_13__/',yt:'https://www.youtube.com/@Aleksandr_Bobrusov',tut:'https://t.me/dancetutorials_365in1',tt:'https://www.tiktok.com/@alexandro_1313',map:'https://goo.gl/maps/CuC3NceDE4T7xck57',online:'https://t.me/dancetutorials_365in1'};
+const LINKS={manager:'https://t.me/Manager_dance',sasha:'https://t.me/alex_13131313',ig:'https://www.instagram.com/dance.samui/',igSasha:'https://www.instagram.com/__alexis_13__/',yt:'https://www.youtube.com/@Aleksandr_Bobrusov',tut:'https://t.me/dancetutorials_365in1',tt:'https://www.tiktok.com/@alexandro_1313',map:'https://goo.gl/maps/CuC3NceDE4T7xck57',online:''};
 function contactSheet(text){
   const a=(h,t,s,pri)=>h?`<a class="btn ${pri?'pri ':''}lens" href="${esc(h)}" target="_blank" rel="noopener" style="text-decoration:none;display:flex;justify-content:space-between;gap:10px"><span>${t}</span><span style="opacity:.7;font-weight:600">${s}</span></a>`:`<div class="copy"><span style="flex:1">${t}</span><span class="todo">скоро</span></div>`;
   openSheet(`<span class="eyebrow">Контакты</span><h2>Как с нами связаться</h2>
@@ -521,15 +521,22 @@ function contactSheet(text){
   <div style="display:grid;gap:8px">
     ${a(LINKS.manager+'?text='+encodeURIComponent(text),'Написать менеджеру',MANAGER,1)}
     ${a(LINKS.sasha,'Написать Саше','Телеграм')}
-    ${a(LINKS.online,'Онлайн-хореография','dancetutorials_365in1')}
+    ${a(LINKS.online,'Онлайн-хореография','')}
     ${a(LINKS.ig,'Инстаграм студии','@dance.samui')}
     ${a(LINKS.igSasha,'Инстаграм Саши','@__alexis_13__')}
     ${a(LINKS.yt,'YouTube','Aleksandr_Bobrusov')}
+    ${a(LINKS.tut,'Туториалы в Телеграме','dancetutorials_365in1')}
     ${a(LINKS.tt,'Туториалы в TikTok','@alexandro_1313')}
     ${a(LINKS.map,'Как добраться','Google Карты')}
   </div>
   <div class="row"><button class="btn lens" id="cpBtn">Скопировать ник менеджера</button></div>`);
   $('cpBtn').onclick=()=>{navigator.clipboard?.writeText(MANAGER).then(()=>toast('Ник скопирован'),()=>toast(MANAGER))}}
+
+function onlineSheet(){const text='Здравствуйте! Хочу доступ к онлайн-хореографии.';
+  const a=(h,t,s,pri)=>`<a class="btn ${pri?'pri ':''}lens" href="${esc(h)}" target="_blank" rel="noopener" style="text-decoration:none;display:flex;justify-content:space-between;gap:10px"><span>${t}</span><span style="opacity:.7;font-weight:600">${s}</span></a>`;
+  openSheet(`<span class="eyebrow">Онлайн</span><h2>Онлайн-хореография</h2>
+  <p style="margin:0">Видеоуроки Саши в закрытом Телеграм-канале: связки и постановки High Heels, заниматься можно из любой точки мира. Доступ открывает менеджер после оплаты.</p>
+  <div style="display:grid;gap:8px">${a(LINKS.manager+'?text='+encodeURIComponent(text),'Написать менеджеру',MANAGER,1)}${a(LINKS.sasha,'Написать Саше','Телеграм')}</div>`)}
 
 /* ---------- клиентка: главная ---------- */
 function vHome(){
@@ -678,12 +685,12 @@ function bookFlow(o){
   </form>`);
   $('rqForm').onsubmit=e=>{e.preventDefault();const n=$('rqName').value.trim(),c=$('rqContact').value.trim();
     if(!n||!c){$('rqErr').textContent='Заполните имя и контакт, чтобы менеджер мог ответить.';return}
-    if(o.wait){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,ago:'только что',st:'wait',mine:true});closeSheet();renderDock();toast(o.msg||'Вы в листе ожидания. Бот напишет, когда освободится место');return}
+    if(o.wait){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,ago:'только что',st:'wait',mine:true});LIVEQ&&LIVEQ.create(requests[0],o);closeSheet();renderDock();toast(o.msg||'Вы в листе ожидания. Бот напишет, когда освободится место');return}
     if(o.d!=null&&conflicts({d:o.d,s:o.s,dur:o.dur,t:o.t}).length){$('rqErr').textContent='Это время только что заняли. Выберите другое.';return}
     const sum=Math.round(o.total*PREPAY[o.kind]);
-    if(!sum){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,d:o.d,s:o.s,dur:o.dur,t:o.t,dir:o.dir,sum:0,course:o.course&&o.course.id,ago:'только что',st:'check',mine:true});closeSheet();renderDock();render();toast('Записали! Оплата на месте, менеджер подтвердит в чате');return}
+    if(!sum){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,d:o.d,s:o.s,dur:o.dur,t:o.t,dir:o.dir,sum:0,course:o.course&&o.course.id,ago:'только что',st:'check',mine:true});LIVEQ&&LIVEQ.create(requests[0],o);closeSheet();renderDock();render();toast('Записали! Оплата на месте, менеджер подтвердит в чате');return}
     const r={id:Date.now(),who:n,contact:c,what:o.what,d:o.d,s:o.s,dur:o.dur,t:o.t,dir:o.dir,sum,course:o.course&&o.course.id,ago:'только что',st:'pay',mine:true};
-    requests.unshift(r);renderDock();if(tab==='rent'){st.ra=st.rb=null;render()}else if(tab==='slots')render();
+    requests.unshift(r);LIVEQ&&LIVEQ.create(r,o);renderDock();if(tab==='rent'){st.ra=st.rb=null;render()}else if(tab==='slots')render();
     payStep(o,r)}}
 function payStep(o,r){
   openSheet(`<div class="steps"><i class="on"></i><i class="on"></i><i></i></div><span class="eyebrow">Шаг 2 из 3 · предоплата</span><h2>Оплатите по QR</h2>
@@ -697,7 +704,7 @@ function payStep(o,r){
   drawQR($('qrc'),r.sum);
   let left=1800;tick=setInterval(()=>{left--;const el=$('tmr');if(!el)return clearInterval(tick);if(left<=0){clearInterval(tick);el.textContent='время вышло';return}el.textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0')},1000);
   $('askBtn').onclick=()=>contactSheet(`Здравствуйте! Вопрос по записи: ${r.what}${r.s?', '+WD[r.d]+' '+r.s:''}.`);
-  $('paidBtn').onclick=()=>{r.st='check';r.receipt=!!$('rqCheck').files.length;renderDock();
+  $('paidBtn').onclick=()=>{r.st='check';r.receipt=!!$('rqCheck').files.length;LIVEQ&&LIVEQ.paid(r);renderDock();
     openSheet(`<div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div><span class="eyebrow">Шаг 3 из 3 · готово</span><h2>Спасибо, ${esc(r.who)}!</h2>
     <p style="margin:0">Менеджер проверит оплату и подтвердит запись в боте. За день до занятия придёт напоминание.</p>
     <div class="lines"><div><span>${esc(r.what)}</span><b>${r.s?WD[r.d]+' '+WEEK[r.d]+' окт, '+r.s:''}</b></div><div><span>Предоплата</span><b>${rub(r.sum)}</b></div></div>
@@ -850,9 +857,9 @@ bind.inbox=()=>{
     const full=r.dir==='rent'||r.dir==='indiv'?(PREPAY[r.dir]?Math.round(r.sum/PREPAY[r.dir]):r.sum):r.sum;
     PAYS.unshift({id:Date.now(),who:r.who,contact:r.contact,what:r.what,amount:full,due:r.d!=null?'2026-10-'+WEEK[r.d]:null,log:[{d:TD,sum:r.sum,m:'qr'}]});
     if(r.course)(ROSTER[r.course]=ROSTER[r.course]||[]).push({name:r.who,contact:r.contact,att:null});
-    r.st='ok';render();toast(r.d!=null?'Поставлено в зал, клиентке ушло подтверждение':'Место в курсе закреплено')});
-  document.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>{requests.find(x=>x.id==b.dataset.no).st='no';render();toast('Бронь снята, время снова свободно')});
-  document.querySelectorAll('[data-rem]').forEach(b=>b.onclick=()=>toast('Бот напомнил об оплате'));
+    r.st='ok';LIVEQ&&LIVEQ.set(r,'ok');render();toast(r.d!=null?'Поставлено в зал, клиентке ушло подтверждение':'Место в курсе закреплено')});
+  document.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>{const r=requests.find(x=>x.id==b.dataset.no);r.st='no';LIVEQ&&LIVEQ.set(r,'cancel');render();toast('Бронь снята, время снова свободно')});
+  document.querySelectorAll('[data-rem]').forEach(b=>b.onclick=()=>{const r=requests.find(x=>x.id==b.dataset.rem);LIVEQ&&LIVEQ.set(r,'pay');toast('Бот напомнил об оплате')});
   document.querySelectorAll('[data-off]').forEach(b=>b.onclick=()=>toast('Бот написал: освободилось место, берёте?'))};
 
 /* ---------- CRM: услуги, оплаты, рассылки, мои записи ---------- */
@@ -878,7 +885,7 @@ let FAQ=[['Нужен ли опыт?','Нет. В каждом потоке ес
   ['Можно вернуть деньги?','Если отменить за 24 часа до старта курса, вернём предоплату. Позже перенесём на следующий поток.'],
   ['Как оплатить?','По QR через PromptPay прямо в боте, или наличными и переводом в студии.'],
   ['Где студия?','Адрес и точка на карте придут в боте сразу после записи.']];
-const PROMO={title:'Индивы и онлайн-хореография',text:'Поставим номер на свадьбу, день рождения или для соцсетей. В зале на Самуи или онлайн из любой точки мира.',link:LINKS.online};
+const PROMO={title:'Индивы и онлайн-хореография',text:'Поставим номер на свадьбу, день рождения или для соцсетей. В зале на Самуи или онлайн из любой точки мира.',link:''};
 
 /* даты курса: из «ВТ и ЧТ, 19:30–21:00» и числа занятий */
 const WDK={ПН:0,ВТ:1,СР:2,ЧТ:3,ПТ:4,СБ:5,ВС:6};
@@ -953,17 +960,17 @@ bind.my=()=>{const find=id=>myAll().find(k=>k.id===id),tgt=x=>x.req||MY.find(k=>
   document.querySelectorAll('[data-sa]').forEach(b=>b.onclick=()=>{const[id,v]=b.dataset.sa.split(':');tgt(find(id)).sh=v;render();toast(v==='yes'?'Записали на съёмку!':'Поняли, менеджер увидит')});
   document.querySelectorAll('[data-ics]').forEach(b=>b.onclick=()=>icsFile(COURSES.find(c=>c.id===b.dataset.ics)));
   document.querySelectorAll('[data-quit]').forEach(b=>b.onclick=()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Да, отменить';return}
-    const x=find(b.dataset.quit),o=tgt(x),c=x.course&&COURSES.find(k=>k.id===x.course);if(c&&x.st==='ok')c.taken=Math.max(0,c.taken-1);o.st=x.req?'no':'cancel';render();toast('Менеджер получил отмену и напишет вам в чат')})};
+    const x=find(b.dataset.quit),o=tgt(x),c=x.course&&COURSES.find(k=>k.id===x.course);if(c&&x.st==='ok')c.taken=Math.max(0,c.taken-1);o.st=x.req?'no':'cancel';if(x.req&&LIVEQ)LIVEQ.cancel(o);render();toast('Менеджер получил отмену и напишет вам в чат')})};
 
 /* ---------- главная: реклама индивов и частые вопросы ---------- */
 const vHomeBase=vHome;
 vHome=()=>vHomeBase()+`
   <section class="promo glass"><div style="display:grid;gap:8px"><span class="eyebrow">Индивидуально · онлайн</span><h2>${esc(PROMO.title)}</h2><p style="margin:0">${esc(PROMO.text)}</p></div>
-    <div class="row"><button class="btn pri lens" id="promoIndiv">Окно в зале</button>${PROMO.link?`<a class="btn lens" href="${esc(PROMO.link)}" target="_blank" rel="noopener" style="text-decoration:none">Онлайн-хореография</a>`:`<button class="btn lens" id="promoOnline">Онлайн-хореография</button><span class="todo">ссылка: уточнить</span>`}</div></section>
+    <div class="row"><button class="btn pri lens" id="promoIndiv">Окно в зале</button>${PROMO.link?`<a class="btn lens" href="${esc(PROMO.link)}" target="_blank" rel="noopener" style="text-decoration:none">Онлайн-хореография</a>`:`<button class="btn lens" id="promoOnline">Онлайн-хореография</button>`}</div></section>
   <section class="sect"><div class="sect-h"><h2>Частые вопросы</h2><span class="todo">пример</span></div>
     <div class="faq">${FAQ.map(([q,a])=>`<details class="glass"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>`;
 const bindDirsBase=bind.dirs;
-bind.dirs=()=>{bindDirsBase();$('promoIndiv').onclick=()=>go('slots');if($('promoOnline'))$('promoOnline').onclick=()=>contactSheet('Здравствуйте! Хочу онлайн-занятие по хореографии.')};
+bind.dirs=()=>{bindDirsBase();$('promoIndiv').onclick=()=>go('slots');if($('promoOnline'))$('promoOnline').onclick=onlineSheet};
 
 /* ---------- цены у клиентки: из списка услуг ---------- */
 function vPrice(){
@@ -1258,7 +1265,7 @@ const VISITS={},KVIS={},GUEST={},NOTES={},MANUAL=[];
 COURSES.forEach((c,ci)=>{VISITS[c.id]={};sessions(c).filter(s=>s.iso<TD).forEach((s,si)=>{VISITS[c.id][s.iso]=new Set((ROSTER[c.id]||[]).filter((x,i)=>(i*7+si*3+ci)%9!==0).map(x=>x.contact))})});
 for(let d=new Date('2026-09-07T00:00');isoD(d)<TD;d.setDate(d.getDate()+1)){const w=(d.getDay()+6)%7;if([0,2,4].includes(w)){const iso=isoD(d),k=+iso.slice(8);KVIS[iso]=new Set(KIDS.filter((x,i)=>(i*5+k)%4!==0).map(x=>x[1]))}}
 const kidDays=()=>{const out=[];for(let d=new Date('2026-09-07T00:00');isoD(d)<='2026-10-25';d.setDate(d.getDate()+1))if([0,2,4].includes((d.getDay()+6)%7))out.push(isoD(d));return out};
-let LIVE=null;
+let LIVE=null,LIVEQ=null;
 function clients(){if(LIVE)return LIVE.list();const M=new Map(),get=(name,contact,kid)=>{const k=String(contact||name).toLowerCase();if(!M.has(k))M.set(k,{key:k,name,contact,kid:!!kid,courses:[],visits:0,pays:[],indiv:0,rent:0,last:null});return M.get(k)};
   const seen=(o,iso)=>{o.visits++;if(!o.last||iso>o.last)o.last=iso};
   COURSES.forEach(c=>(ROSTER[c.id]||[]).forEach(x=>{const o=get(x.name,x.contact);o.courses.push(c.id);Object.entries(VISITS[c.id]||{}).forEach(([iso,set])=>set.has(x.contact)&&seen(o,iso))}));
@@ -1393,7 +1400,7 @@ const calBtn=k=>`<button class="btn lens" data-cal="${k}">${k!=='me'&&CALS[k].on
 
 try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
 const MANAGER_IDS=[7043604610,221314723,1332655761];
-const TGU=(window.Telegram&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user)||{};
+const TGU=(window.Telegram&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user)||{},ME_MANAGER=MANAGER_IDS.includes(TGU.id);
 if(!MANAGER_IDS.includes(TGU.id))document.querySelector('.bar .seg').style.display='none';
 render();
 fetch('https://dancesamui-bot.fly.dev/api/services',{headers:{Authorization:'tma '+Telegram.WebApp.initData}}).then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
@@ -1402,12 +1409,34 @@ fetch('https://dancesamui-bot.fly.dev/api/services',{headers:{Authorization:'tma
     if(!s)continue;if(r.price!=null)s.price=+r.price;s.pre=r.prepay_pct;s.name=r.name;s.sub=r.sub||s.sub;s.unit=r.unit||s.unit}
   applyPrices();render()}).catch(()=>{});
 fetch('https://dancesamui-bot.fly.dev/api/courses',{headers:{Authorization:'tma '+Telegram.WebApp.initData}}).then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
-  if(!rows.length)return;
-  COURSES.splice(0,COURSES.length,...rows.map(r=>fill({id:'c'+r.id.slice(0,8),dir:'heels',t:'heels',title:r.title,age:'взрослые',date:r.start_date,days:(r.days||'ВТ и ЧТ')+', 19:30–21:00',len:'2 недели, 4 занятия',price:+r.price,seats:r.seats,taken:r.taken,real:true,group:r.group_link||''})));
+  if(rows.length){COURSES.splice(0,COURSES.length,...rows.map(r=>fill({id:'c'+r.id.slice(0,8),dir:'heels',t:'heels',title:r.title,age:'взрослые',date:r.start_date,days:(r.days||'ВТ и ЧТ')+', 19:30–21:00',len:'2 недели, 4 занятия',price:+r.price,seats:r.seats,taken:r.taken,real:true,group:r.group_link||''})));
   COURSES.forEach(c=>{ROSTER[c.id]=[];VISITS[c.id]={}});
   window.__courseIds={};rows.forEach(r=>window.__courseIds['c'+r.id.slice(0,8)]=r.id);
-  applyPrices();render();
-  if(MANAGER_IDS.includes(TGU.id))LIVE_INIT()}).catch(()=>{});
+  applyPrices();render()}
+  LIVEQ_INIT();if(ME_MANAGER)LIVE_INIT()}).catch(()=>{});
+function LIVEQ_INIT(){/* заявки: настоящие, через API бота (клиентка видит свои, менеджер все) */
+(()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
+  const call=(m,p,b)=>fetch(API+p,{method:m,headers:H,body:b?JSON.stringify(b):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
+  const pad=n=>String(n).padStart(2,'0');
+  const iso=d=>{const x=new Date(NOW);x.setDate(WEEK[d]);return x.getFullYear()+'-'+pad(x.getMonth()+1)+'-'+pad(x.getDate())};
+  const dIdx=day=>{if(!day)return null;const i=WEEK.indexOf(+day.slice(8,10));return i<0?null:i};
+  const ago=t=>{const s=(Date.now()-new Date(t))/1000;return s<60?'только что':s<3600?Math.round(s/60)+' мин назад':s<86400?Math.round(s/3600)+' ч назад':Math.round(s/86400)+' дн назад'};
+  const local=id=>{for(const k in window.__courseIds||{})if(window.__courseIds[k]===id)return k};
+  const map=r=>({id:r.id,who:r.name,contact:r.contact,what:r.what,d:dIdx(r.day),s:r.start_time||undefined,dur:r.dur_min||undefined,
+    dir:['wait','pre','online'].includes(r.kind)?undefined:r.kind,t:r.kind==='indiv'?'heels':undefined,sum:+r.sum||0,
+    course:r.course_id?local(r.course_id):undefined,ago:ago(r.created_at),st:r.status==='cancel'?'no':r.status,receipt:r.receipt,mine:r.tg_id===TGU.id});
+  MY.length=0;
+  LIVEQ={
+    load:()=>call('GET',ME_MANAGER?'/requests':'/my').then(rows=>{requests.splice(0,requests.length,...rows.map(map))}),
+    create(r,o){const kind=o.wait?(o.msg?'pre':'wait'):o.kind;
+      r.live=call('POST','/requests',{name:r.who,contact:r.contact,kind,what:r.what,course_id:o.course&&window.__courseIds[o.course.id]||null,
+        day:r.d!=null?iso(r.d):null,start_time:r.s||null,dur_min:r.dur||null,sum:r.sum||0,status:r.st}).then(x=>{r.id=x.id}).catch(()=>toast('Заявка не ушла. Напишите менеджеру, пожалуйста'))},
+    paid(r){(r.live||Promise.resolve()).then(()=>call('POST','/requests/'+r.id+'/paid',{receipt:!!r.receipt})).catch(()=>{})},
+    cancel(r){(r.live||Promise.resolve()).then(()=>call('POST','/requests/'+r.id+'/cancel')).catch(()=>{})},
+    set(r,status){call('PATCH','/requests/'+r.id,{status}).catch(()=>toast('Не получилось сохранить, попробуйте ещё раз'))}};
+})();
+
+LIVEQ.load().then(()=>render()).catch(()=>{})}
 function LIVE_INIT(){/* справочник клиенток: настоящие данные из базы (только менеджер) */
 (()=>{const API='https://dancesamui-bot.fly.dev/api',H={Authorization:'tma '+Telegram.WebApp.initData,'Content-Type':'application/json'};
   const call=(m,p,b)=>fetch(API+p,{method:m,headers:H,body:b?JSON.stringify(b):undefined}).then(r=>r.ok?r.json():Promise.reject(r.status));
