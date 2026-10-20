@@ -512,7 +512,7 @@ $('mgrBtn').onclick=()=>contactSheet('Здравствуйте! Хочу узн�
 function render(){renderDock();const v={dirs:vHome,new:vNew,slots:vSlots,rent:vRent,price:vPrice,my:vMy,hall:vHall,rentcal:vRentCal,people:vPeople,base:vBase,pay:vPay,msg:vMsg,svc:vSvc,inbox:vInbox}[tab];$('app').innerHTML=v();bind[tab]&&bind[tab]()}
 const bind={};
 
-const LINKS={manager:'https://t.me/Manager_dance',sasha:'https://t.me/alex_13131313',ig:'https://www.instagram.com/dance.samui/',igSasha:'https://www.instagram.com/__alexis_13__/',yt:'https://www.youtube.com/@Aleksandr_Bobrusov',tut:'https://t.me/dancetutorials_365in1',tt:'https://www.tiktok.com/@alexandro_1313',map:'https://goo.gl/maps/CuC3NceDE4T7xck57',online:''};
+const LINKS={manager:'https://t.me/Manager_dance',sasha:'https://t.me/alex_13131313',ig:'https://www.instagram.com/dance.samui/',igSasha:'https://www.instagram.com/__alexis_13__/',yt:'https://www.youtube.com/@Aleksandr_Bobrusov',tut:'https://t.me/dancetutorials_365in1',tt:'https://www.tiktok.com/@alexandro_1313',map:'https://goo.gl/maps/CuC3NceDE4T7xck57',online:'https://t.me/dancetutorials_365in1'};
 function contactSheet(text){
   const a=(h,t,s,pri)=>h?`<a class="btn ${pri?'pri ':''}lens" href="${esc(h)}" target="_blank" rel="noopener" style="text-decoration:none;display:flex;justify-content:space-between;gap:10px"><span>${t}</span><span style="opacity:.7;font-weight:600">${s}</span></a>`:`<div class="copy"><span style="flex:1">${t}</span><span class="todo">скоро</span></div>`;
   openSheet(`<span class="eyebrow">Контакты</span><h2>Как с нами связаться</h2>
@@ -520,11 +520,10 @@ function contactSheet(text){
   <div style="display:grid;gap:8px">
     ${a(LINKS.manager+'?text='+encodeURIComponent(text),'Написать менеджеру',MANAGER,1)}
     ${a(LINKS.sasha,'Написать Саше','Телеграм')}
-    ${a(LINKS.online,'Онлайн-хореография','')}
+    ${a(LINKS.online,'Онлайн-хореография','dancetutorials_365in1')}
     ${a(LINKS.ig,'Инстаграм студии','@dance.samui')}
     ${a(LINKS.igSasha,'Инстаграм Саши','@__alexis_13__')}
     ${a(LINKS.yt,'YouTube','Aleksandr_Bobrusov')}
-    ${a(LINKS.tut,'Туториалы в Телеграме','dancetutorials_365in1')}
     ${a(LINKS.tt,'Туториалы в TikTok','@alexandro_1313')}
     ${a(LINKS.map,'Как добраться','Google Карты')}
   </div>
@@ -874,7 +873,7 @@ let FAQ=[['Нужен ли опыт?','Нет. В каждом потоке ес
   ['Можно вернуть деньги?','Если отменить за 24 часа до старта курса, вернём предоплату. Позже перенесём на следующий поток.'],
   ['Как оплатить?','По QR через PromptPay прямо в боте, или наличными и переводом в студии.'],
   ['Где студия?','Адрес и точка на карте придут в боте сразу после записи.']];
-const PROMO={title:'Индивы и онлайн-хореография',text:'Поставим номер на свадьбу, день рождения или для соцсетей. В зале на Самуи или онлайн из любой точки мира.',link:''};
+const PROMO={title:'Индивы и онлайн-хореография',text:'Поставим номер на свадьбу, день рождения или для соцсетей. В зале на Самуи или онлайн из любой точки мира.',link:LINKS.online};
 
 /* даты курса: из «ВТ и ЧТ, 19:30–21:00» и числа занятий */
 const WDK={ПН:0,ВТ:1,СР:2,ЧТ:3,ПТ:4,СБ:5,ВС:6};
