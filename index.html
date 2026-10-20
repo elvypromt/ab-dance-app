@@ -1370,6 +1370,10 @@ fetch('https://dancesamui-bot.fly.dev/api/services',{headers:{Authorization:'tma
   for(const r of rows){const s=SERVICES.find(x=>x.id===by[r.category]||(r.category==='Индивидуальные'&&x.cat==='Индивидуальные')||(r.category==='Детям'&&x.id==='s2'));
     if(!s)continue;if(r.price!=null)s.price=+r.price;s.pre=r.prepay_pct;s.name=r.name;s.sub=r.sub||s.sub;s.unit=r.unit||s.unit}
   applyPrices();render()}).catch(()=>{});
+fetch('https://dancesamui-bot.fly.dev/api/courses',{headers:{Authorization:'tma '+Telegram.WebApp.initData}}).then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+  if(!rows.length)return;
+  COURSES.splice(0,COURSES.length,...rows.map(r=>fill({id:'c'+r.id.slice(0,8),dir:'heels',t:'heels',title:r.title,age:'взрослые',date:r.start_date,days:(r.days||'ВТ и ЧТ')+', 19:30–21:00',len:'2 недели, 4 занятия',price:+r.price,seats:r.seats,taken:r.taken,real:true,group:r.group_link||''})));
+  COURSES.forEach(c=>{ROSTER[c.id]=[];VISITS[c.id]={}});applyPrices();render()}).catch(()=>{});
 </script>
 
 </body>
