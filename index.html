@@ -384,7 +384,7 @@ const DIRS={
   rent:{name:'Аренда зала',c:'var(--rose-deep)'}
 };
 const TRAINERS={
-  heels:{name:'Саша',short:'Саша',ins:'Сашей',role:'High Heels, воздушная гимнастика для детей, индивы',c:'var(--rose)',price:3000,ini:'С',
+  heels:{name:'Саша',short:'Саша',ins:'Сашей',role:'High Heels, воздушная гимнастика для детей, индивы',c:'var(--rose)',price:3000,ini:'♥',
     avail:{0:[[11,17]],2:[[11,17]],4:[[11,17]],5:[[11,16]]}}
 };
 const RENT={hall:{name:'Аренда зала',sub:'просто зал, почасово',price:350}};
@@ -465,7 +465,7 @@ function conflicts(c,skipId){
   const s=m(c.s),f=s+c.dur,out=[],all=events.concat(holds());
   for(const e of all){if(e.id===skipId||e.d!==c.d||e.away)continue;if(overlap(s,f,m(e.s),m(e.s)+e.dur)){out.push(`зал занят: ${e.hold?'бронь ждёт оплаты':label(e)}, ${e.s}–${hm(m(e.s)+e.dur)}`);break}}
   if(c.t&&!out.length)for(const e of all){if(e.id===skipId||e.d!==c.d||e.t!==c.t)continue;
-    if(overlap(s,f,m(e.s),m(e.s)+e.dur)){out.push(`${TRAINERS[c.t].short} в это время занят`);break}}
+    if(overlap(s,f,m(e.s),m(e.s)+e.dur)){out.push(`тренер в это время занят`);break}}
   if(s<540||f>1320)out.push('студия работает с 09:00 до 22:00');
   return out}
 // все часы из рабочего окна тренера; занятые показываем серыми, без подробностей
@@ -495,7 +495,7 @@ const ICON={
   msg:I('<path d="M21 4 3 11l6.5 2.5L12 20l3-6.5z"/><path d="m9.5 13.5 4-4"/>')
 };
 const TABS={client:[['dirs','Главная'],['new','Курсы'],['slots','Индивы'],['rent','Аренда'],['price','Цены'],['my','Мои']],
-            manager:[['hall','Зал'],['rentcal','Аренда'],['people','Саша'],['base','База'],['pay','Оплаты'],['msg','Рассылки'],['inbox','Заявки']]};
+            manager:[['hall','Зал'],['rentcal','Аренда'],['people','Расписание'],['base','База'],['pay','Оплаты'],['msg','Рассылки'],['inbox','Заявки']]};
 let role='client',tab='dirs',st={age:'adult',trainer:'heels',day:TODAY,mTrainer:'heels',rDay:TODAY,ra:null,rb:null,purpose:'hall'};
 
 function renderDock(){
@@ -554,7 +554,7 @@ function vHome(){
       <article class="card glass" style="--c:${d.c}">
         <span class="tag"><i class="dot"></i>${d.name.toUpperCase()}</span>
         <h3>${d.name}</h3>
-        <div class="meta"><span><b>${g.age}</b></span><span>${g.when}</span><span>Ведёт ${t.name} ${g.real?'':'<span class="todo">пример</span>'}</span></div>
+        <div class="meta"><span><b>${g.age}</b></span><span>${g.when}</span>${g.real?'':'<span class="todo">пример</span>'}</div>
         <div class="price">${g.price==null?'<span class="todo">цена: уточнить</span>':rub(g.price)+' <small>'+g.per+'</small>'}</div>
       </article>`}).join('')}</div>
   </section>`}
@@ -589,8 +589,7 @@ function vSlots(){
   const counts=WEEK.map((_,d)=>trainerHours(st.trainer,d).filter(x=>x.free).length);
   return `<section class="sect"><div class="sect-h"><h2>Индивидуальные</h2><span class="note">Предоплата 50%, остаток на занятии</span></div>
   <div class="panel glass">
-    <div class="row" role="group" aria-label="Тренер">${Object.entries(TRAINERS).map(([k,x])=>`<button id="tr_${k}" class="chip lens ${k===st.trainer?'on':''}" data-tr="${k}">${x.short}</button>`).join('')}</div>
-    <div class="who-card" style="--c:${t.c}"><div class="ava">${t.ini}</div><div><div style="font-weight:800;color:var(--ink)">${t.name} <span class="todo">имя уточнить</span></div><div style="font-size:13.5px">${t.role}</div>
+        <div class="who-card" style="--c:${t.c}"><div class="ava">${t.ini}</div><div><div style="font-weight:800;color:var(--ink)">Индивидуальные занятия</div><div style="font-size:13.5px">постановка номера, High Heels</div>
       <div style="font-size:13.5px;margin-top:2px"><b style="color:var(--ink)">${rub(t.price)}</b> за час <span class="todo">уточнить</span></div></div></div>
     <div class="days">${WEEK.map((n,d)=>`<button id="day_${d}" class="day lens ${d===st.day?'on':''}" data-day="${d}"><span class="w">${WD[d]}</span><span class="n">${n}</span><span class="c ${counts[d]?'':'z'}">${counts[d]?counts[d]+' своб.':'нет'}</span></button>`).join('')}</div>
     <div class="eyebrow">${DAY_FULL[st.day]}, ${WEEK[st.day]} октября</div>
@@ -600,7 +599,7 @@ bind.slots=()=>{
   document.querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>{st.trainer=b.dataset.tr;if(!trainerHours(st.trainer,st.day).some(x=>x.free)){const f=WEEK.findIndex((_,d)=>trainerHours(st.trainer,d).some(x=>x.free));if(f>=0)st.day=f}render()});
   document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{st.day=+b.dataset.day;render()});
   document.querySelectorAll('.slot:not(:disabled)').forEach(b=>b.onclick=()=>{const s=b.dataset.s,d=st.day,t=TRAINERS[st.trainer];
-    bookFlow({title:`Индив с ${t.ins}`,sub:`${DAY_FULL[d]}, ${WEEK[d]} октября, ${s}–${hm(m(s)+60)}.`,what:'Индивидуальное, '+t.short,total:t.price,kind:'indiv',d,s,dur:60,t:st.trainer,dir:'indiv'})})};
+    bookFlow({title:`Индивидуальное занятие`,sub:`${DAY_FULL[d]}, ${WEEK[d]} октября, ${s}–${hm(m(s)+60)}.`,what:'Индивидуальное занятие',total:t.price,kind:'indiv',d,s,dur:60,t:st.trainer,dir:'indiv'})})};
 
 /* ---------- аренда: лента дня ---------- */
 function vRent(){
@@ -711,7 +710,7 @@ function grid(opts={}){
     for(let d=0;d<7;d++){if(one&&d!==gd)continue;let av='';if(opts.trainer){const a=TRAINERS[opts.trainer].avail[d]||[];if(a.some(([x,y])=>t>=x*60&&t<y*60))av=' avail'}
       h+=`<button class="cell${r%2?' half':''}${av}" style="grid-column:${col(d)};grid-row:${r+2}" data-d="${d}" data-t="${hm(t)}" aria-label="${WD[d]} ${hm(t)}"></button>`}}
   for(const e of events.concat(holds())){if(opts.trainer?e.t!==opts.trainer:e.away)continue;if(one&&e.d!==gd)continue;const r=(m(e.s)-start)/30,d=DIRS[e.dir];
-    h+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':''}" style="--c:${d.c};grid-column:${col(e.d)};grid-row:${r+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`}><b>${e.hold?'Бронь · '+esc(e.who):esc(label(e))}</b><span>${e.s}–${hm(m(e.s)+e.dur)}${e.hold?' · ждёт оплату':e.t?' · '+TRAINERS[e.t].short:''}</span></button>`}
+    h+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':''}" style="--c:${d.c};grid-column:${col(e.d)};grid-row:${r+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`}><b>${e.hold?'Бронь · '+esc(e.who):esc(label(e))}</b><span>${e.s}–${hm(m(e.s)+e.dur)}${e.hold?' · ждёт оплату':''}</span></button>`}
   return h+'</div>'}
 const legend=()=>`<div class="legend">${Object.values(DIRS).map(d=>`<span style="--c:${d.c}"><i class="dot"></i>${d.name}</span>`).join('')}<span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>`;
 
@@ -770,7 +769,7 @@ function bindGrid(){
 function evSheet(e){
   const d=DIRS[e.dir];
   openSheet(`<span class="tag" style="--c:${d.c}"><i class="dot"></i>${d.name.toUpperCase()}</span><h2>${esc(label(e))}</h2>
-  <div class="meta"><span><b>${DAY_FULL[e.d]}, ${WEEK[e.d]} октября</b>, ${e.s}–${hm(m(e.s)+e.dur)}</span>${e.t?`<span>Ведёт ${TRAINERS[e.t].name}</span>`:''}</div>
+  <div class="meta"><span><b>${DAY_FULL[e.d]}, ${WEEK[e.d]} октября</b>, ${e.s}–${hm(m(e.s)+e.dur)}</span></div>
   <div class="row"><button class="btn pri lens" id="evMove">Перенести</button><button class="btn ghost lens" id="evDel">Отменить занятие</button></div>
   <div class="err" id="evMsg"></div>`);
   $('evMove').onclick=()=>editForm({...e});
@@ -802,9 +801,9 @@ function vPeople(){
   const k=st.mTrainer,t=TRAINERS[k],mine=events.filter(e=>e.t===k);
   const hours=mine.reduce((a,e)=>a+e.dur,0)/60,ind=mine.filter(e=>e.dir==='indiv').length;
   const free=WEEK.reduce((a,_,d)=>a+trainerHours(k,d).filter(x=>x.free).length,0);
-  return `<section class="sect"><div class="sect-h"><h2>Расписание Саши</h2>${calBtn('sasha')}</div>
+  return `<section class="sect"><div class="sect-h"><h2>Расписание тренера</h2>${calBtn('sasha')}</div>
   <div class="stats">
-    <div class="stat glass" style="--c:${t.c}"><div class="who-card"><div class="ava">${t.ini}</div><div><div style="font-weight:800;color:var(--ink)">${t.name}</div><div style="font-size:13px">${t.role}</div></div></div></div>
+    <div class="stat glass" style="--c:${t.c}"><div class="who-card"><div class="ava">${t.ini}</div><div><div style="font-weight:800;color:var(--ink)">Тренер</div><div style="font-size:13px">High Heels, дети, индивы</div></div></div></div>
     <div class="stat glass"><span class="v">${hours} ч</span><span class="l">ведёт на этой неделе</span></div>
     <div class="stat glass"><span class="v">${ind}</span><span class="l">индивидуальных</span></div>
     <div class="stat glass"><span class="v">${free}</span><span class="l">свободных окон для записи</span></div>
@@ -837,7 +836,7 @@ let SERVICES=[
   {id:'s1',cat:'Курсы',name:'High Heels, курс',sub:'2 недели, 4 занятия, ВТ и ЧТ 19:30–21:00',price:2200,unit:'курс',real:1,key:'course:heels',pre:100,rem:1},
   {id:'s2',cat:'Детям',name:'Воздушная гимнастика для детей',sub:'в другом зале, группы 3 раза в неделю по вечерам, дни уточнить',price:null,unit:'месяц',pre:0,rem:1,
     vars:[{n:'Разовое занятие',price:null},{n:'Абонемент на месяц',price:null}]}
-].concat(Object.entries(TRAINERS).map(([k,t])=>({id:'i_'+k,cat:'Индивидуальные',name:'Индив с '+t.ins,sub:'High Heels, постановка номера. Детские индивы: уточнить',price:t.price,unit:'час',key:'indiv:'+k,pre:50,rem:1})),
+].concat(Object.entries(TRAINERS).map(([k,t])=>({id:'i_'+k,cat:'Индивидуальные',name:'Индивидуальное занятие',sub:'High Heels, постановка номера. Детские индивы: уточнить',price:t.price,unit:'час',key:'indiv:'+k,pre:50,rem:1})),
   [{id:'r_hall',cat:'Аренда зала',name:'Аренда зала',sub:'просто зал, почасово',price:350,unit:'час',real:1,key:'rent:hall',pre:30,rem:1}]);
 function applyPrices(){for(const s of SERVICES){if(!s.key)continue;const[k,v]=s.key.split(':'),p=s.price||0;
   if(k==='indiv'){TRAINERS[v].price=p;if(v==='heels')PREPAY.indiv=s.pre/100}
@@ -849,7 +848,7 @@ let FAQ=[['Нужен ли опыт?','Нет. В каждом потоке ес
   ['Можно вернуть деньги?','Если отменить за 24 часа до старта курса, вернём предоплату. Позже перенесём на следующий поток.'],
   ['Как оплатить?','По QR через PromptPay прямо в боте, или наличными и переводом в студии.'],
   ['Где студия?','Адрес и точка на карте придут в боте сразу после записи.']];
-const PROMO={title:'Индивы и онлайн-хореография с Сашей',text:'Поставим номер на свадьбу, день рождения или для соцсетей. В зале на Самуи или онлайн из любой точки мира.',link:''};
+const PROMO={title:'Индивы и онлайн-хореография',text:'Поставим номер на свадьбу, день рождения или для соцсетей. В зале на Самуи или онлайн из любой точки мира.',link:''};
 
 /* даты курса: из «ВТ и ЧТ, 19:30–21:00» и числа занятий */
 const WDK={ПН:0,ВТ:1,СР:2,ЧТ:3,ПТ:4,СБ:5,ВС:6};
@@ -934,7 +933,7 @@ vHome=()=>vHomeBase()+`
   <section class="sect"><div class="sect-h"><h2>Частые вопросы</h2><span class="todo">пример</span></div>
     <div class="faq">${FAQ.map(([q,a])=>`<details class="glass"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>`;
 const bindDirsBase=bind.dirs;
-bind.dirs=()=>{bindDirsBase();$('promoIndiv').onclick=()=>go('slots');if($('promoOnline'))$('promoOnline').onclick=()=>contactSheet('Здравствуйте! Хочу онлайн-занятие по хореографии с Сашей.')};
+bind.dirs=()=>{bindDirsBase();$('promoIndiv').onclick=()=>go('slots');if($('promoOnline'))$('promoOnline').onclick=()=>contactSheet('Здравствуйте! Хочу онлайн-занятие по хореографии.')};
 
 /* ---------- цены у клиентки: из списка услуг ---------- */
 function vPrice(){
@@ -1340,7 +1339,7 @@ const bindInboxBase=bind.inbox;bind.inbox=()=>{bindInboxBase();document.querySel
 
 /* ---------- подключение календарей ---------- */
 DIRS.ext={name:'Из календаря',c:'#9a8fa6'};
-const CALS={sasha:{on:0,acc:'',title:'Календарь Саши',sub:'Его личные дела и воздушная гимнастика в другом зале. В эти часы к нему нельзя записаться на индив.',
+const CALS={sasha:{on:0,acc:'',title:'Календарь тренера',sub:'Личные дела и воздушная гимнастика в другом зале. В эти часы нельзя записаться на индив.',
     imp:[{d:0,s:'14:00',dur:120,t:'heels',away:1,title:'Занят (личное)'},{d:2,s:'11:00',dur:60,t:'heels',away:1,title:'Занят (личное)'}]},
   hall:{on:0,acc:'',title:'Календарь зала',sub:'Если аренду уже записывают в Google Календарь, мы подтянем оттуда. В эти часы зал не сдаётся и не бронируется.',
     imp:[{d:5,s:'11:00',dur:120,title:'Занято (из календаря)'},{d:6,s:'10:00',dur:180,title:'Занято (из календаря)'}]}};
