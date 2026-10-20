@@ -458,7 +458,7 @@ const finished=c=>daysTo(c)<=0&&!running(c);
 const pastCourses=()=>COURSES.filter(finished).sort((a,b)=>b.dt-a.dt);
 const nextOpen=()=>upcoming().find(c=>daysTo(c)>0&&c.seats>c.taken&&!c.pre);
 function whenTxt(c){const n=daysTo(c);if(running(c))return n===0?'идёт · сегодня первое занятие':'идёт сейчас';
-  return n===1?'завтра':'через '+n+' '+plural(n,'день','дня','дней')}
+  if(n<0)return 'прошёл';return n===1?'завтра':'через '+n+' '+plural(n,'день','дня','дней')}
 function timeline(list,attr='data-c'){const nx=nextOpen();
   return `<div class="tl">${list.map(c=>{const d=DIRS[c.dir],left=c.seats-c.taken,run=running(c);return `
     <button class="tl-i glass ${c===nx?'next':''}" style="--c:${d.c}" ${attr}="${c.id}" id="tl_${c.id}">
@@ -807,9 +807,9 @@ function addSheet(){
   document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const k=b.dataset.add;closeSheet();
     if(k==='course')courseForm();else if(k==='mc'){courseForm();document.querySelector('[data-ct="1"]').click()}
     else if(k==='ev')editForm({d:tdx(),s:'14:00',dur:60,dir:'indiv',t:'heels'});else go('msg')})}
-function liveRoster(c){if(typeof LIVE==='undefined'||!LIVE.list)return '';const r=LIVE.list().filter(o=>o.courses.includes(c.id));
+function liveRoster(c){if(!LIVE||!LIVE.list)return '';const r=LIVE.list().filter(o=>o.courses.includes(c.id));
   return `<div style="display:grid;gap:4px"><span class="note" style="font-weight:800">${finished(c)?'Ходили':'Записаны'} · ${r.length}</span>
-  ${r.length?`<div class="roster">${r.map(x=>`<button class="lens" data-lcl="${x.key}" style="all:unset;display:flex;justify-content:space-between;gap:8px;cursor:pointer;width:100%"><span>${esc(x.name)} <span class="note">${esc(x.contact)}</span></span><span class="pill ${x.res==='tourist'?'wait':'ok'}">${x.kid?'ребёнок':x.res==='tourist'?'турист':'клиентка'}</span></button>`).join('')}</div>`:'<span class="note">Пока никого. Запись через бот попадёт сюда сама, вручную — через «База».</span>'}</div>`}
+  ${r.length?`<div class="roster">${r.map(x=>`<div data-lcl="${x.key}" role="button" tabindex="0" style="cursor:pointer"><span>${esc(x.name)} <span class="note">${esc(x.contact)}</span></span><span class="pill ${x.res==='tourist'?'wait':'ok'}">${x.kid?'ребёнок':x.res==='tourist'?'турист':'клиентка'}</span></div>`).join('')}</div>`:'<span class="note">Пока никого. Запись через бот попадёт сюда сама, вручную — через «База».</span>'}</div>`}
 function courseSheet(c){const d=DIRS[c.dir],left=c.seats-c.taken,wl=requests.filter(r=>r.st==='wait'&&r.what.includes(c.title)).length;
   openSheet(`<span class="tag" style="--c:${d.c}"><i class="dot"></i>${d.name.toUpperCase()}</span><h2>${esc(c.title)}</h2>
   <div class="lines"><div><span>Старт</span><b>${c.start} ${c.month}, ${DAY_FULL[c.wd]}</b></div><div><span>Когда</span><b>${whenTxt(c)}</b></div>
