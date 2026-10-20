@@ -66,7 +66,7 @@ a{color:var(--rose-deep)}
 .mgr{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:999px;font-weight:800;font-size:13px;color:var(--ink)}
 .mgr svg{width:17px;height:17px}
 
-.dock{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;display:flex;gap:2px;padding:6px;border-radius:999px;max-width:calc(100vw - 20px)}
+.dock{overflow-x:auto;scrollbar-width:none;position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;display:flex;gap:2px;padding:6px;border-radius:999px;max-width:calc(100vw - 20px)}
 .dock button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 13px;border-radius:999px;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;position:relative}
 .dock button svg{width:21px;height:21px}
 .dock button.on{color:var(--rose-deep);background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.6));box-shadow:inset 0 1px 0 #fff,0 4px 14px rgba(100,50,80,.16)}
@@ -249,6 +249,90 @@ table.prices{width:100%;border-collapse:collapse;font-size:14.5px}
 .tl-k{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--rose-deep);padding:2px 8px;border-radius:6px;justify-self:start}
 .tl-s{font-size:12.5px;font-weight:700;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.ph{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--ink);margin:0}
+.svc{display:grid}
+.svc-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.svc-r:first-child{border-top:0}
+.svc-r b{color:var(--ink)}
+.pin{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:14px;background:rgba(255,255,255,.6);font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.pin input{width:76px;border:0;background:transparent;font-weight:800;color:var(--ink);text-align:right;padding:6px 0;font-variant-numeric:tabular-nums}
+.btn.sm{padding:8px 14px;font-size:12.5px}
+@media (max-width:560px){.svc-r{grid-template-columns:1fr auto}.svc-r>.btn.sm{grid-column:1/-1;justify-self:start}.svc-r>span:empty{display:none}}
+.rcal{display:grid;grid-template-columns:50px repeat(26,34px);grid-template-rows:22px repeat(7,52px);row-gap:4px;min-width:max-content}
+.rcal .hh{grid-row:1;font-size:11px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;border-left:1px solid var(--line);padding-left:4px}
+.rcal .rd{grid-column:1;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--muted);align-self:center}
+.rcal .rd b{display:block;font-family:var(--serif);font-size:20px;letter-spacing:0;color:var(--ink);font-weight:400;line-height:1}
+.rcal .rd.today b{color:var(--rose-deep)}
+.rc-f{margin:2px 1px;border-radius:8px;background:rgba(255,255,255,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.9)}
+.rc-f:hover{background:rgba(48,165,103,.22)}
+.rcal .ev{margin:2px 1px;white-space:nowrap}
+.rcal .ev b,.rcal .ev span{display:block;overflow:hidden;text-overflow:ellipsis}
+.rcal .ev.cls{opacity:.55}
+.paygrid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:820px){.paygrid{grid-template-columns:1fr}}
+.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mcal .wd{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--muted);text-align:center}
+.mc{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.45);display:grid;place-content:center;justify-items:center;position:relative;padding:2px}
+.mc b{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--ink);line-height:1}
+.mc small{font-size:9.5px;font-weight:800;color:var(--free);line-height:1.1}
+.mc i{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--warn)}
+.mc.today{box-shadow:inset 0 0 0 1.5px var(--rose)}
+.mc.on{background:rgba(46,27,40,.7)}.mc.on b,.mc.on small{color:#fff}
+.bub{max-width:360px;padding:12px 14px;border-radius:18px 18px 18px 6px;background:#fff;color:var(--ink);font-size:14px;box-shadow:var(--glass-out)}
+.bub-b{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;margin-top:10px}
+.bub-b span{padding:8px;border-radius:10px;background:var(--rose-soft);color:var(--rose-deep);font-weight:800;font-size:12.5px;text-align:center}
+.fld textarea{width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.55);color:var(--ink);font:600 15px/1.45 var(--sans);resize:vertical}
+.roster{display:grid;max-height:260px;overflow:auto}
+.roster div{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;padding:6px 0;border-top:1px solid var(--line)}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--rose-deep)}
+.sess{display:flex;flex-wrap:wrap;gap:6px}
+.ss{padding:5px 10px;border-radius:10px;background:rgba(255,255,255,.6);font-size:12.5px;font-weight:700;color:var(--ink)}
+.ss.past{opacity:.45}
+.ss.moved{background:var(--rose-soft);color:var(--rose-deep)}
+.promo{padding:26px;border-radius:var(--r-xl);display:grid;gap:16px;box-shadow:var(--glass-in),var(--glass-out),0 0 0 1.5px rgba(184,111,130,.35)}
+.promo h2{font-size:clamp(30px,4vw,44px)}
+.faq{display:grid;gap:8px}
+.faq details{padding:14px 18px;border-radius:var(--r-md)}
+.faq summary{font-weight:800;color:var(--ink);cursor:pointer}
+.faq p{margin:8px 0 0}
+
+.svc-b{width:100%;text-align:left;border-radius:12px}
+.svc-b:hover{background:rgba(255,255,255,.4)}
+.svc-p{color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-width:560px){.svc-b{grid-template-columns:1fr auto}.svc-b .pill{grid-row:2}}
+.tpl{display:grid;gap:12px}
+.step{display:grid;gap:10px;padding:14px;border-radius:var(--r-md);background:rgba(255,255,255,.42)}
+.step>b{font-size:15px;color:var(--ink)}
+.step .sn{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--rose-deep);color:#fff;font-size:12px;font-weight:800;margin-bottom:-6px}
+.step input:not([type=checkbox]){width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.6);color:var(--ink);font-weight:600}
+.step .pin input{width:110px;padding:6px 0;border:0;background:transparent}
+.pin.big{justify-self:start;font-size:16px}.pin.big input{font-size:20px}
+.vars{display:grid;gap:8px}.vars:empty{display:none}
+.var{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}
+.ck{display:flex;gap:10px;align-items:center;font-weight:700;font-size:14px}
+.chip:disabled{opacity:.45}
+.shoot{display:grid;gap:6px;padding:12px 14px;border-radius:var(--r-md);background:var(--rose-soft)}
+.shoot b{color:var(--rose-deep)}
+.srch{flex:1;min-width:180px;padding:12px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.6);color:var(--ink);font-weight:600}
+.req.cl{width:100%;grid-template-columns:1fr auto}
+.dayscroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.dayscroll .chip{white-space:nowrap;flex:none}
+.vis{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}
+.vrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.5);font-weight:700;color:var(--ink);text-align:left}
+.vrow.on{background:rgba(48,165,103,.16)}
+.big-n{font-family:var(--serif);font-size:34px;color:var(--ink);line-height:1}.big-n small{font-family:var(--sans);font-size:13px;color:var(--muted)}
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:120px 1fr auto;gap:10px;align-items:center;font-size:13.5px;font-weight:700}
+.bar .tr{height:12px;border-radius:6px;background:rgba(255,255,255,.55);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--rose),var(--lilac))}
+.cols{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:18px}
+.cols.sm{height:80px}
+.cols span{flex:1;min-width:0;position:relative;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--rose),var(--lilac));min-height:4px}
+.cols b{position:absolute;top:-17px;left:0;right:0;text-align:center;font-size:11px;color:var(--ink)}
+.cols small{position:absolute;bottom:-17px;left:-4px;right:-4px;text-align:center;font-size:9.5px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden}
+.cols{margin-bottom:18px}
+@media (max-width:560px){.dock button{padding:8px 9px;font-size:10px}.bar{grid-template-columns:90px 1fr auto}}
 </style>
 
 <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
@@ -276,23 +360,15 @@ table.prices{width:100%;border-collapse:collapse;font-size:14.5px}
 /* ---------- данные: High Heels по ВТ/ЧТ 19:30–21:00 и курс 2 недели настоящие (курс 2 200 ฿), остальные цены примерные, остальное пример ---------- */
 const DIRS={
   heels:{name:'High Heels',c:'var(--rose)'},
-  aerial:{name:'Aerial',c:'var(--lilac)'},
-  kids:{name:'Детская аэробика',c:'var(--peri)'},
-  acro:{name:'Акробатика',c:'var(--peach)'},
+  aerial:{name:'Воздушная гимнастика',c:'var(--lilac)'},
   indiv:{name:'Индивидуальное',c:'var(--sage)'},
   rent:{name:'Аренда зала',c:'var(--rose-deep)'}
 };
 const TRAINERS={
-  heels:{name:'Хореограф High Heels',short:'High Heels',ins:'хореографом High Heels',role:'каблуки, хореография, постановки',c:'var(--rose)',price:3000,ini:'H',
-    avail:{0:[[12,19]],2:[[12,19]],4:[[12,18]],5:[[11,16]]}},
-  aerial:{name:'Тренер Aerial',short:'Aerial',ins:'тренером Aerial',role:'полотна, кольцо, растяжка',c:'var(--lilac)',price:2800,ini:'A',
-    avail:{1:[[10,16]],3:[[10,16]],5:[[13,18]]}},
-  kids:{name:'Детский тренер',short:'Детский',ins:'детским тренером',role:'аэробика и акробатика, 4–10 лет',c:'var(--peri)',price:2500,ini:'Д',
-    avail:{0:[[11,15]],2:[[11,15]],6:[[11,16]]}}
+  heels:{name:'Саша',short:'Саша',ins:'Сашей',role:'High Heels, воздушная гимнастика для детей, индивы',c:'var(--rose)',price:3000,ini:'С',
+    avail:{0:[[11,17]],2:[[11,17]],4:[[11,17]],5:[[11,16]]}}
 };
-const RENT={adult:{name:'Взрослая тренировка',sub:'свои занятия, репетиции',price:350},
-            kids:{name:'Детский праздник',sub:'зал, звук, уборка после',price:350},
-            shoot:{name:'Фото или видео',sub:'зеркала, свет из окон',price:350}};
+const RENT={hall:{name:'Аренда зала',sub:'просто зал, почасово',price:350}};
 const PREPAY={course:1,indiv:.5,rent:.3};
 const MANAGER='@abdance_manager';
 const WEEK=[19,20,21,22,23,24,25],WD=['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'],TODAY=1;
@@ -300,36 +376,25 @@ const DAY_FULL=['понедельник','вторник','среда','четв
 let uid=100;
 let events=[
   {d:0,s:'12:00',dur:60,dir:'indiv',t:'heels',who:'Ксения П.'},
-  {d:0,s:'16:00',dur:60,dir:'kids',t:'kids',title:'Аэробика 4–6 лет'},
-  {d:0,s:'17:00',dur:60,dir:'acro',t:'kids',title:'Акробатика 7–10 лет'},
+  {d:0,s:'17:30',dur:60,dir:'aerial',t:'heels',title:'Воздушная гимнастика, дети'},
   {d:0,s:'19:30',dur:90,dir:'rent',who:'Бачата, внешний тренер'},
-  {d:1,s:'11:00',dur:60,dir:'aerial',t:'aerial',title:'Aerial, взрослые'},
-  {d:1,s:'16:30',dur:60,dir:'kids',t:'kids',title:'Аэробика 7–9 лет'},
-  {d:1,s:'17:30',dur:60,dir:'aerial',t:'aerial',title:'Aerial kids 8–12'},
   {d:1,s:'19:30',dur:90,dir:'heels',t:'heels',title:'High Heels, курс'},
   {d:2,s:'14:00',dur:60,dir:'indiv',t:'heels',who:'Марина Д.'},
-  {d:2,s:'16:00',dur:60,dir:'kids',t:'kids',title:'Аэробика 4–6 лет'},
-  {d:2,s:'17:00',dur:60,dir:'acro',t:'kids',title:'Акробатика 7–10 лет'},
-  {d:2,s:'19:00',dur:120,dir:'rent',who:'Репетиция, группа «Пульс»'},
-  {d:3,s:'11:00',dur:60,dir:'aerial',t:'aerial',title:'Aerial, взрослые'},
-  {d:3,s:'16:30',dur:60,dir:'kids',t:'kids',title:'Аэробика 7–9 лет'},
-  {d:3,s:'17:30',dur:60,dir:'aerial',t:'aerial',title:'Aerial kids 8–12'},
+  {d:2,s:'17:30',dur:60,dir:'aerial',t:'heels',title:'Воздушная гимнастика, дети'},
+  {d:2,s:'19:00',dur:120,dir:'rent',who:'Группа «Пульс»'},
   {d:3,s:'19:30',dur:90,dir:'heels',t:'heels',title:'High Heels, курс'},
   {d:4,s:'15:00',dur:60,dir:'indiv',t:'heels',who:'Полина'},
-  {d:4,s:'16:00',dur:60,dir:'kids',t:'kids',title:'Аэробика 4–6 лет'},
-  {d:4,s:'18:00',dur:120,dir:'rent',who:'Фотосессия, Лиза'},
-  {d:5,s:'10:00',dur:60,dir:'kids',t:'kids',title:'Аэробика 4–6 лет'},
-  {d:5,s:'11:00',dur:90,dir:'acro',t:'kids',title:'Акробатика 7–10 лет'},
-  {d:5,s:'13:00',dur:60,dir:'aerial',t:'aerial',title:'Aerial kids 8–12'},
-  {d:5,s:'16:00',dur:180,dir:'rent',who:'День рождения, 8 детей'},
-  {d:6,s:'12:00',dur:90,dir:'heels',t:'heels',title:'Открытый класс Heels'}
+  {d:4,s:'17:30',dur:60,dir:'aerial',t:'heels',title:'Воздушная гимнастика, дети'},
+  {d:4,s:'19:00',dur:120,dir:'rent',who:'Лиза'},
+  {d:5,s:'16:00',dur:180,dir:'rent',who:'Мария'}
 ].map(e=>({...e,id:++uid}));
 
 const COURSES=[
+  {id:'hs1',dir:'heels',t:'heels',title:'High Heels, поток 8 сентября',age:'взрослые',date:'2026-09-08',days:'ВТ и ЧТ, 19:30–21:00',len:'2 недели, 4 занятия',price:2200,seats:12,taken:10,real:true},
+  {id:'hs2',dir:'heels',t:'heels',title:'High Heels, поток 22 сентября',age:'взрослые',date:'2026-09-22',days:'ВТ и ЧТ, 19:30–21:00',len:'2 недели, 4 занятия',price:2200,seats:12,taken:11,real:true},
+  {id:'ho1',dir:'heels',t:'heels',title:'High Heels, поток 6 октября',age:'взрослые',date:'2026-10-06',days:'ВТ и ЧТ, 19:30–21:00',len:'2 недели, 4 занятия',price:2200,seats:12,taken:12,real:true},
   {id:'hh1',dir:'heels',t:'heels',title:'High Heels, новый поток',age:'взрослые',date:'2026-11-03',days:'ВТ и ЧТ, 19:30–21:00',len:'2 недели, 4 занятия',price:2200,seats:12,taken:9,real:true},
   {id:'hh0',dir:'heels',t:'heels',title:'High Heels, текущий поток',age:'взрослые',date:'2026-10-20',days:'ВТ и ЧТ, 19:30–21:00',len:'2 недели, 4 занятия',price:2200,seats:12,taken:12,real:true},
-  {id:'ae1',dir:'aerial',t:'aerial',title:'Aerial с нуля',age:'взрослые',date:'2026-11-05',days:'ВТ и ЧТ, 11:00',len:'4 недели, 8 занятий',price:8800,seats:6,taken:4},
-  {id:'ac1',dir:'acro',t:'kids',title:'Акробатика для малышей',age:'5–7 лет',date:'2026-11-07',days:'СБ, 10:00',len:'10 занятий',price:7000,seats:10,taken:3},
   {id:'hh2',dir:'heels',t:'heels',title:'High Heels, поток 17 ноября',age:'взрослые',date:'2026-11-17',days:'ВТ и ЧТ, 19:30–21:00',len:'2 недели, 4 занятия',price:2200,seats:12,taken:2,real:true},
   {id:'hh3',dir:'heels',t:'heels',title:'High Heels, поток 1 декабря',age:'взрослые',date:'2026-12-01',days:'ВТ и ЧТ, 19:30–21:00',len:'2 недели, 4 занятия',price:2200,seats:12,taken:0,pre:true,real:true}
 ];
@@ -356,15 +421,12 @@ function timeline(list,attr='data-c'){const nx=nextOpen();
       <span class="tl-s">${left<=0?'мест нет · лист ожидания':c.pre?'набор скоро · предзапись':`свободно ${left} из ${c.seats}`}</span>
     </button>`}).join('')}</div>`}
 const GROUPS=[
-  {dir:'heels',t:'heels',kid:0,age:'взрослые, любой уровень',when:'ВТ и ЧТ 19:30–21:00 · ВС 12:00 открытый класс',price:2200,per:'курс 2 недели',real:true},
-  {dir:'aerial',t:'aerial',kid:0,age:'взрослые',when:'ВТ и ЧТ 11:00',price:1200,per:'разовое'},
-  {dir:'aerial',t:'aerial',kid:1,age:'дети 8–12 лет',when:'ВТ и ЧТ 17:30 · СБ 13:00',price:6400,per:'в месяц'},
-  {dir:'kids',t:'kids',kid:1,age:'4–6 и 7–9 лет',when:'ПН, СР, ПТ 16:00 · ВТ, ЧТ 16:30',price:5600,per:'в месяц'},
-  {dir:'acro',t:'kids',kid:1,age:'7–10 лет',when:'ПН, СР 17:00 · СБ 11:00',price:6400,per:'в месяц'}
+  {dir:'heels',t:'heels',kid:0,age:'взрослые, любой уровень',when:'ВТ и ЧТ 19:30–21:00, курс 2 недели',price:2200,per:'курс 2 недели',real:true},
+  {dir:'aerial',t:'heels',kid:1,age:'дети, группы',when:'3 раза в неделю по вечерам, дни и время уточнить',price:null,per:''}
 ];
 let requests=[
   {id:1,who:'Анна Белова',contact:'@anna_bel',what:'Индивидуальное, High Heels',d:2,s:'15:00',dur:60,t:'heels',dir:'indiv',sum:1500,ago:'12 минут назад',st:'check'},
-  {id:2,who:'Ирина',contact:'@irina_photo',what:'Аренда зала, фото или видео',d:6,s:'15:00',dur:180,dir:'rent',sum:1620,ago:'40 минут назад',st:'pay'},
+  {id:2,who:'Ирина',contact:'@irina_photo',what:'Аренда зала',d:6,s:'15:00',dur:180,dir:'rent',sum:1620,ago:'40 минут назад',st:'pay'},
   {id:3,who:'Вика',contact:'+7 916 •• •• 42',what:'Лист ожидания: High Heels, текущий поток',ago:'час назад',st:'wait'},
   {id:4,who:'Даша К.',contact:'@dashak',what:'Курс High Heels с 3 ноября',sum:2200,ago:'вчера',st:'ok'}
 ];
@@ -406,22 +468,28 @@ const ICON={
   price:I('<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.4"/>'),
   hall:I('<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>'),
   people:I('<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.8-3.6 3-5.5 6-5.5s5.2 1.9 6 5.5"/><circle cx="17" cy="7" r="2.4"/><path d="M16.5 12.6c2.4.2 4 1.8 4.5 4.6"/>'),
-  inbox:I('<path d="M3 13l3-8h12l3 8v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/>')
+  inbox:I('<path d="M3 13l3-8h12l3 8v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/>'),
+  my:I('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'),
+  rentcal:I('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4v3H7z"/>'),
+  pay:I('<rect x="2.5" y="6" width="19" height="13" rx="3"/><path d="M2.5 10.5h19M6.5 15h4"/>'),
+  base:I('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>'),
+  msg:I('<path d="M21 4 3 11l6.5 2.5L12 20l3-6.5z"/><path d="m9.5 13.5 4-4"/>')
 };
-const TABS={client:[['dirs','Главная'],['new','Курсы'],['slots','Индивы'],['rent','Аренда'],['price','Цены']],
-            manager:[['hall','Зал'],['people','Тренеры'],['inbox','Заявки']]};
-let role='client',tab='dirs',st={age:'adult',trainer:'heels',day:TODAY,mTrainer:'heels',rDay:TODAY,ra:null,rb:null,purpose:'adult'};
+const TABS={client:[['dirs','Главная'],['new','Курсы'],['slots','Индивы'],['rent','Аренда'],['price','Цены'],['my','Мои']],
+            manager:[['hall','Зал'],['rentcal','Аренда'],['people','Саша'],['base','База'],['pay','Оплаты'],['msg','Рассылки'],['inbox','Заявки']]};
+let role='client',tab='dirs',st={age:'adult',trainer:'heels',day:TODAY,mTrainer:'heels',rDay:TODAY,ra:null,rb:null,purpose:'hall'};
 
 function renderDock(){
   const n=requests.filter(r=>['check','pay','wait'].includes(r.st)).length;
-  $('dock').innerHTML=TABS[role].map(([k,l])=>`<button id="tab_${k}" class="${k===tab?'on':''}" data-tab="${k}">${ICON[k]}${l}${k==='inbox'&&n?`<span class="badge">${n}</span>`:''}</button>`).join('');
+  const bg={inbox:n,pay:PAYS.filter(p=>pst(p)==='late').length};
+  $('dock').innerHTML=TABS[role].map(([k,l])=>`<button id="tab_${k}" class="${k===tab?'on':''}" data-tab="${k}">${ICON[k]}${l}${bg[k]?`<span class="badge">${bg[k]}</span>`:''}</button>`).join('');
   $('dock').querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.tab))}
 function go(t){tab=t;render();scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{role=b.dataset.role;tab=TABS[role][0][0];
   document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));$('mgrBtn').hidden=role!=='client';render()});
 $('mgrBtn').onclick=()=>contactSheet('Здравствуйте! Хочу узнать про занятия в AB Dance Studio.');
 
-function render(){renderDock();const v={dirs:vHome,new:vNew,slots:vSlots,rent:vRent,price:vPrice,hall:vHall,people:vPeople,inbox:vInbox}[tab];$('app').innerHTML=v();bind[tab]&&bind[tab]()}
+function render(){renderDock();const v={dirs:vHome,new:vNew,slots:vSlots,rent:vRent,price:vPrice,my:vMy,hall:vHall,rentcal:vRentCal,people:vPeople,base:vBase,pay:vPay,msg:vMsg,svc:vSvc,inbox:vInbox}[tab];$('app').innerHTML=v();bind[tab]&&bind[tab]()}
 const bind={};
 
 function contactSheet(text){
@@ -441,7 +509,7 @@ function vHome(){
     <div class="l">
       <span class="eyebrow">Новый поток · старт ${c.start} ${c.month}</span>
       <h1>Каблуки, сцена<em>и ты в центре зала</em></h1>
-      <p>High Heels, Aerial, детские группы и аренда зала. Курсы, свободные окна и цены собраны здесь. Выберите время, оплатите предоплату по QR, и вы записаны.</p>
+      <p>Курсы High Heels, воздушная гимнастика для детей, индивы и аренда зала. Всё здесь. Выберите время, оплатите предоплату по QR, и вы записаны.</p>
       <div class="row"><button class="btn lens" id="goSlots">Индив с тренером</button><button class="btn lens" id="goRent">Арендовать зал</button></div>
     </div>
     <div class="ticket" style="--c:var(--rose)">
@@ -467,8 +535,8 @@ function vHome(){
       <article class="card glass" style="--c:${d.c}">
         <span class="tag"><i class="dot"></i>${d.name.toUpperCase()}</span>
         <h3>${d.name}</h3>
-        <div class="meta"><span><b>${g.age}</b></span><span>${g.when}</span><span>Ведёт: ${t.name.toLowerCase()} ${g.real?'':'<span class="todo">пример</span>'}</span></div>
-        <div class="price">${rub(g.price)} <small>${g.per}</small></div>
+        <div class="meta"><span><b>${g.age}</b></span><span>${g.when}</span><span>Ведёт ${t.name} ${g.real?'':'<span class="todo">пример</span>'}</span></div>
+        <div class="price">${g.price==null?'<span class="todo">цена: уточнить</span>':rub(g.price)+' <small>'+g.per+'</small>'}</div>
       </article>`}).join('')}</div>
   </section>`}
 bind.dirs=()=>{document.querySelectorAll('[data-age]').forEach(b=>b.onclick=()=>{st.age=b.dataset.age;render()});
@@ -477,7 +545,7 @@ bind.dirs=()=>{document.querySelectorAll('[data-age]').forEach(b=>b.onclick=()=>
 
 /* ---------- курсы ---------- */
 function vNew(){
-  return `<section class="sect"><div class="sect-h"><h2>Курсы и наборы</h2><span class="note">Предоплата 100%, место за вами сразу после оплаты</span></div>
+  return `<section class="sect"><div class="sect-h"><h2>Курсы и наборы</h2><span class="note">${PREPAY.course?'Предоплата '+Math.round(PREPAY.course*100)+'%, место за вами сразу после оплаты':'Оплата на месте'}</span></div>
   ${timeline(upcoming())}
   <div class="cards">${upcoming().map(c=>{const d=DIRS[c.dir],left=c.seats-c.taken,full=left<=0;return `
     <article class="card glass" style="--c:${d.c}">
@@ -526,12 +594,12 @@ function vRent(){
       <div class="eyebrow">${DAY_FULL[st.rDay]}, ${WEEK[st.rDay]} октября · проведите пальцем по свободным часам</div>
       <div class="ribbon" id="ribbon">${seg}</div>
       <div class="ribbon-legend"><span><i class="sw" style="background:rgba(48,165,103,.18);box-shadow:inset 0 0 0 1px rgba(48,165,103,.3)"></i>свободно</span><span><i class="sw" style="background:repeating-linear-gradient(135deg,var(--busy) 0 4px,transparent 4px 8px)"></i>занято</span><span><i class="sw" style="background:linear-gradient(90deg,#C98397,#9C86D9)"></i>ваше время</span></div>
-      <div class="purpose" role="group" aria-label="Для чего зал">${Object.entries(RENT).map(([k,r])=>`<button id="pp_${k}" class="lens ${k===st.purpose?'on':''}" data-pp="${k}"><span>${r.name}<br><small style="font-weight:600">${r.sub}</small></span><small>${rub(r.price)} / час</small></button>`).join('')}</div>
+      <div class="copy"><span style="flex:1">Зал, ${rub(RENT.hall.price)} в час</span></div>
     </div>
     <aside class="sum glass" id="rentSum"></aside>
   </div></section>`}
 function rentCalc(){
-  if(st.ra==null)return null;const n=st.rb-st.ra,p=RENT[st.purpose].price,base=n*p,disc=n>=3?Math.round(base*.1):0;return{n,p,base,disc,total:base-disc}}
+  if(st.ra==null)return null;const n=st.rb-st.ra,p=RENT[st.purpose].price,base=n*p,disc=n>=3&&CFG.disc?Math.round(base*CFG.disc/100):0;return{n,p,base,disc,total:base-disc}}
 function paintRent(){
   document.querySelectorAll('#ribbon .hr').forEach(el=>{const h=+el.dataset.h,on=st.ra!=null&&h>=st.ra&&h<st.rb;
     el.classList.toggle('sel',on);el.classList.toggle('first',on&&h===st.ra);el.classList.toggle('last',on&&h===st.rb-1)});
@@ -539,17 +607,17 @@ function paintRent(){
   box.innerHTML=c?`<span class="eyebrow">Ваше время</span>
     <div class="range">${hm(st.ra*60)}<span> — </span>${hm(st.rb*60)}</div>
     <div class="sub">${hrs(c.n)} · ${DAY_FULL[st.rDay]}, ${WEEK[st.rDay]} октября</div>
-    <div class="lines"><div><span>${RENT[st.purpose].name}, ${hrs(c.n)} × ${rub(c.p)}</span><b>${rub(c.base)}</b></div>
-      ${c.disc?`<div><span>Скидка от 3 часов, 10%</span><b style="color:var(--free)">−${rub(c.disc)}</b></div>`:`<div><span style="color:var(--muted)">От 3 часов скидка 10%</span><b></b></div>`}
+    <div class="lines"><div><span>Зал, ${hrs(c.n)} × ${rub(c.p)}</span><b>${rub(c.base)}</b></div>
+      ${c.disc?`<div><span>Скидка от 3 часов, ${CFG.disc}%</span><b style="color:var(--free)">−${rub(c.disc)}</b></div>`:`<div><span style="color:var(--muted)">${CFG.disc?'От 3 часов скидка '+CFG.disc+'%':''}</span><b></b></div>`}
       <div class="tot"><span>Итого</span><b>${rub(c.total)}</b></div>
-      <div><span>Предоплата 30% по QR</span><b>${rub(c.total*PREPAY.rent)}</b></div></div>
+      <div><span>${PREPAY.rent?'Предоплата '+Math.round(PREPAY.rent*100)+'% по QR':'Оплата на месте'}</span><b>${PREPAY.rent?rub(c.total*PREPAY.rent):''}</b></div></div>
     <button class="btn pri lens" id="rentGo">Забронировать</button>
     <button class="btn lens" id="rentClr">Выбрать заново</button>`
   :`<span class="eyebrow">Ваше время</span><div class="range" style="color:var(--muted)">—:—</div>
     <p style="margin:0">Нажмите на свободный час и протяните вправо, чтобы взять несколько часов подряд. Занятые часы серые, через них выделение не пройдёт.</p>
-    <div class="lines"><div><span>Минимум</span><b>1 час</b></div><div><span>От 3 часов</span><b>−10%</b></div><div><span>Работаем</span><b>09:00–22:00</b></div></div>`;
-  if(c){$('rentGo').onclick=()=>bookFlow({title:'Аренда зала',sub:`${RENT[st.purpose].name}. ${DAY_FULL[st.rDay]}, ${WEEK[st.rDay]} октября, ${hm(st.ra*60)}–${hm(st.rb*60)}.`,
-      what:'Аренда зала, '+RENT[st.purpose].name.toLowerCase(),total:c.total,kind:'rent',d:st.rDay,s:hm(st.ra*60),dur:c.n*60,dir:'rent'});
+    <div class="lines"><div><span>Минимум</span><b>1 час</b></div>${CFG.disc?`<div><span>От 3 часов</span><b>−${CFG.disc}%</b></div>`:''}<div><span>Работаем</span><b>09:00–22:00</b></div></div>`;
+  if(c){$('rentGo').onclick=()=>bookFlow({title:'Аренда зала',sub:`${DAY_FULL[st.rDay]}, ${WEEK[st.rDay]} октября, ${hm(st.ra*60)}–${hm(st.rb*60)}.`,
+      what:'Аренда зала',total:c.total,kind:'rent',d:st.rDay,s:hm(st.ra*60),dur:c.n*60,dir:'rent'});
     $('rentClr').onclick=()=>{st.ra=st.rb=null;paintRent()}}}
 bind.rent=()=>{
   document.querySelectorAll('[data-rday]').forEach(b=>b.onclick=()=>{st.rDay=+b.dataset.rday;st.ra=st.rb=null;render()});
@@ -580,10 +648,11 @@ function bookFlow(o){
   </form>`);
   $('rqForm').onsubmit=e=>{e.preventDefault();const n=$('rqName').value.trim(),c=$('rqContact').value.trim();
     if(!n||!c){$('rqErr').textContent='Заполните имя и контакт, чтобы менеджер мог ответить.';return}
-    if(o.wait){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,ago:'только что',st:'wait'});closeSheet();renderDock();toast(o.msg||'Вы в листе ожидания. Бот напишет, когда освободится место');return}
+    if(o.wait){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,ago:'только что',st:'wait',mine:true});closeSheet();renderDock();toast(o.msg||'Вы в листе ожидания. Бот напишет, когда освободится место');return}
     if(o.d!=null&&conflicts({d:o.d,s:o.s,dur:o.dur,t:o.t}).length){$('rqErr').textContent='Это время только что заняли. Выберите другое.';return}
     const sum=Math.round(o.total*PREPAY[o.kind]);
-    const r={id:Date.now(),who:n,contact:c,what:o.what,d:o.d,s:o.s,dur:o.dur,t:o.t,dir:o.dir,sum,course:o.course&&o.course.id,ago:'только что',st:'pay'};
+    if(!sum){requests.unshift({id:Date.now(),who:n,contact:c,what:o.what,d:o.d,s:o.s,dur:o.dur,t:o.t,dir:o.dir,sum:0,course:o.course&&o.course.id,ago:'только что',st:'check',mine:true});closeSheet();renderDock();render();toast('Записали! Оплата на месте, менеджер подтвердит в чате');return}
+    const r={id:Date.now(),who:n,contact:c,what:o.what,d:o.d,s:o.s,dur:o.dur,t:o.t,dir:o.dir,sum,course:o.course&&o.course.id,ago:'только что',st:'pay',mine:true};
     requests.unshift(r);renderDock();if(tab==='rent'){st.ra=st.rb=null;render()}else if(tab==='slots')render();
     payStep(o,r)}}
 function payStep(o,r){
@@ -610,20 +679,6 @@ function drawQR(cv,seed){const g=cv.getContext('2d'),N=25,s=cv.width/N;let x=see
   for(let i=0;i<N;i++)for(let j=0;j<N;j++){const inF=(i<8&&j<8)||(i>N-9&&j<8)||(i<8&&j>N-9);if(!inF&&rnd()>.52)g.fillRect(i*s,j*s,s,s)}
   fin(0,0);fin(N-7,0);fin(0,N-7);g.fillStyle='#B86F82';g.beginPath();g.arc(cv.width/2,cv.height/2,s*2.2,0,7);g.fill()}
 
-/* ---------- цены ---------- */
-function vPrice(){
-  const rows=[
-    ['Взрослым',[['High Heels, курс','2 недели, 4 занятия, ВТ и ЧТ 19:30–21:00','2 200 ฿',1],['Открытый класс High Heels','разовое, воскресенье','900 ฿'],['Aerial, взрослые','разовое','1 200 ฿'],['Aerial с нуля','курс 8 занятий','8 800 ฿']]],
-    ['Детям',[['Детская аэробика','абонемент в месяц, 2–3 раза в неделю','5 600 ฿'],['Акробатика 7–10 лет','абонемент в месяц','6 400 ฿'],['Aerial kids 8–12','абонемент в месяц','6 400 ฿'],['Пробное занятие','один раз, любая группа','500 ฿']]],
-    ['Индивидуальные',Object.values(TRAINERS).map(t=>[t.name,t.role,rub(t.price)+' / час'])],
-    ['Аренда зала',Object.values(RENT).map(r=>[r.name,r.sub,rub(r.price)+' / час']).concat([['От 3 часов подряд','на любую аренду','−10%']])]];
-  return `<section class="sect"><div class="sect-h"><h2>Цены</h2><span class="note">Точно только курс High Heels, 2 200 ฿. Остальное примерное, настоящее внесёт менеджер</span></div>
-  <div class="panel glass scroll"><table class="prices"><thead><tr><th>Что</th><th>Условия</th><th style="text-align:right">Цена</th></tr></thead><tbody>
-  ${rows.map(([g,list])=>`<tr class="grp"><td colspan="3">${g}</td></tr>`+list.map(([a,b,c,real])=>`<tr><td><b style="color:var(--ink)">${a}</b>${real?' <span class="pill ok">точно</span>':''}</td><td>${b}</td><td class="r">${c}</td></tr>`).join('')).join('')}
-  </tbody></table></div>
-  <div class="panel glass"><div class="lines"><div><span>Предоплата: курсы</span><b>100%</b></div><div><span>Предоплата: индивы</span><b>50%</b></div><div><span>Предоплата: аренда</span><b>30%</b></div></div>
-  <span class="note">Оплата по QR через PromptPay. Если не оплатить за 30 минут, время освобождается.</span></div></section>`}
-
 /* ---------- админка ---------- */
 function load(){let busy=0;for(const e of events)busy+=e.dur;const total=7*13*60;return{busy,total,pct:Math.round(busy/total*100)}}
 function grid(opts={}){
@@ -644,6 +699,7 @@ function vHall(){
     <div class="stat glass"><span class="v">${Math.round((L.total-L.busy)/60)} ч</span><span class="l">свободно до воскресенья</span></div>
     <div class="stat glass"><span class="v">${fr} ч</span><span class="l">свободно сегодня, вторник</span></div>
     <div class="stat glass"><span class="v">${n}</span><span class="l">брони ждут оплату или проверку</span></div>
+    <button class="stat glass" id="goSvc" style="text-align:left"><span class="v">${SERVICES.length}</span><span class="l">услуг и цен · изменить →</span></button>
   </section>
   <section class="sect"><div class="sect-h"><h2>Потоки курсов</h2><button class="btn lens" id="newCourse">Новый поток</button></div>
     ${timeline(upcoming(),'data-mc')}
@@ -660,14 +716,16 @@ function courseSheet(c){const d=DIRS[c.dir],left=c.seats-c.taken,wl=requests.fil
   <div class="lines"><div><span>Старт</span><b>${c.start} ${c.month}, ${DAY_FULL[c.wd]}</b></div><div><span>Когда</span><b>${whenTxt(c)}</b></div>
     <div><span>Расписание</span><b>${c.days}</b></div><div><span>Записано</span><b>${c.taken} из ${c.seats}</b></div>
     <div><span>Свободно</span><b>${Math.max(0,left)}</b></div><div><span>В листе ожидания</span><b>${wl}</b></div><div><span>Цена</span><b>${rub(c.price)}</b></div></div>
-  <div class="row"><button class="btn pri lens" id="annBtn">Анонс в бот</button>${c.pre?'<button class="btn lens" id="openBtn">Открыть набор</button>':''}</div>
+  <div style="display:grid;gap:6px"><span class="note" style="font-weight:800">Даты занятий</span>${sessList(c)}</div>
+  ${(ROSTER[c.id]||[]).length?`<div style="display:grid;gap:4px"><span class="note" style="font-weight:800">Ответ на «Вы идёте на курс?»</span><div class="roster">${ROSTER[c.id].map(x=>`<div><span>${esc(x.name)} <span class="note">${esc(x.contact)}</span></span><span class="pill ${x.att==='yes'?'ok':x.att==='no'?'no':'wait'}">${x.att==='yes'?'идёт':x.att==='no'?'не идёт':'не ответила'}</span></div>`).join('')}</div></div>`:''}
+  <div class="row"><button class="btn pri lens" id="annBtn">Анонс в бот</button><button class="btn lens" id="chBtn">Перенос, тренер заболел</button>${c.pre?'<button class="btn lens" id="openBtn">Открыть набор</button>':''}</div>
   <div class="err" id="annMsg" style="color:var(--body)"></div>`);
   $('annBtn').onclick=()=>{$('annMsg').textContent=`Черновик готов: «Новый поток ${d.name} стартует ${c.start} ${c.month}, ${c.days}. Осталось ${Math.max(0,left)} мест». Уйдёт подписчикам бота только после вашего «Отправить».`};
-  if(c.pre)$('openBtn').onclick=()=>{c.pre=false;closeSheet();render();toast('Набор открыт, оплата доступна клиенткам')}}
+  $('chBtn').onclick=()=>changeSheet(c);if(c.pre)$('openBtn').onclick=()=>{c.pre=false;closeSheet();render();toast('Набор открыт, оплата доступна клиенткам')}}
 function courseForm(){
   openSheet(`<span class="eyebrow">Новый поток</span><h2>Запланировать курс</h2>
   <form id="cForm" style="display:grid;gap:12px" novalidate>
-    <div class="two"><div class="fld"><label for="cDir">Направление</label><select id="cDir">${['heels','aerial','kids','acro'].map(k=>`<option value="${k}">${DIRS[k].name}</option>`).join('')}</select></div>
+    <div class="two"><div class="fld"><label for="cDir">Направление</label><select id="cDir">${['heels','aerial'].map(k=>`<option value="${k}">${DIRS[k].name}</option>`).join('')}</select></div>
       <div class="fld"><label for="cDate">Дата старта</label><input id="cDate" type="date" value="2026-12-15" min="2026-10-21"></div></div>
     <div class="fld"><label for="cDays">Дни и время</label><input id="cDays" value="ВТ и ЧТ, 19:30–21:00"></div>
     <div class="two"><div class="fld"><label for="cLen">Длительность</label><select id="cLen"><option value="2">2 недели, 4 занятия</option><option value="4">4 недели, 8 занятий</option></select></div>
@@ -678,8 +736,8 @@ function courseForm(){
   </form>`);
   $('cForm').onsubmit=e=>{e.preventDefault();const date=$('cDate').value,dir=$('cDir').value,w=+$('cLen').value;
     if(!date||new Date(date+'T00:00')<=NOW){$('cErr').textContent='Выберите дату после сегодняшней.';return}
-    const c=fill({id:'c'+Date.now(),dir,t:dir==='kids'||dir==='acro'?'kids':dir,title:DIRS[dir].name+', поток '+new Date(date+'T00:00').getDate()+' '+MON[new Date(date+'T00:00').getMonth()],
-      age:dir==='kids'||dir==='acro'?'дети':'взрослые',date,days:$('cDays').value.trim()||'уточнить',len:w===2?'2 недели, 4 занятия':'4 недели, 8 занятий',weeks:w,price:+$('cPrice').value||0,seats:+$('cSeats').value||12,taken:0});
+    const c=fill({id:'c'+Date.now(),dir,t:dir,title:DIRS[dir].name+', поток '+new Date(date+'T00:00').getDate()+' '+MON[new Date(date+'T00:00').getMonth()],
+      age:dir==='aerial'?'дети':'взрослые',date,days:$('cDays').value.trim()||'уточнить',len:w===2?'2 недели, 4 занятия':'4 недели, 8 занятий',weeks:w,price:+$('cPrice').value||0,seats:+$('cSeats').value||12,taken:0});
     COURSES.push(c);closeSheet();render();toast('Поток добавлен, клиентки уже видят его в стартах')}}
 function bindGrid(){
   document.querySelectorAll('.sched .cell').forEach(c=>c.onclick=()=>editForm({d:+c.dataset.d,s:c.dataset.t,dur:60,dir:'indiv',t:tab==='people'?st.mTrainer:'heels'}));
@@ -688,7 +746,7 @@ function bindGrid(){
 function evSheet(e){
   const d=DIRS[e.dir];
   openSheet(`<span class="tag" style="--c:${d.c}"><i class="dot"></i>${d.name.toUpperCase()}</span><h2>${esc(label(e))}</h2>
-  <div class="meta"><span><b>${DAY_FULL[e.d]}, ${WEEK[e.d]} октября</b>, ${e.s}–${hm(m(e.s)+e.dur)}</span>${e.t?`<span>Ведёт: ${TRAINERS[e.t].name.toLowerCase()}</span>`:''}</div>
+  <div class="meta"><span><b>${DAY_FULL[e.d]}, ${WEEK[e.d]} октября</b>, ${e.s}–${hm(m(e.s)+e.dur)}</span>${e.t?`<span>Ведёт ${TRAINERS[e.t].name}</span>`:''}</div>
   <div class="row"><button class="btn pri lens" id="evMove">Перенести</button><button class="btn ghost lens" id="evDel">Отменить занятие</button></div>
   <div class="err" id="evMsg"></div>`);
   $('evMove').onclick=()=>editForm({...e});
@@ -733,26 +791,521 @@ function vPeople(){
   </section>`}
 bind.people=()=>{document.querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{st.mTrainer=b.dataset.mt;render()});bindGrid()};
 
-function vInbox(){
-  const P={check:'чек на проверке',pay:'ждём оплату',wait:'лист ожидания',ok:'подтверждена',no:'отклонена'};
-  return `<section class="sect"><div class="sect-h"><h2>Заявки</h2><span class="note">Дублируются менеджеру в бот</span></div>
-  <div style="display:grid;gap:10px">${requests.map(r=>`<article class="req glass"><div style="min-width:0;display:grid;gap:3px">
-      <div><span class="who">${esc(r.who)}</span> <span class="pill ${r.st}">${P[r.st]}</span></div>
-      <div class="what">${esc(r.what)}${r.d!=null?` · <b>${WD[r.d]} ${WEEK[r.d]} окт, ${r.s}–${hm(m(r.s)+(r.dur||60))}</b>`:''}</div>
-      <div class="when">${esc(r.contact)} · ${r.ago}${r.sum?' · предоплата '+rub(r.sum):''}${r.receipt?' · чек приложен':''}</div></div>
-      <div class="row">${
-        r.st==='check'?`<button class="btn pri lens" id="ok_${r.id}" data-ok="${r.id}">Оплата пришла</button><button class="btn lens" id="no_${r.id}" data-no="${r.id}">Не пришла</button>`:
-        r.st==='pay'?`<button class="btn lens" id="rem_${r.id}" data-rem="${r.id}">Напомнить</button><button class="btn ghost lens" id="no_${r.id}" data-no="${r.id}">Снять бронь</button>`:
-        r.st==='wait'?`<button class="btn pri lens" id="off_${r.id}" data-off="${r.id}">Предложить место</button>`:''}</div>
-    </article>`).join('')}</div></section>`}
 bind.inbox=()=>{
   document.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>{const r=requests.find(x=>x.id==b.dataset.ok);
     if(r.d!=null)events.push({id:++uid,d:r.d,s:r.s,dur:r.dur||60,dir:r.dir,t:r.t,who:r.who});
     if(r.course){const c=COURSES.find(x=>x.id===r.course);if(c)c.taken++}
+    const full=r.dir==='rent'||r.dir==='indiv'?(PREPAY[r.dir]?Math.round(r.sum/PREPAY[r.dir]):r.sum):r.sum;
+    PAYS.unshift({id:Date.now(),who:r.who,contact:r.contact,what:r.what,amount:full,due:r.d!=null?'2026-10-'+WEEK[r.d]:null,log:[{d:TD,sum:r.sum,m:'qr'}]});
+    if(r.course)(ROSTER[r.course]=ROSTER[r.course]||[]).push({name:r.who,contact:r.contact,att:null});
     r.st='ok';render();toast(r.d!=null?'Поставлено в зал, клиентке ушло подтверждение':'Место в курсе закреплено')});
   document.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>{requests.find(x=>x.id==b.dataset.no).st='no';render();toast('Бронь снята, время снова свободно')});
   document.querySelectorAll('[data-rem]').forEach(b=>b.onclick=()=>toast('Бот напомнил об оплате'));
   document.querySelectorAll('[data-off]').forEach(b=>b.onclick=()=>toast('Бот написал: освободилось место, берёте?'))};
+
+/* ---------- CRM: услуги, оплаты, рассылки, мои записи ---------- */
+const CFG={disc:10,rem:{course:true,day:true,h2:true,debt:true,shoot:true}};
+const CATS=['Курсы','Детям','Индивидуальные','Аренда зала','Мастер-классы','Другое'];
+const UNITS=[['разово','разово'],['час','за час'],['курс','за курс'],['месяц','в месяц']];
+const unitTxt=u=>({разово:'разово',час:'/ час',курс:'за курс',месяц:'в месяц'}[u]||'');
+const priceTxt=(p,u)=>p==null||p===''?'<span class="todo">цена: уточнить</span>':rub(p)+' '+unitTxt(u);
+const preTxt=s=>s.pre?`предоплата ${s.pre}%`:'без предоплаты';
+let SERVICES=[
+  {id:'s1',cat:'Курсы',name:'High Heels, курс',sub:'2 недели, 4 занятия, ВТ и ЧТ 19:30–21:00',price:2200,unit:'курс',real:1,key:'course:heels',pre:100,rem:1},
+  {id:'s2',cat:'Детям',name:'Воздушная гимнастика для детей',sub:'группы, 3 раза в неделю по вечерам, дни уточнить',price:null,unit:'месяц',pre:0,rem:1,
+    vars:[{n:'Разовое занятие',price:null},{n:'Абонемент на месяц',price:null}]}
+].concat(Object.entries(TRAINERS).map(([k,t])=>({id:'i_'+k,cat:'Индивидуальные',name:'Индив с '+t.ins,sub:'High Heels, постановка номера. Детские индивы: уточнить',price:t.price,unit:'час',key:'indiv:'+k,pre:50,rem:1})),
+  [{id:'r_hall',cat:'Аренда зала',name:'Аренда зала',sub:'просто зал, почасово',price:350,unit:'час',real:1,key:'rent:hall',pre:30,rem:1}]);
+function applyPrices(){for(const s of SERVICES){if(!s.key)continue;const[k,v]=s.key.split(':'),p=s.price||0;
+  if(k==='indiv'){TRAINERS[v].price=p;if(v==='heels')PREPAY.indiv=s.pre/100}
+  if(k==='rent'){RENT[v].price=p;PREPAY.rent=s.pre/100}
+  if(k==='course'){PREPAY.course=s.pre/100;COURSES.filter(c=>c.dir===v&&daysTo(c)>0).forEach(c=>c.price=p);GROUPS.filter(g=>g.dir===v&&/^курс/.test(g.per)).forEach(g=>g.price=p)}}}
+let FAQ=[['Нужен ли опыт?','Нет. В каждом потоке есть новички, хореограф объясняет с нуля.'],
+  ['Какие нужны каблуки?','На первое занятие подойдут свои, устойчивый каблук 7–10 см. Наколенники обязательно.'],
+  ['Что если пропущу занятие?','Нажмите «Не смогу» в напоминании бота. Пропуск можно отработать на открытом классе в воскресенье.'],
+  ['Можно вернуть деньги?','Если отменить за 24 часа до старта курса, вернём предоплату. Позже перенесём на следующий поток.'],
+  ['Как оплатить?','По QR через PromptPay прямо в боте, или наличными и переводом в студии.'],
+  ['Где студия?','Адрес и точка на карте придут в боте сразу после записи.']];
+const PROMO={title:'Индивы и онлайн-хореография с Сашей',text:'Поставим номер на свадьбу, день рождения или для соцсетей. В зале на Самуи или онлайн из любой точки мира.',link:''};
+
+/* даты курса: из «ВТ и ЧТ, 19:30–21:00» и числа занятий */
+const WDK={ПН:0,ВТ:1,СР:2,ЧТ:3,ПТ:4,СБ:5,ВС:6};
+const isoD=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const wdOf=iso=>(new Date(iso+'T00:00').getDay()+6)%7;
+const TD='2026-10-20';
+const dlabel=iso=>iso?(+iso.slice(8))+' '+MON[+iso.slice(5,7)-1].slice(0,3):'';
+function sessions(c){const set=(c.days.match(/ПН|ВТ|СР|ЧТ|ПТ|СБ|ВС/g)||[]).map(k=>WDK[k]),tm=(c.days.match(/\d{1,2}:\d\d/)||['19:30'])[0];
+  const cnt=parseInt((c.len.match(/(\d+)\s*занят/)||[])[1])||c.weeks*set.length||4,out=[],d=new Date(c.dt);let g=0;
+  while(out.length<cnt&&g++<150){if(set.includes((d.getDay()+6)%7)){const iso=isoD(d);out.push({iso,tm,ch:(c.changes||{})[iso]})}d.setDate(d.getDate()+1)}return out}
+function sessList(c){return `<div class="sess">${sessions(c).map(s=>{const at=s.ch?s.ch.to:s.iso,past=at<TD;
+  return s.ch?`<span class="ss moved ${past?'past':''}"><s>${dlabel(s.iso)}</s> → ${WD[wdOf(s.ch.to)]} ${dlabel(s.ch.to)}, ${s.ch.tm}</span>`:`<span class="ss ${past?'past':''}">${WD[wdOf(s.iso)]} ${dlabel(s.iso)}, ${s.tm}</span>`}).join('')}</div>`}
+function icsFile(c){const end=(c.days.match(/–(\d{1,2}:\d\d)/)||[])[1]||'21:00',z=s=>s.replace(/[-:]/g,'');
+  const ev=sessions(c).map(s=>{const day=s.ch?s.ch.to:s.iso,tm=s.ch?s.ch.tm:s.tm,dur=m(end)-m(s.tm);
+    return `BEGIN:VEVENT\r\nUID:${c.id}-${s.iso}@abdance\r\nDTSTART:${z(day)}T${z(tm)}00\r\nDTEND:${z(day)}T${z(hm(m(tm)+dur))}00\r\nSUMMARY:${c.title}, AB Dance Studio\r\nEND:VEVENT`}).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//AB Dance//RU\r\n${ev}\r\nEND:VCALENDAR`],{type:'text/calendar'}));a.download='ab-dance-'+c.id+'.ics';a.click();toast('Даты курса добавятся в календарь телефона')}
+
+/* участницы потоков и отметки «буду / не смогу» */
+const NAMES=[['Даша К.','@dashak'],['Анна Белова','@anna_bel'],['Катя','+66 81 ••• 12'],['Полина','@polina_s'],['Марина Д.','@marina_d'],['Лиза','@liza_ph'],['Ксения П.','@ks_p'],['Оля','@olya_m'],['Вика','@vika_dance'],['Настя','@nastya'],['Юля','@yulia_k'],['Соня','@sonya'],
+  ['Алина','@alina_s'],['Женя','@zhenya_d'],['Маша Л.','@masha_l'],['Таня','@tanya_ko'],['Ира','@ira_samui'],['Лена','@lena_v'],['Кристина','@kris_t'],['Аня С.','@anya_s']];
+const ROT={hs1:8,hs2:4,ho1:2};
+const ATT=['yes','yes',null,'yes','no','yes',null,'yes','yes','yes',null,'yes'];
+const ROSTER={};COURSES.forEach(c=>ROSTER[c.id]=NAMES.slice(ROT[c.id]||0).concat(NAMES.slice(0,ROT[c.id]||0)).slice(0,c.taken).map(([name,contact],i)=>({name,contact,att:ATT[(i+c.taken)%12]})));
+Object.assign(COURSES.find(c=>c.id==='hh0'),{group:'t.me/+abdance_heels_oct',gsent:true,shoot:{date:'2026-11-01',tm:'09:30',place:'пляж Чавенг, у пирса',map:'',looks:'чёрное боди или купальник, каблуки, волосы распущены',sent:true}});
+ROSTER.hh0.forEach((x,i)=>{if(x.att==='yes')x.sh=['yes','yes',null,'no','yes'][i%5]});
+let SENT=[{title:'Ссылка на группу',txt:'High Heels, текущий поток',aud:'Записанные на поток',when:'19 окт, 12:00',n:12},
+  {title:'Мастер-класс Strip Plastic',txt:'Суббота, 31 октября, 14:00. Любой уровень, 900 ฿',aud:'Все подписчики бота',when:'15 окт, 18:00',n:84}];
+let MY=[{id:'m1',course:'hh0',st:'ok',att:'yes'},{id:'m2',what:'Индивидуальное, High Heels',dir:'indiv',d:4,s:'15:00',dur:60,st:'ok',att:null}];
+
+/* оплаты: вместо заметок менеджера */
+const METH={qr:'QR PromptPay',cash:'наличные',transfer:'перевод'};
+const evId=w=>(events.find(e=>e.who===w)||{}).id;
+let PAYS=[
+  {id:1,who:'Даша К.',contact:'@dashak',what:'High Heels, курс с 3 ноября',amount:2200,log:[{d:'2026-10-19',sum:2200,m:'qr'}]},
+  {id:2,who:'Ксения П.',contact:'@ks_p',what:'Индив, High Heels',amount:3000,log:[{d:'2026-10-19',sum:3000,m:'cash'}]},
+  {id:3,who:'Анна Белова',contact:'@anna_bel',what:'High Heels, текущий поток',amount:2200,due:'2026-10-22',log:[]},
+  {id:4,who:'Катя',contact:'+66 81 ••• 12',what:'High Heels, текущий поток',amount:2200,due:'2026-10-20',log:[{d:'2026-10-15',sum:1000,m:'cash'}]},
+  {id:5,who:'Полина',contact:'@polina_s',what:'Индив, High Heels, 16 окт',amount:3000,due:'2026-10-18',log:[],rem:1},
+  {id:6,who:'Лиза',contact:'@liza_ph',what:'Аренда зала, 2 часа',amount:700,ev:evId('Лиза'),log:[{d:'2026-10-16',sum:700,m:'transfer'}]},
+  {id:7,who:'Бачата, внешний тренер',contact:'@bachata_samui',what:'Аренда зала, 1,5 часа',amount:525,ev:evId('Бачата, внешний тренер'),log:[{d:'2026-10-19',sum:525,m:'cash'}]},
+  {id:8,who:'Группа «Пульс»',contact:'@puls_crew',what:'Аренда зала, 2 часа',amount:700,due:'2026-10-21',ev:evId('Группа «Пульс»'),log:[]},
+  {id:9,who:'Мария',contact:'+66 89 ••• 40',what:'Аренда зала, 3 часа',amount:945,due:'2026-10-24',ev:evId('Мария'),log:[{d:'2026-10-12',sum:315,m:'qr'}]},
+  {id:10,who:'Марина Д.',contact:'@marina_d',what:'Индив, High Heels',amount:3000,log:[{d:'2026-10-14',sum:1500,m:'qr'},{d:'2026-10-17',sum:1500,m:'cash'}]}];
+const paid=p=>p.log.reduce((a,l)=>a+l.sum,0),owe=p=>Math.max(0,p.amount-paid(p));
+const pst=p=>owe(p)<=0?'ok':p.due&&p.due<TD?'late':paid(p)>0?'part':'owe';
+const payPill=p=>{const s=pst(p);return `<span class="pill ${{ok:'ok',late:'check',part:'pay',owe:'wait'}[s]}">${{ok:'оплачено',late:'просрочено',part:'частично',owe:'долг'}[s]}</span>`};
+const methOpts=`<option value="cash">Наличные</option><option value="transfer">Перевод</option><option value="qr">QR PromptPay</option>`;
+
+/* ---------- клиентка: мои записи ---------- */
+function myAll(){return MY.concat(requests.filter(r=>r.mine).map(r=>({id:'r'+r.id,what:r.what,dir:r.dir,d:r.d,s:r.s,dur:r.dur,course:r.course,st:r.st==='no'?'cancel':r.st,att:r.att,req:r})))}
+function vMy(){const P={ok:'оплачено',pay:'ждёт оплату',check:'оплата на проверке',wait:'лист ожидания',cancel:'отменено'},PC={ok:'ok',pay:'pay',check:'check',wait:'wait',cancel:'no'};
+  const list=myAll();
+  return `<section class="sect"><div class="sect-h"><h2>Мои записи</h2><span class="note">Бот присылает то же в чат и напоминает перед каждым занятием</span></div>
+  ${list.length?`<div class="cards">${list.map(x=>{const c=x.course&&COURSES.find(k=>k.id===x.course),dir=c?c.dir:x.dir||'heels',live=x.st!=='cancel'&&x.st!=='wait';
+    const ch=c&&Object.values(c.changes||{})[0];
+    const when=c?`старт ${c.start} ${c.month} · ${c.days}`:x.d!=null?`${DAY_FULL[x.d]}, ${WEEK[x.d]} октября, ${x.s}–${hm(m(x.s)+(x.dur||60))}`:'';
+    const q=c?'Вы идёте на этот курс?':'Придёте?';
+    return `<article class="card glass" style="--c:${DIRS[dir].c}"><span class="tag"><i class="dot"></i>${DIRS[dir].name.toUpperCase()}</span><h3>${esc(c?c.title:x.what)}</h3>
+    <div class="meta"><span><b>${when}</b></span><span><span class="pill ${PC[x.st]}">${P[x.st]}</span></span></div>
+    ${ch?`<div class="note" style="color:var(--rose-deep);font-weight:800">Изменение: ${esc(ch.why)}, занятие перенесено</div>`:''}
+    ${c?sessList(c):''}
+    ${live?`<div class="note" style="font-weight:700">${q}</div><div class="row"><button class="chip lens ${x.att==='yes'?'on':''}" data-att="${x.id}:yes">${c?'Иду':'Буду'}</button><button class="chip lens ${x.att==='no'?'on':''}" data-att="${x.id}:no">${c?'Не иду':'Не смогу'}</button></div>${c?`<span class="note">${x.att==='yes'?'Вы подтвердили курс. Бот пришлёт переносы, ссылку на чат и приглашение на съёмку.':'Отметьте «Иду», и бот будет присылать переносы занятий, ссылку на чат потока и съёмку.'}</span>`:''}`:''}
+    ${c&&c.shoot&&c.shoot.sent&&x.att==='yes'&&live?`<div class="shoot"><b>Съёмка после курса</b><span>${DAY_FULL[wdOf(c.shoot.date)]}, ${dlabel(c.shoot.date)}, ${c.shoot.tm} · ${esc(c.shoot.place)}</span>${c.shoot.looks?`<span class="note">Что надеть: ${esc(c.shoot.looks)}</span>`:''}
+      <div class="row"><button class="chip lens ${x.sh==='yes'?'on':''}" data-sa="${x.id}:yes">Иду на съёмку</button><button class="chip lens ${x.sh==='no'?'on':''}" data-sa="${x.id}:no">Не смогу</button>${c.shoot.map?`<a class="btn lens sm" href="https://${esc(c.shoot.map.replace(/^https?:\/\//,''))}" target="_blank" rel="noopener" style="text-decoration:none">Карта</a>`:''}</div></div>`:''}
+    ${c&&live?`<div class="row">${c.group?`<a class="btn lens" href="https://${esc(c.group.replace(/^https?:\/\//,''))}" target="_blank" rel="noopener" style="text-decoration:none">Чат группы курса</a>`:''}<button class="btn lens" data-ics="${c.id}">В календарь телефона</button></div>${c.group?'':'<span class="note">Ссылку на чат группы бот пришлёт перед стартом</span>'}`:''}
+    ${x.st!=='cancel'?`<button class="btn ghost lens" data-quit="${x.id}" style="justify-self:start">${c?'Отказаться от курса':'Отменить запись'}</button>`:''}
+    </article>`}).join('')}</div>`:'<div class="panel glass"><p style="margin:0">Пока записей нет. Выберите курс или окно у тренера.</p></div>'}
+  <div class="panel glass"><h3 class="ph">Так выглядит напоминание в боте</h3><div class="bub">Завтра High Heels в 19:30, AB Dance Studio.<br>Возьмите каблуки и наколенники.<div class="bub-b"><span>Буду</span><span>Не смогу</span></div></div>
+  <span class="note">Нажали «Не смогу», и менеджер сразу видит это в списке потока.</span></div></section>`}
+bind.my=()=>{const find=id=>myAll().find(k=>k.id===id),tgt=x=>x.req||MY.find(k=>k.id===x.id);
+  document.querySelectorAll('[data-att]').forEach(b=>b.onclick=()=>{const[id,v]=b.dataset.att.split(':');tgt(find(id)).att=v;render();toast(v==='yes'?'Отлично, ждём вас! Менеджер видит отметку':'Поняли. Менеджер получил, что вы не придёте')});
+  document.querySelectorAll('[data-sa]').forEach(b=>b.onclick=()=>{const[id,v]=b.dataset.sa.split(':');tgt(find(id)).sh=v;render();toast(v==='yes'?'Записали на съёмку!':'Поняли, менеджер увидит')});
+  document.querySelectorAll('[data-ics]').forEach(b=>b.onclick=()=>icsFile(COURSES.find(c=>c.id===b.dataset.ics)));
+  document.querySelectorAll('[data-quit]').forEach(b=>b.onclick=()=>{if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Да, отменить';return}
+    const x=find(b.dataset.quit),o=tgt(x),c=x.course&&COURSES.find(k=>k.id===x.course);if(c&&x.st==='ok')c.taken=Math.max(0,c.taken-1);o.st=x.req?'no':'cancel';render();toast('Менеджер получил отмену и напишет вам в чат')})};
+
+/* ---------- главная: реклама индивов и частые вопросы ---------- */
+const vHomeBase=vHome;
+vHome=()=>vHomeBase()+`
+  <section class="promo glass"><div style="display:grid;gap:8px"><span class="eyebrow">Индивидуально · онлайн</span><h2>${esc(PROMO.title)}</h2><p style="margin:0">${esc(PROMO.text)}</p></div>
+    <div class="row"><button class="btn pri lens" id="promoIndiv">Окно в зале</button>${PROMO.link?`<a class="btn lens" href="${esc(PROMO.link)}" target="_blank" rel="noopener" style="text-decoration:none">Онлайн-хореография</a>`:`<button class="btn lens" id="promoOnline">Онлайн-хореография</button><span class="todo">ссылка: уточнить</span>`}</div></section>
+  <section class="sect"><div class="sect-h"><h2>Частые вопросы</h2><span class="todo">пример</span></div>
+    <div class="faq">${FAQ.map(([q,a])=>`<details class="glass"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>`;
+const bindDirsBase=bind.dirs;
+bind.dirs=()=>{bindDirsBase();$('promoIndiv').onclick=()=>go('slots');if($('promoOnline'))$('promoOnline').onclick=()=>contactSheet('Здравствуйте! Хочу онлайн-занятие по хореографии с Сашей.')};
+
+/* ---------- цены у клиентки: из списка услуг ---------- */
+function vPrice(){
+  const cats=CATS.filter(c=>SERVICES.some(s=>s.cat===c));
+  return `<section class="sect"><div class="sect-h"><h2>Цены</h2><span class="note">Точно: курс High Heels 2 200 ฿ и аренда зала 350 ฿ в час. Остальное уточняет менеджер</span></div>
+  <div class="panel glass scroll"><table class="prices"><thead><tr><th>Что</th><th>Условия</th><th style="text-align:right">Цена</th></tr></thead><tbody>
+  ${cats.map(g=>`<tr class="grp"><td colspan="3">${g}</td></tr>`+SERVICES.filter(s=>s.cat===g).map(s=>`<tr><td><b style="color:var(--ink)">${esc(s.name)}</b>${s.real?' <span class="pill ok">точно</span>':''}</td><td>${esc(s.sub||'')}<br><small>${preTxt(s)}</small></td><td class="r">${s.vars&&s.vars.length?'':priceTxt(s.price,s.unit)}</td></tr>`
+    +(s.vars||[]).map(v=>`<tr><td style="padding-left:22px">${esc(v.n)}</td><td></td><td class="r">${priceTxt(v.price,s.unit==='месяц'&&/разов/i.test(v.n)?'разово':s.unit)}</td></tr>`).join('')).join('')
+    +(g==='Аренда зала'&&CFG.disc?`<tr><td><b style="color:var(--ink)">От 3 часов подряд</b></td><td>скидка на аренду</td><td class="r">−${CFG.disc}%</td></tr>`:'')).join('')}
+  </tbody></table></div>
+  <div class="panel glass"><span class="note">Предоплата по QR через PromptPay. Если не оплатить за 30 минут, время освобождается. Где написано «без предоплаты», платите на месте.</span></div></section>`}
+
+/* ---------- менеджер: услуги и цены ---------- */
+function vSvc(){
+  const cats=CATS.filter(c=>SERVICES.some(s=>s.cat===c));
+  return `<section class="sect"><div class="sect-h"><h2>Услуги и цены</h2><div class="row"><button class="btn lens" id="backHall">Назад в зал</button><button class="btn pri lens" id="addSvc">+ Добавить услугу</button></div></div>
+  <span class="note">Нажмите на услугу, чтобы поменять цену или предоплату. Клиентки сразу видят новое.</span>
+  ${cats.map(g=>`<div class="panel glass"><h3 class="ph">${g}</h3><div class="svc">${SERVICES.filter(s=>s.cat===g).map(s=>`
+    <button class="svc-r svc-b" data-se="${s.id}"><div style="min-width:0;text-align:left"><b>${esc(s.name)}</b>${s.real?' <span class="pill ok">точно</span>':''}<div class="note">${esc(s.sub||'')}${s.vars&&s.vars.length?' · вариантов: '+s.vars.length:''}</div></div>
+      <span class="pill ${s.pre?'pay':'ok'}">${preTxt(s)}</span><b class="svc-p">${s.vars&&s.vars.length?s.vars.map(v=>v.price==null?'?':rub(v.price)).join(' / '):priceTxt(s.price,s.unit)}</b></button>`).join('')}</div></div>`).join('')}
+  <div class="panel glass"><h3 class="ph">Скидка на аренду</h3><div class="svc"><div class="svc-r"><b>От 3 часов подряд</b><span></span><label class="pin"><input type="number" min="0" max="50" step="5" value="${CFG.disc}" id="cfDisc" aria-label="Скидка на аренду"><span>%</span></label></div></div><span class="note">Поставьте 0, если скидки нет.</span></div>
+  <div class="panel glass"><h3 class="ph">Реклама на главной</h3>
+    <div class="fld"><label for="prT">Заголовок</label><input id="prT" value="${esc(PROMO.title)}"></div>
+    <div class="fld"><label for="prX">Текст</label><textarea id="prX" rows="2">${esc(PROMO.text)}</textarea></div>
+    <div class="fld"><label for="prL">Ссылка на онлайн-хореографию</label><input id="prL" value="${esc(PROMO.link)}" placeholder="https://..."></div></div>
+  <div class="panel glass"><div class="sect-h" style="align-items:center"><h3 class="ph">Частые вопросы</h3><button class="btn lens sm" id="addFaq">+ Вопрос</button></div><div class="svc">
+    ${FAQ.map(([q,a],i)=>`<div class="svc-r"><div style="min-width:0"><b>${esc(q)}</b><div class="note">${esc(a)}</div></div><span></span><button class="btn ghost lens sm" data-fd="${i}">Убрать</button></div>`).join('')}</div></div></section>`}
+bind.svc=()=>{$('addSvc').onclick=()=>svcForm();$('backHall').onclick=()=>go('hall');
+  document.querySelectorAll('[data-se]').forEach(b=>b.onclick=()=>svcForm(SERVICES.find(x=>x.id===b.dataset.se)));
+  $('cfDisc').onchange=()=>{CFG.disc=Math.min(50,Math.max(0,+$('cfDisc').value||0));toast(CFG.disc?'Скидка '+CFG.disc+'% от 3 часов':'Скидка выключена')};
+  [['prT','title'],['prX','text'],['prL','link']].forEach(([id,k])=>$(id).onchange=()=>{PROMO[k]=$(id).value.trim();toast('Реклама на главной обновлена')});
+  document.querySelectorAll('[data-fd]').forEach(b=>b.onclick=()=>{FAQ.splice(+b.dataset.fd,1);render();toast('Вопрос убран')});
+  $('addFaq').onclick=()=>{openSheet(`<span class="eyebrow">Частые вопросы</span><h2>Новый вопрос</h2><form id="fqForm" style="display:grid;gap:12px" novalidate>
+    <div class="fld"><label for="fqQ">Вопрос</label><input id="fqQ" placeholder="Например, можно ли с ребёнком?"></div>
+    <div class="fld"><label for="fqA">Ответ</label><textarea id="fqA" rows="3"></textarea></div><div class="err" id="fqErr"></div>
+    <button class="btn pri lens" type="submit">Добавить</button></form>`);
+    $('fqForm').onsubmit=e=>{e.preventDefault();const q=$('fqQ').value.trim(),a=$('fqA').value.trim();if(!q||!a){$('fqErr').textContent='Нужны вопрос и ответ.';return}FAQ.push([q,a]);closeSheet();render();toast('Вопрос появился у клиенток')}}};
+/* шаблон услуги: всё кнопками, без лишнего */
+function svcForm(s){const isNew=!s;
+  const f=s?{...s,vars:(s.vars||[]).map(v=>({...v}))}:{cat:'Мастер-классы',name:'',sub:'',price:'',unit:'разово',pre:0,rem:1,vars:[]};
+  const chips=(k,opts,dis)=>`<div class="row" role="group">${opts.map(([v,l])=>`<button type="button" class="chip lens ${String(f[k])===String(v)?'on':''}" data-fk="${k}" data-fv="${v}" ${dis?'disabled':''}>${l}</button>`).join('')}</div>`;
+  const draw=()=>{const hasV=f.vars.length;openSheet(`<span class="eyebrow">${isNew?'Новая услуга':'Услуга'}</span><h2>${isNew?'Добавить услугу':esc(f.name)}</h2>
+  <form id="sForm" class="tpl" novalidate>
+    <div class="step"><span class="sn">1</span><b>Раздел</b>${chips('cat',CATS.map(c=>[c,c]),f.key)}</div>
+    <div class="step"><span class="sn">2</span><b>Название</b><input id="sName" value="${esc(f.name)}" placeholder="Например, мастер-класс Strip"><input id="sSub" value="${esc(f.sub||'')}" placeholder="Коротко: когда, для кого (можно пусто)"></div>
+    <div class="step"><span class="sn">3</span><b>Цена</b>${chips('unit',UNITS,f.key)}
+      ${hasV?'':`<label class="pin big"><input id="sPrice" type="number" min="0" step="50" value="${f.price??''}" placeholder="не знаю"><span>฿</span></label>`}
+      <div class="vars">${f.vars.map((v,i)=>`<div class="var"><input data-vn="${i}" value="${esc(v.n)}" placeholder="Вариант, например «4 занятия»"><label class="pin"><input data-vp="${i}" type="number" min="0" step="50" value="${v.price??''}" placeholder="?"><span>฿</span></label><button type="button" class="btn ghost lens sm" data-vx="${i}" aria-label="Убрать вариант">×</button></div>`).join('')}</div>
+      <button type="button" class="btn lens sm" id="addVar" style="justify-self:start">+ ${hasV?'Ещё вариант':'Несколько вариантов цены'}</button>
+      <span class="note">Цену можно оставить пустой, клиентки увидят «уточнить».</span></div>
+    <div class="step"><span class="sn">4</span><b>Предоплата</b>${chips('pre',[[0,'Не нужна'],[30,'30%'],[50,'50%'],[100,'Вся сумма']])}
+      <label class="ck"><input type="checkbox" id="sRem" ${f.rem?'checked':''}> Напоминать об оплате, если не заплатили</label></div>
+    <div class="err" id="sErr"></div>
+    <div class="row"><button class="btn pri lens" type="submit">${isNew?'Добавить':'Сохранить'}</button>${!isNew&&!s.key?'<button class="btn ghost lens" type="button" id="sDel">Убрать услугу</button>':''}</div>
+  </form>`);
+    const keep=()=>{f.name=$('sName').value;f.sub=$('sSub').value;if($('sPrice'))f.price=$('sPrice').value===''?null:+$('sPrice').value;f.rem=$('sRem').checked;
+      document.querySelectorAll('[data-vn]').forEach(i=>f.vars[+i.dataset.vn].n=i.value);document.querySelectorAll('[data-vp]').forEach(i=>f.vars[+i.dataset.vp].price=i.value===''?null:+i.value)};
+    document.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{keep();const v=b.dataset.fv;f[b.dataset.fk]=b.dataset.fk==='pre'?+v:v;draw()});
+    $('addVar').onclick=()=>{keep();if(!f.vars.length)f.vars.push({n:'Основной',price:f.price});f.vars.push({n:'',price:null});draw()};
+    document.querySelectorAll('[data-vx]').forEach(b=>b.onclick=()=>{keep();f.vars.splice(+b.dataset.vx,1);if(f.vars.length===1){f.price=f.vars[0].price;f.vars=[]}draw()});
+    $('sForm').onsubmit=e=>{e.preventDefault();keep();const n=f.name.trim();if(!n){$('sErr').textContent='Напишите название.';return}
+      const v={cat:f.cat,name:n,sub:f.sub.trim(),unit:f.unit,pre:f.pre,rem:f.rem,vars:f.vars.filter(x=>x.n.trim()),price:f.vars.length?(f.vars[0].price??null):f.price};
+      if(isNew)SERVICES.push({id:'s'+Date.now(),...v});else Object.assign(s,v);applyPrices();closeSheet();render();toast(isNew?'Услуга добавлена, клиентки видят её в ценах':'Сохранено')};
+    if($('sDel'))$('sDel').onclick=()=>{const b=$('sDel');if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Да, убрать';return}SERVICES=SERVICES.filter(x=>x!==s);closeSheet();render();toast('Услуга убрана')}};
+  draw()}
+
+/* ---------- менеджер: календарь аренды ---------- */
+function vRentCal(){
+  const price=RENT.hall.price,rents=events.filter(e=>e.dir==='rent').sort((a,b)=>a.d-b.d||m(a.s)-m(b.s)),hrsR=rents.reduce((a,e)=>a+e.dur,0)/60,hold=holds().filter(h=>h.dir==='rent').length;
+  let free=0;WEEK.forEach((_,d)=>{for(let h=9;h<22;h++)if(!hallBusy(d,h))free++});
+  let g='<div class="rcal"><div></div>';
+  for(let h=9;h<22;h++)g+=`<div class="hh" style="grid-column:${(h-9)*2+2}/span 2">${String(h).padStart(2,'0')}:00</div>`;
+  WEEK.forEach((n,d)=>{const row=d+2;g+=`<div class="rd ${d===TODAY?'today':''}" style="grid-row:${row}">${WD[d]}<b>${n}</b></div>`;
+    for(let i=0;i<26;i++){const t=540+i*30;if(!conflicts({d,s:hm(t),dur:30}).length)g+=`<button class="rc-f" style="grid-row:${row};grid-column:${i+2}" data-rd="${d}" data-rt="${hm(t)}" aria-label="Свободно: ${WD[d]} ${hm(t)}"></button>`}
+    for(const e of events.concat(holds()).filter(e=>e.d===d)){const i=(m(e.s)-540)/30,lb=e.hold?'Бронь · '+e.who:label(e);
+      g+=`<button class="ev ${e.hold?'hold':e.dir==='rent'?'rent-ev':'cls'}" style="--c:${DIRS[e.dir].c};grid-row:${row};grid-column:${i+2}/span ${e.dur/30}" ${e.hold?`data-hold="${e.id.slice(1)}"`:`data-ev="${e.id}"`} title="${esc(lb)}"><b>${esc(lb)}</b><span>${e.s}–${hm(m(e.s)+e.dur)}</span></button>`}});
+  g+='</div>';
+  return `<section class="stats">
+    <div class="stat glass"><span class="v">${hrsR} ч</span><span class="l">аренды на этой неделе</span></div>
+    <div class="stat glass"><span class="v">${rub(hrsR*price)}</span><span class="l">по аренде за неделю</span></div>
+    <div class="stat glass"><span class="v">${free} ч</span><span class="l">зал свободен до воскресенья</span></div>
+    <div class="stat glass"><span class="v">${hold}</span><span class="l">аренды ждут оплату</span></div></section>
+  <section class="sect"><div class="sect-h"><h2>Аренда зала · 19–25 октября</h2><button class="btn pri lens" id="addRent">Сдать зал</button></div>
+    <div class="legend"><span><i class="dot" style="background:rgba(255,255,255,.8);box-shadow:inset 0 0 0 1px var(--line)"></i>Свободно, можно сдать</span><span style="--c:var(--rose-deep)"><i class="dot"></i>Аренда</span><span><i class="dot" style="background:var(--lilac);opacity:.55"></i>Занятия студии</span><span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--rose)"></i>Бронь ждёт оплату</span></div>
+    <div class="gridbox">${g}</div>
+    <span class="note">Белые клетки по 30 минут свободны. Нажмите на свободную, чтобы вписать аренду, на занятую, чтобы увидеть, кто там, и перенести.</span></section>
+  <section class="sect"><h2 style="font-size:30px">Кто арендует</h2><div style="display:grid;gap:10px">${rents.map(e=>{const p=PAYS.find(x=>x.ev===e.id);return `<article class="req glass"><div style="display:grid;gap:3px;min-width:0">
+    <div><span class="who">${esc(e.who)}</span> ${p?payPill(p):'<span class="pill wait">оплата не записана</span>'}</div>
+    <div class="what"><b>${DAY_FULL[e.d]}, ${WEEK[e.d]} окт</b>, ${e.s}–${hm(m(e.s)+e.dur)} · ${e.dur/60} ч · ${rub(e.dur/60*price)}</div>${p&&owe(p)?`<div class="when">долг ${rub(owe(p))}</div>`:''}</div>
+    <div class="row">${p?(owe(p)?`<button class="btn lens" data-pa="${p.id}">Принять оплату</button>`:''):`<button class="btn lens" data-rp="${e.id}">Записать оплату</button>`}</div></article>`}).join('')}</div></section>`}
+bind.rentcal=()=>{$('addRent').onclick=()=>editForm({d:TODAY,s:'14:00',dur:120,dir:'rent'});
+  document.querySelectorAll('.rc-f').forEach(c=>c.onclick=()=>editForm({d:+c.dataset.rd,s:c.dataset.rt,dur:60,dir:'rent'}));
+  document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>evSheet(events.find(e=>e.id==b.dataset.ev)));
+  document.querySelectorAll('[data-hold]').forEach(b=>b.onclick=()=>go('inbox'));
+  document.querySelectorAll('[data-pa]').forEach(b=>b.onclick=()=>acceptSheet(PAYS.find(p=>p.id==b.dataset.pa)));
+  document.querySelectorAll('[data-rp]').forEach(b=>b.onclick=()=>{const e=events.find(x=>x.id==b.dataset.rp);payForm({who:e.who,what:'Аренда зала, '+WD[e.d]+' '+WEEK[e.d]+' окт, '+e.s,amount:e.dur/60*RENT.hall.price,ev:e.id})})};
+
+/* ---------- менеджер: оплаты ---------- */
+function vPay(){
+  const f=st.payF||'all',day=st.payDay,logs=PAYS.flatMap(p=>p.log);
+  let list=PAYS.slice().sort((a,b)=>(pst(a)==='ok')-(pst(b)==='ok')||(pst(b)==='late')-(pst(a)==='late'));
+  if(f==='debt')list=list.filter(p=>owe(p)>0);if(f==='ok')list=list.filter(p=>!owe(p));
+  if(day)list=list.filter(p=>p.due===day||p.log.some(l=>l.d===day));
+  const got=logs.reduce((a,l)=>a+l.sum,0),debt=PAYS.reduce((a,p)=>a+owe(p),0),late=PAYS.filter(p=>pst(p)==='late').length,dn=PAYS.filter(p=>owe(p)>0).length;
+  const by=k=>logs.filter(l=>l.m===k).reduce((a,l)=>a+l.sum,0);
+  let cal=`<div class="mcal">${WD.map(w=>`<span class="wd">${w}</span>`).join('')}<span style="grid-column:span 3"></span>`;
+  for(let d=1;d<=31;d++){const iso='2026-10-'+String(d).padStart(2,'0'),inc=logs.filter(l=>l.d===iso).reduce((a,l)=>a+l.sum,0),due=PAYS.some(p=>p.due===iso&&owe(p)>0);
+    cal+=`<button class="mc ${iso===TD?'today':''} ${iso===day?'on':''}" data-md="${iso}" aria-label="${d} октября${inc?', пришло '+rub(inc):''}${due?', есть срок оплаты':''}"><b>${d}</b>${inc?`<small>+${(inc/1000).toLocaleString('ru-RU',{maximumFractionDigits:1})}k</small>`:''}${due?'<i></i>':''}</button>`}
+  cal+='</div>';
+  return `<section class="stats">
+    <div class="stat glass"><span class="v">${rub(got)}</span><span class="l">получено в октябре</span></div>
+    <div class="stat glass"><span class="v" style="color:var(--warn)">${rub(debt)}</span><span class="l">долги, ${dn} ${plural(dn,'запись','записи','записей')}</span></div>
+    <div class="stat glass"><span class="v">${late}</span><span class="l">просрочено</span></div>
+    <div class="stat glass"><div class="lines" style="font-size:13px"><div><span>QR</span><b>${rub(by('qr'))}</b></div><div><span>Наличные</span><b>${rub(by('cash'))}</b></div><div><span>Перевод</span><b>${rub(by('transfer'))}</b></div></div></div></section>
+  <section class="sect"><div class="sect-h"><h2>Оплаты</h2><div class="row"><button class="btn lens" id="remAll" ${dn?'':'disabled'}>Напомнить должникам</button><button class="btn pri lens" id="addPay">Записать оплату</button></div></div>
+  <div class="paygrid"><div class="panel glass"><div class="sect-h" style="align-items:center"><h3 class="ph">Октябрь 2026</h3>${day?`<button class="chip lens on" id="dayClr">${dlabel(day)} ×</button>`:''}</div>${cal}
+    <span class="note">Цифра в дне: сколько пришло денег. Красная точка: в этот день у кого-то срок оплаты. Нажмите на день, чтобы увидеть, кто.</span></div>
+   <div style="display:grid;gap:10px;align-content:start">
+    <div class="row">${[['all','Все'],['debt','Долги'],['ok','Оплачено']].map(([k,l])=>`<button class="chip lens ${f===k?'on':''}" data-pf="${k}">${l}</button>`).join('')}</div>
+    ${list.length?list.map(p=>{const o=owe(p),last=p.log[p.log.length-1];return `<article class="req glass"><div style="display:grid;gap:3px;min-width:0">
+      <div><span class="who">${esc(p.who)}</span> ${payPill(p)}</div><div class="what">${esc(p.what)}</div>
+      <div class="when">${esc(p.contact||'без контакта')} · ${o?`оплачено ${rub(paid(p))} из ${rub(p.amount)}, долг <b style="color:var(--warn)">${rub(o)}</b>${p.due?' · срок '+dlabel(p.due):''}`:`${rub(p.amount)} · ${p.log.map(l=>METH[l.m]).filter((v,i,a)=>a.indexOf(v)===i).join(' + ')} · ${dlabel(last.d)}`}${p.rem?` · напоминаний: ${p.rem}`:''}</div></div>
+      <div class="row">${o?`<button class="btn pri lens" data-pa="${p.id}">Принять оплату</button><button class="btn lens" data-pr="${p.id}">Напомнить</button>`:''}</div></article>`}).join(''):'<div class="note">За этот день записей нет.</div>'}
+   </div></div></section>`}
+bind.pay=()=>{$('addPay').onclick=()=>payForm();$('remAll').onclick=()=>remindSheet(PAYS.filter(p=>owe(p)>0));
+  if($('dayClr'))$('dayClr').onclick=()=>{st.payDay=null;render()};
+  document.querySelectorAll('[data-md]').forEach(b=>b.onclick=()=>{st.payDay=st.payDay===b.dataset.md?null:b.dataset.md;render()});
+  document.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{st.payF=b.dataset.pf;render()});
+  document.querySelectorAll('[data-pa]').forEach(b=>b.onclick=()=>acceptSheet(PAYS.find(p=>p.id==b.dataset.pa)));
+  document.querySelectorAll('[data-pr]').forEach(b=>b.onclick=()=>remindSheet([PAYS.find(p=>p.id==b.dataset.pr)]))};
+function payForm(pre={}){
+  openSheet(`<span class="eyebrow">Вместо заметок</span><h2>Записать оплату или долг</h2>
+  <form id="pForm" style="display:grid;gap:12px" novalidate>
+    <div class="two"><div class="fld"><label for="pWho">Кто</label><input id="pWho" value="${esc(pre.who||'')}" placeholder="Имя"></div>
+      <div class="fld"><label for="pCt">Телеграм или телефон</label><input id="pCt" value="${esc(pre.contact||'')}" placeholder="@username"></div></div>
+    <div class="fld"><label for="pWhat">За что</label><input id="pWhat" list="svcList" value="${esc(pre.what||'')}" placeholder="Выберите услугу или напишите"><datalist id="svcList">${SERVICES.map(s=>`<option value="${esc(s.name)}">`).join('')}</datalist></div>
+    <div class="two"><div class="fld"><label for="pAmt">Сколько стоит, ฿</label><input id="pAmt" type="number" min="0" step="50" value="${pre.amount||''}"></div>
+      <div class="fld"><label for="pGot">Оплачено сейчас, ฿</label><input id="pGot" type="number" min="0" step="50" value="${pre.amount||''}"></div></div>
+    <div class="two"><div class="fld"><label for="pM">Как</label><select id="pM">${methOpts}</select></div>
+      <div class="fld"><label for="pDue">Срок, если долг</label><input id="pDue" type="date" value="2026-10-23"></div></div>
+    <div class="err" id="pErr"></div>
+    <button class="btn pri lens" type="submit">Сохранить</button>
+    <span class="note">Поставьте «Оплачено сейчас» 0, если человек ещё не платил. Запись попадёт в долги, и бот напомнит в срок.</span>
+  </form>`);
+  $('pWhat').oninput=()=>{const s=SERVICES.find(x=>x.name===$('pWhat').value);if(s){$('pAmt').value=s.price;$('pGot').value=s.price}};
+  $('pForm').onsubmit=e=>{e.preventDefault();const who=$('pWho').value.trim(),amt=+$('pAmt').value||0,got=Math.min(amt,Math.max(0,+$('pGot').value||0));
+    if(!who||!amt){$('pErr').textContent='Нужны имя и сумма.';return}
+    PAYS.unshift({id:Date.now(),who,contact:$('pCt').value.trim(),what:$('pWhat').value.trim()||'без описания',amount:amt,due:got<amt?$('pDue').value:null,ev:pre.ev,log:got?[{d:TD,sum:got,m:$('pM').value}]:[]});
+    closeSheet();render();toast(got<amt?'Записано: долг '+rub(amt-got):'Оплата записана')}}
+function acceptSheet(p){const o=owe(p);
+  openSheet(`<span class="eyebrow">Принять оплату</span><h2>${esc(p.who)}</h2>
+  <div class="lines"><div><span>${esc(p.what)}</span><b>${rub(p.amount)}</b></div><div><span>Уже оплачено</span><b>${rub(paid(p))}</b></div><div class="tot"><span>Долг</span><b>${rub(o)}</b></div></div>
+  <form id="aForm" style="display:grid;gap:12px" novalidate><div class="two"><div class="fld"><label for="aSum">Сумма, ฿</label><input id="aSum" type="number" min="1" max="${o}" value="${o}"></div>
+    <div class="fld"><label for="aM">Как</label><select id="aM">${methOpts}</select></div></div>
+    <button class="btn pri lens" type="submit">Принято</button></form>`);
+  $('aForm').onsubmit=e=>{e.preventDefault();const s=Math.min(o,Math.max(0,+$('aSum').value||0));if(!s)return;p.log.push({d:TD,sum:s,m:$('aM').value});closeSheet();render();
+    toast(owe(p)?'Принято, остался долг '+rub(owe(p)):'Оплачено полностью, запись ушла из долгов')}}
+function remindSheet(list){const isTg=p=>/^@/.test(p.contact||''),tg=list.filter(isTg),man=list.filter(p=>!isTg(p));
+  const tpl='Здравствуйте, {имя}! Напоминаем про оплату: {услуга}. Осталось {сумма}. Оплатить можно по QR в боте или наличными в студии.';
+  const fillT=(t,p)=>t.replaceAll('{имя}',p.who.split(/[ ,]/)[0]).replaceAll('{услуга}',p.what).replaceAll('{сумма}',rub(owe(p)));
+  openSheet(`<span class="eyebrow">Напоминание об оплате</span><h2>${list.length===1?esc(list[0].who):'Должникам: '+list.length}</h2>
+  <div class="fld"><label for="rTxt">Текст</label><textarea id="rTxt" rows="4">${tpl}</textarea></div>
+  <span class="note">{имя}, {услуга} и {сумма} бот подставит сам для каждого.</span>
+  <div class="bub" id="rPrev"></div>
+  ${tg.length?`<div class="note">Бот отправит: ${tg.map(p=>esc(p.who)).join(', ')}</div>`:''}
+  ${man.length?`<div class="note" style="color:var(--warn)">Без Телеграма, только вручную: ${man.map(p=>esc(p.who)+', '+esc(p.contact||'нет контакта')).join('; ')}</div>`:''}
+  <div class="row">${tg.length?`<button class="btn pri lens" id="rSend">Отправить ${tg.length}</button>`:''}<button class="btn lens" id="rCopy">Скопировать текст</button></div>`);
+  const pv=()=>{$('rPrev').innerHTML=esc(fillT($('rTxt').value,list[0]))+'<div class="bub-b"><span>Оплатить по QR</span><span>Написать менеджеру</span></div>'};
+  $('rTxt').oninput=pv;pv();
+  if($('rSend'))$('rSend').onclick=()=>{const b=$('rSend');if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно отправить?';return}tg.forEach(p=>p.rem=(p.rem||0)+1);closeSheet();render();toast('Бот отправил напоминаний: '+tg.length)};
+  $('rCopy').onclick=()=>{navigator.clipboard?.writeText(fillT($('rTxt').value,list[0])).then(()=>toast('Текст скопирован'),()=>toast('Не получилось скопировать'))}}
+
+/* ---------- менеджер: рассылки, группы потоков, переносы ---------- */
+const AUTO=[{k:'course',name:'Перед стартом курса',sub:'за 3 дня: «Курс начинается во вторник, вы идёте?» Кнопки Иду и Не смогу'},
+  {k:'day',name:'За день до занятия',sub:'время, что взять с собой. Кнопки Буду и Не смогу'},
+  {k:'h2',name:'За 2 часа',sub:'короткое «ждём вас в 19:30»'},
+  {k:'shoot',name:'После курса: съёмка',sub:'в последний день: «Идёте на съёмку?» дата, место, идеи по лукам'},
+  {k:'debt',name:'Долг по оплате',sub:'в день срока и через 2 дня, если не оплачено'}];
+function vMsg(){
+  return `<section class="sect"><div class="sect-h"><h2>Рассылки</h2><button class="btn pri lens" id="newMsg">Новая рассылка</button></div>
+  <div class="panel glass"><h3 class="ph">Бот напоминает сам</h3><div class="svc">
+    ${AUTO.map(a=>`<label class="svc-r"><div style="min-width:0"><b>${a.name}</b><div class="note">${a.sub}</div></div><span></span><input type="checkbox" data-au="${a.k}" ${CFG.rem[a.k]?'checked':''}></label>`).join('')}
+  </div><button class="btn lens" id="prevRem" style="justify-self:start">Как это видит клиентка</button></div>
+  <div class="sect-h"><h2 style="font-size:30px">Потоки и их группы</h2><span class="note">Ссылку на чат потока бот пришлёт каждой записанной, а новым сразу после оплаты</span></div>
+  <div style="display:grid;gap:10px">${upcoming().map(c=>{const r=ROSTER[c.id]||[],y=r.filter(x=>x.att==='yes').length,n=r.filter(x=>x.att==='no').length;return `<article class="req glass"><div style="display:grid;gap:3px;min-width:0">
+    <div><span class="who">${esc(c.title)}</span> ${c.gsent?'<span class="pill ok">ссылка разослана</span>':c.group?'<span class="pill pay">не разослана</span>':'<span class="pill no">нет группы</span>'}${c.changes&&Object.keys(c.changes).length?' <span class="pill check">есть перенос</span>':''}</div>
+    <div class="what">${c.start} ${c.month} · ${whenTxt(c)} · записано ${r.length}${r.length?` · <b>ответили «Иду»: ${y}</b>, не идут ${n}, не ответили ${r.length-y-n}`:''}</div>
+    <div class="when">${c.group?esc(c.group):'ссылку на группу ещё не добавили'}</div></div>
+    <div class="row"><button class="btn lens" data-gl="${c.id}">${c.group?'Группа':'Добавить группу'}</button><button class="btn lens" data-ch="${c.id}">Перенос</button><button class="btn lens" data-sh="${c.id}">Съёмка${c.shoot&&c.shoot.sent?' ✓':''}</button><button class="btn lens" data-mc="${c.id}">Участницы</button></div></article>`}).join('')}</div>
+  <h2 style="font-size:30px">Отправленные</h2>
+  <div style="display:grid;gap:10px">${SENT.map(s=>`<article class="req glass"><div style="display:grid;gap:3px;min-width:0"><div><span class="who">${esc(s.title)}</span> ${s.plan?'<span class="pill pay">запланирована</span>':`<span class="pill ok">получили ${s.n}</span>`}</div><div class="what">${esc(s.txt)}</div><div class="when">${esc(s.aud)} · ${esc(s.when)}</div></div></article>`).join('')}</div></section>`}
+bind.msg=()=>{$('newMsg').onclick=msgForm;
+  document.querySelectorAll('[data-au]').forEach(i=>i.onchange=()=>{CFG.rem[i.dataset.au]=i.checked;toast(i.checked?'Автонапоминание включено':'Автонапоминание выключено')});
+  document.querySelectorAll('[data-gl]').forEach(b=>b.onclick=()=>groupSheet(COURSES.find(c=>c.id===b.dataset.gl)));
+  document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>changeSheet(COURSES.find(c=>c.id===b.dataset.ch)));
+  document.querySelectorAll('[data-mc]').forEach(b=>b.onclick=()=>courseSheet(COURSES.find(c=>c.id===b.dataset.mc)));
+  document.querySelectorAll('[data-sh]').forEach(b=>b.onclick=()=>shootSheet(COURSES.find(c=>c.id===b.dataset.sh)));
+  $('prevRem').onclick=()=>openSheet(`<span class="eyebrow">Глазами клиентки</span><h2>Сообщения от бота</h2>
+    <div class="bub">Курс High Heels стартует во вторник, 3 ноября, в 19:30. Вы идёте?<div class="bub-b"><span>Иду</span><span>Не смогу</span></div></div>
+    <div class="bub">Завтра занятие High Heels в 19:30. Возьмите каблуки и наколенники.<div class="bub-b"><span>Буду</span><span>Не смогу</span></div></div>
+    <div class="bub">Ждём вас сегодня в 19:30, AB Dance Studio.</div>
+    <div class="bub">Напоминаем про оплату курса: осталось 1 200 ฿. Оплатить можно по QR или в студии.<div class="bub-b"><span>Оплатить по QR</span></div></div>
+    <span class="note">«Не смогу» сразу видно менеджеру в списке потока, а освободившееся окно открывается для других.</span>`)};
+function groupSheet(c){const r=(ROSTER[c.id]||[]).filter(x=>x.att==='yes');
+  openSheet(`<span class="eyebrow">Группа потока</span><h2>${esc(c.title)}</h2>
+  <div class="fld"><label for="gLink">Ссылка на чат в Телеграме</label><input id="gLink" value="${esc(c.group||'')}" placeholder="t.me/+..."></div>
+  <div class="bub">Вы в потоке «${esc(c.title)}», старт ${c.start} ${c.month}, ${esc(c.days)}. Вот чат группы: там расписание и все новости потока.<div class="bub-b"><span>Вступить в группу</span></div></div>
+  <span class="note">Уйдёт ${r.length}, кто ответил «Иду». Новые получат ссылку сами, когда менеджер подтвердит оплату.</span>
+  <div class="err" id="gErr"></div>
+  <div class="row"><button class="btn pri lens" id="gSend" ${r.length?'':'disabled'}>Разослать ${r.length}</button><button class="btn lens" id="gSave">Только сохранить</button></div>`);
+  const save=()=>{const v=$('gLink').value.trim();if(v&&!/^(https?:\/\/)?t\.me\//.test(v)){$('gErr').textContent='Нужна ссылка вида t.me/...';return false}c.group=v;return true};
+  $('gSave').onclick=()=>{if(save()){closeSheet();render();toast('Ссылка сохранена')}};
+  $('gSend').onclick=()=>{if(!save())return;if(!c.group){$('gErr').textContent='Сначала вставьте ссылку.';return}const b=$('gSend');if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно отправить?';return}
+    c.gsent=true;SENT.unshift({title:'Ссылка на группу',txt:c.title,aud:'Записанные на поток',when:'только что',n:r.length});closeSheet();render();toast('Бот разослал ссылку: '+r.length)}}
+function changeSheet(c){const ss=sessions(c).filter(s=>s.iso>=TD),all=ROSTER[c.id]||[],r=all.filter(x=>x.att==='yes');
+  openSheet(`<span class="eyebrow">Изменение в потоке</span><h2>${esc(c.title)}</h2>
+  <form id="chForm" style="display:grid;gap:12px" novalidate>
+    <div class="fld"><label for="chWhy">Причина</label><select id="chWhy"><option>Тренер заболел</option><option>Праздник, студия закрыта</option><option>Зал занят</option><option>Изменение расписания</option></select></div>
+    <div class="fld"><label for="chFrom">Что переносим</label><select id="chFrom">${ss.map(s=>`<option value="${s.iso}">Занятие ${WD[wdOf(s.iso)]}, ${dlabel(s.iso)}, ${s.tm}${s.ch?' (уже перенесено)':''}</option>`).join('')}<option value="all">Весь поток, со старта</option></select></div>
+    <div class="two"><div class="fld"><label for="chTo">Новая дата</label><input id="chTo" type="date" min="${TD}"></div><div class="fld"><label for="chTm">Время</label><input id="chTm" type="time" value="${ss[0]?ss[0].tm:'19:30'}"></div></div>
+    <div class="fld"><label for="chTxt">Сообщение участницам</label><textarea id="chTxt" rows="4"></textarea></div>
+    <div class="bub" id="chPrev"></div>
+    <span class="note">Уйдёт ${r.length}, кто ответил «Иду».${all.length>r.length?` Ещё ${all.length-r.length} не подтвердили курс: бот сначала спросит «Вы идёте?», и после «Иду» пришлёт перенос.`:''} В «Моих записях» у них сразу поменяются даты, а в боте будут кнопки «Мне подходит» и «Не смогу».</span>
+    <div class="err" id="chErr"></div>
+    <button class="btn pri lens" type="submit" id="chSend">Перенести и разослать ${r.length}</button></form>`);
+  const pv=()=>{$('chPrev').innerHTML=esc($('chTxt').value)+'<div class="bub-b"><span>Мне подходит</span><span>Не смогу</span></div>'};
+  const gen=()=>{const f=$('chFrom').value,to=$('chTo').value,tm=$('chTm').value,toTxt=to?`${DAY_FULL[wdOf(to)]}, ${dlabel(to)}, ${tm}`:'…';
+    $('chTxt').value=f==='all'?`${$('chWhy').value}. Старт потока «${c.title}» переносится на ${toTxt}. Дальше по тому же расписанию.`:`${$('chWhy').value}. Занятие ${dlabel(f)} переносится на ${toTxt}. Остальные даты без изменений.`;pv()};
+  const shift=()=>{const f=$('chFrom').value,d=new Date((f==='all'?c.date:f)+'T00:00');d.setDate(d.getDate()+(f==='all'?7:2));$('chTo').value=isoD(d)};
+  $('chFrom').onchange=()=>{shift();gen()};['chWhy','chTo','chTm'].forEach(id=>$(id).onchange=gen);$('chTxt').oninput=pv;shift();gen();
+  $('chForm').onsubmit=e=>{e.preventDefault();const f=$('chFrom').value,to=$('chTo').value,tm=$('chTm').value;if(!to){$('chErr').textContent='Выберите новую дату.';return}
+    const b=$('chSend');if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно разослать '+r.length+'?';return}
+    if(f==='all'){c.date=to;fill(c);if(tm)c.days=c.days.replace(/\d{1,2}:\d\d/,tm);c.changes={}}else{c.changes=c.changes||{};c.changes[f]={to,tm,why:$('chWhy').value}}
+    SENT.unshift({title:'Перенос: '+c.title,txt:$('chTxt').value,aud:'Записанные на поток',when:'только что',n:r.length});closeSheet();render();toast('Перенесено. Бот разослал сообщений: '+r.length)}}
+function msgForm(){
+  const AUD=[['all','Все подписчики бота',84],['adult','Курсы High Heels, все потоки',51],['kids','Родители, воздушная гимнастика',27]].concat(upcoming().map(c=>['c:'+c.id,'Поток: '+c.title,(ROSTER[c.id]||[]).length]),[['wait','Лист ожидания',requests.filter(r=>r.st==='wait').length]]);
+  const nx=nextOpen(),TPL={mk:'Мастер-класс Strip Plastic\nСуббота, 31 октября, 14:00–16:00\nЛюбой уровень, 900 ฿. Мест 15, запись по кнопке ниже.',
+    ann:nx?`Новый поток ${DIRS[nx.dir].name} стартует ${nx.start} ${nx.month}\n${nx.days}, ${nx.len}\n${rub(nx.price)}, осталось ${nx.seats-nx.taken} мест.`:'',free:''};
+  openSheet(`<span class="eyebrow">Новая рассылка</span><h2>Что и кому</h2>
+  <div class="row" role="group" aria-label="Тип рассылки">${[['mk','Мастер-класс'],['ann','Анонс курса'],['free','Свой текст']].map(([k,l],i)=>`<button class="chip lens ${i?'':'on'}" data-mk="${k}">${l}</button>`).join('')}</div>
+  <div class="fld"><label for="mAud">Кому</label><select id="mAud">${AUD.map(([k,l,n])=>`<option value="${k}" data-n="${n}">${esc(l)} · ${n}</option>`).join('')}</select></div>
+  <div class="fld"><label for="mTxt">Текст</label><textarea id="mTxt" rows="5">${esc(TPL.mk)}</textarea></div>
+  <div class="two"><div class="fld"><label for="mWhen">Когда</label><select id="mWhen"><option>сейчас</option><option>сегодня в 18:00</option><option>завтра в 10:00</option></select></div>
+    <div class="fld"><label for="mBtn">Кнопка под сообщением</label><select id="mBtn"><option>Записаться</option><option>Написать менеджеру</option><option value="">без кнопки</option></select></div></div>
+  <div class="bub" id="mPrev"></div>
+  <span class="note">Число подписчиков пока пример. Тем, кто отписался, бот не пишет.</span>
+  <div class="row"><button class="btn lens" id="mTest">Тест себе</button><button class="btn pri lens" id="mSend">Отправить</button></div>`);
+  const n=()=>+$('mAud').selectedOptions[0].dataset.n;
+  const pv=()=>{$('mPrev').innerHTML=esc($('mTxt').value).replace(/\n/g,'<br>')+($('mBtn').value?`<div class="bub-b"><span>${esc($('mBtn').value)}</span></div>`:'');const b=$('mSend');delete b.dataset.sure;b.textContent=($('mWhen').value==='сейчас'?'Отправить ':'Запланировать ')+n()};
+  ['mTxt','mAud','mWhen','mBtn'].forEach(id=>{$(id).oninput=pv;$(id).onchange=pv});pv();
+  document.querySelectorAll('[data-mk]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-mk]').forEach(x=>x.classList.toggle('on',x===b));$('mTxt').value=TPL[b.dataset.mk];$('mBtn').value=b.dataset.mk==='free'?'Написать менеджеру':'Записаться';pv()});
+  $('mTest').onclick=()=>toast('Бот прислал тестовое сообщение вам');
+  $('mSend').onclick=()=>{const t=$('mTxt').value.trim(),b=$('mSend'),w=$('mWhen').value;if(!t){toast('Напишите текст');return}if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно? Получат '+n();return}
+    const ln=t.split('\n');SENT.unshift({title:ln[0].slice(0,60),txt:ln.slice(1).join(' ').slice(0,140),aud:$('mAud').selectedOptions[0].text,when:w==='сейчас'?'только что':w,n:n(),plan:w!=='сейчас'});closeSheet();render();toast(w==='сейчас'?'Рассылка ушла':'Рассылка запланирована')}}
+
+/* ---------- связки со старыми экранами ---------- */
+const bindHallBase=bind.hall;bind.hall=()=>{bindHallBase();$('goSvc').onclick=()=>go('svc')};
+
+/* ---------- съёмка после курса ---------- */
+function shootSheet(c){const all=ROSTER[c.id]||[],r=all.filter(x=>x.att==='yes'),sh=c.shoot||{date:isoD(new Date(sessions(c).slice(-1)[0].iso+'T00:00')),tm:'10:00',place:'',map:'',looks:''};
+  const ys=all.filter(x=>x.sh==='yes').length,ns=all.filter(x=>x.sh==='no').length;
+  openSheet(`<span class="eyebrow">Съёмка после курса</span><h2>${esc(c.title)}</h2>
+  ${c.shoot&&c.shoot.sent?`<div class="lines"><div><span>Идут на съёмку</span><b>${ys}</b></div><div><span>Не смогут</span><b>${ns}</b></div><div><span>Пока не ответили</span><b>${r.length-ys-ns}</b></div></div>`:''}
+  <form id="shForm" style="display:grid;gap:12px" novalidate>
+    <div class="two"><div class="fld"><label for="shD">Дата</label><input id="shD" type="date" value="${sh.date}"></div><div class="fld"><label for="shT">Время</label><input id="shT" type="time" value="${sh.tm}"></div></div>
+    <div class="fld"><label for="shP">Где</label><input id="shP" value="${esc(sh.place)}" placeholder="Например, пляж Чавенг, у пирса"></div>
+    <div class="fld"><label for="shM">Ссылка на карту</label><input id="shM" value="${esc(sh.map)}" placeholder="maps.app.goo.gl/..."></div>
+    <div class="fld"><label for="shL">Что надеть: идеи по лукам</label><textarea id="shL" rows="3" placeholder="Чёрное боди, каблуки, волосы распущены">${esc(sh.looks)}</textarea></div>
+    <div class="bub" id="shPrev"></div>
+    <span class="note">Уйдёт ${r.length}, кто ответил «Иду» на этот курс. Остальные не получат: бот не пишет тем, кто не подтвердил курс.</span>
+    <div class="err" id="shErr"></div>
+    <button class="btn pri lens" type="submit" id="shSend">${c.shoot&&c.shoot.sent?'Отправить изменения':'Разослать опрос'} ${r.length}</button></form>`);
+  const txt=()=>`Курс закончился, впереди съёмка! ${$('shD').value?DAY_FULL[wdOf($('shD').value)]+', '+dlabel($('shD').value):''} в ${$('shT').value}. Место: ${$('shP').value||'…'}.${$('shL').value?' Что надеть: '+$('shL').value:''} Вы идёте?`;
+  const pv=()=>{$('shPrev').innerHTML=esc(txt())+`<div class="bub-b"><span>Иду на съёмку</span><span>Не смогу</span></div>${$('shM').value?'<div class="bub-b"><span>Открыть карту</span></div>':''}`};
+  ['shD','shT','shP','shM','shL'].forEach(id=>$(id).oninput=pv);pv();
+  $('shForm').onsubmit=e=>{e.preventDefault();if(!$('shD').value||!$('shP').value.trim()){$('shErr').textContent='Нужны дата и место.';return}
+    const b=$('shSend');if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно разослать '+r.length+'?';return}
+    c.shoot={date:$('shD').value,tm:$('shT').value,place:$('shP').value.trim(),map:$('shM').value.trim(),looks:$('shL').value.trim(),sent:true};
+    SENT.unshift({title:'Съёмка: '+c.title,txt:txt(),aud:'Ответили «Иду» на курс',when:'только что',n:r.length});closeSheet();render();toast('Опрос про съёмку ушёл: '+r.length)}}
+
+/* ---------- база: клиентки, посещения, отчёты ---------- */
+const KIDS=[['Мия, 7 лет','@mama_mia'],['Ева, 9 лет','@olga_eva'],['Алиса, 6 лет','@alisa_mom'],['Соня, 8 лет','@sonya_mama'],['Вера, 10 лет','@vera_k'],['Аня, 7 лет','@anna_mom'],['Лея, 6 лет','+66 92 ••• 31'],['Маша, 9 лет','@masha_mama'],['Ника, 8 лет','@nika_p'],['Тая, 11 лет','@taya_mom']];
+const VISITS={},KVIS={},GUEST={},NOTES={},MANUAL=[];
+COURSES.forEach((c,ci)=>{VISITS[c.id]={};sessions(c).filter(s=>s.iso<TD).forEach((s,si)=>{VISITS[c.id][s.iso]=new Set((ROSTER[c.id]||[]).filter((x,i)=>(i*7+si*3+ci)%9!==0).map(x=>x.contact))})});
+for(let d=new Date('2026-09-07T00:00');isoD(d)<TD;d.setDate(d.getDate()+1)){const w=(d.getDay()+6)%7;if([0,2,4].includes(w)){const iso=isoD(d),k=+iso.slice(8);KVIS[iso]=new Set(KIDS.filter((x,i)=>(i*5+k)%4!==0).map(x=>x[1]))}}
+const kidDays=()=>{const out=[];for(let d=new Date('2026-09-07T00:00');isoD(d)<='2026-10-25';d.setDate(d.getDate()+1))if([0,2,4].includes((d.getDay()+6)%7))out.push(isoD(d));return out};
+function clients(){const M=new Map(),get=(name,contact,kid)=>{const k=String(contact||name).toLowerCase();if(!M.has(k))M.set(k,{key:k,name,contact,kid:!!kid,courses:[],visits:0,pays:[],indiv:0,rent:0,last:null});return M.get(k)};
+  const seen=(o,iso)=>{o.visits++;if(!o.last||iso>o.last)o.last=iso};
+  COURSES.forEach(c=>(ROSTER[c.id]||[]).forEach(x=>{const o=get(x.name,x.contact);o.courses.push(c.id);Object.entries(VISITS[c.id]||{}).forEach(([iso,set])=>set.has(x.contact)&&seen(o,iso))}));
+  KIDS.forEach(([n,ct])=>{const o=get(n,ct,1);Object.entries(KVIS).forEach(([iso,set])=>set.has(ct)&&seen(o,iso))});
+  PAYS.forEach(p=>{const o=get(p.who,p.contact);o.pays.push(p);if(/^Аренда/.test(p.what))o.rent++;else if(/^Индив/i.test(p.what))o.indiv++});
+  MANUAL.forEach(x=>get(x.name,x.contact,x.kid));
+  return [...M.values()].sort((a,b)=>(b.last||'').localeCompare(a.last||''))}
+const daysAgo=iso=>Math.round((new Date(TD)-new Date(iso))/864e5);
+const ctag=o=>{const t=[];if(o.kid)t.push('дети');if(o.courses.length)t.push(o.courses.length>1?'курсы ×'+o.courses.length:'курс');if(o.indiv)t.push('индив');if(o.rent)t.push('аренда');return t};
+const cOwe=o=>o.pays.reduce((a,p)=>a+owe(p),0),cPaid=o=>o.pays.reduce((a,p)=>a+paid(p),0);
+function vBase(){const v=st.bv||'cl';
+  return `<section class="sect"><div class="sect-h"><h2>База</h2><div class="row" role="tablist">${[['cl','Клиентки'],['vis','Кто пришёл'],['rep','Отчёты']].map(([k,l])=>`<button class="chip lens ${v===k?'on':''}" data-bv="${k}">${l}</button>`).join('')}</div></div>
+  ${v==='cl'?baseClients():v==='vis'?baseVisits():baseReports()}</section>`}
+function baseClients(){const f=st.cf||'all',q=(st.cq||'').toLowerCase();
+  let list=clients();const n=list.length;
+  list=list.filter(o=>f==='all'||(f==='course'&&o.courses.length)||(f==='kid'&&o.kid)||(f==='indiv'&&o.indiv)||(f==='rent'&&o.rent)||(f==='debt'&&cOwe(o)>0)||(f==='lost'&&o.last&&daysAgo(o.last)>21&&!o.kid));
+  if(q)list=list.filter(o=>(o.name+' '+o.contact).toLowerCase().includes(q));
+  return `<div class="row"><input class="srch" id="cq" value="${esc(st.cq||'')}" placeholder="Поиск по имени или @нику" aria-label="Поиск"><button class="btn lens" id="csv">Скачать базу</button><button class="btn pri lens" id="addCl">+ Клиентка</button></div>
+  <div class="row">${[['all','Все '+n],['course','Курсы'],['kid','Дети'],['indiv','Индивы'],['rent','Аренда'],['debt','Должны'],['lost','Давно не были']].map(([k,l])=>`<button class="chip lens ${f===k?'on':''}" data-cf="${k}">${l}</button>`).join('')}</div>
+  <div style="display:grid;gap:8px">${list.map(o=>`<button class="req glass cl" data-cl="${esc(o.key)}"><div style="display:grid;gap:3px;min-width:0;text-align:left">
+    <div><span class="who">${esc(o.name)}</span> ${ctag(o).map(t=>`<span class="pill ${t==='дети'?'check':t.startsWith('курсы')?'ok':'wait'}">${t}</span>`).join(' ')}${cOwe(o)?` <span class="pill check">долг ${rub(cOwe(o))}</span>`:''}</div>
+    <div class="when">${esc(o.contact||'без контакта')} · посещений ${o.visits} · ${o.last?'была '+dlabel(o.last):'ещё не была'}${cPaid(o)?' · оплатила '+rub(cPaid(o)):''}</div></div><span class="note">→</span></button>`).join('')||'<div class="note">Никого не нашли.</div>'}</div>`}
+function clientSheet(k){const o=clients().find(x=>x.key===k);if(!o)return;const u=/^@/.test(o.contact||'')?o.contact.slice(1):null;
+  openSheet(`<span class="eyebrow">${o.kid?'Ребёнок · пишем родителю':'Клиентка'}</span><h2>${esc(o.name)}</h2>
+  <div class="row">${u?`<a class="btn pri lens" href="https://t.me/${encodeURIComponent(u)}" target="_blank" rel="noopener" style="text-decoration:none">Написать в Телеграм</a>`:''}<span class="copy" style="flex:1;user-select:text">${esc(o.contact||'нет контакта')}</span></div>
+  <div class="lines"><div><span>Курсов</span><b>${o.courses.length}</b></div><div><span>Посещений</span><b>${o.visits}</b></div><div><span>Оплатила всего</span><b>${rub(cPaid(o))}</b></div>${cOwe(o)?`<div><span>Должна</span><b style="color:var(--warn)">${rub(cOwe(o))}</b></div>`:''}<div><span>Последний раз</span><b>${o.last?dlabel(o.last):'—'}</b></div></div>
+  ${o.courses.length?`<div style="display:grid;gap:6px"><b>Курсы</b>${o.courses.map(id=>{const c=COURSES.find(x=>x.id===id),ss=sessions(c).filter(s=>s.iso<TD),v=ss.filter(s=>(VISITS[id][s.iso]||new Set).has(o.contact)).length;return `<div class="copy"><span style="flex:1">${esc(c.title)}</span><b>${ss.length?v+' из '+ss.length:'ещё не начался'}</b></div>`}).join('')}</div>`:''}
+  ${o.pays.length?`<div style="display:grid;gap:6px"><b>Оплаты</b>${o.pays.map(p=>`<div class="copy"><span style="flex:1">${esc(p.what)}</span>${payPill(p)}<b>${rub(p.amount)}</b></div>`).join('')}</div>`:''}
+  <div class="fld"><label for="cNote">Заметка менеджера</label><textarea id="cNote" rows="2" placeholder="Например: хочет индив перед свадьбой">${esc(NOTES[k]||'')}</textarea></div>`);
+  $('cNote').onchange=()=>{NOTES[k]=$('cNote').value;toast('Заметка сохранена')}}
+function baseVisits(){
+  const S=[];COURSES.forEach(c=>sessions(c).forEach(s=>S.push({k:c.id+'|'+s.iso,iso:s.iso,tm:s.tm,ttl:'High Heels',c})));
+  kidDays().forEach(iso=>S.push({k:'kids|'+iso,iso,tm:'17:30',ttl:'Дети, воздушная'}));
+  const list=S.filter(s=>s.iso<=TD&&s.iso>='2026-10-05').sort((a,b)=>b.iso.localeCompare(a.iso));
+  const cur=list.find(s=>s.k===st.vk)||list[0],kid=!cur.c;
+  const people=kid?KIDS.map(([name,contact])=>({name,contact})):(ROSTER[cur.c.id]||[]);
+  const set=kid?(KVIS[cur.iso]=KVIS[cur.iso]||new Set()):(VISITS[cur.c.id][cur.iso]=VISITS[cur.c.id][cur.iso]||new Set());
+  const g=GUEST[cur.k]||0,n=people.filter(x=>set.has(x.contact)).length;
+  return `<div class="dayscroll">${list.map(s=>`<button class="chip lens ${s===cur?'on':''}" data-vk="${s.k}">${WD[wdOf(s.iso)]} ${dlabel(s.iso)} · ${s.ttl}</button>`).join('')}</div>
+  <div class="panel glass"><div class="sect-h" style="align-items:center"><h3 class="ph">${kid?'Воздушная гимнастика, дети':esc(cur.c.title)} · ${dlabel(cur.iso)}, ${cur.tm}</h3><span class="big-n">${n+g}<small> пришло</small></span></div>
+    <span class="note">Нажмите на имя, кто пришёл. Если пришёл кто-то не из списка, добавьте гостя.</span>
+    <div class="vis">${people.map(x=>`<button class="vrow ${set.has(x.contact)?'on':''}" data-vc="${esc(x.contact)}"><span>${esc(x.name)}</span><span class="pill ${set.has(x.contact)?'ok':'wait'}">${set.has(x.contact)?'пришла':'нет'}</span></button>`).join('')}</div>
+    <div class="row"><button class="btn lens" id="allIn">Все пришли</button><span class="pin">Гости <button class="btn lens sm" id="gM" aria-label="Минус гость">−</button><b>${g}</b><button class="btn lens sm" id="gP" aria-label="Плюс гость">+</button></span></div></div>`}
+function baseReports(){
+  const all=clients(),oct=PAYS.flatMap(p=>p.log.filter(l=>l.d.startsWith('2026-10')).map(l=>({...l,w:p.what})));
+  const kind=w=>/^Аренда/.test(w)?'Аренда зала':/^Индив/i.test(w)?'Индивы':/гимнаст|дет/i.test(w)?'Дети':'Курсы High Heels';
+  const inc={};oct.forEach(l=>inc[kind(l.w)]=(inc[kind(l.w)]||0)+l.sum);const incMax=Math.max(1,...Object.values(inc)),incSum=Object.values(inc).reduce((a,b)=>a+b,0);
+  const crs=COURSES.filter(c=>sessions(c).some(s=>s.iso<TD)).sort((a,b)=>a.dt-b.dt).map(c=>{const r=(ROSTER[c.id]||[]).length,ss=sessions(c).filter(s=>s.iso<TD),per=ss.map(s=>(VISITS[c.id][s.iso]||new Set()).size+(GUEST[c.id+'|'+s.iso]||0));
+    return {c,r,ss,per,avg:r&&ss.length?Math.round(per.reduce((a,b)=>a+b,0)/(r*ss.length)*100):0}});
+  const weeks={};Object.entries(KVIS).forEach(([iso,set])=>{const d=new Date(iso+'T00:00');d.setDate(d.getDate()-(d.getDay()+6)%7);const k=isoD(d);(weeks[k]=weeks[k]||[]).push(set.size+(GUEST['kids|'+iso]||0))});
+  const wk=Object.entries(weeks).sort().map(([k,a])=>[k,Math.round(a.reduce((x,y)=>x+y,0)/a.length*10)/10]),wMax=Math.max(1,...wk.map(x=>x[1]));
+  const cc=all.filter(o=>o.courses.length),back=cc.filter(o=>o.courses.length>1).length,lost=cc.filter(o=>o.last&&daysAgo(o.last)>21&&!o.courses.some(id=>upcoming().some(c=>c.id===id)));
+  const firstAt=o=>o.courses.map(id=>COURSES.find(c=>c.id===id).date).sort()[0],newOct=cc.filter(o=>(firstAt(o)||'').startsWith('2026-10')).length;
+  return `<section class="stats">
+    <div class="stat glass"><span class="v">${all.length}</span><span class="l">человек в базе</span></div>
+    <div class="stat glass"><span class="v">${newOct}</span><span class="l">новых на курсах в октябре</span></div>
+    <div class="stat glass"><span class="v">${cc.length?Math.round(back/cc.length*100):0}%</span><span class="l">пришли на второй курс</span></div>
+    <div class="stat glass"><span class="v">${rub(incSum)}</span><span class="l">пришло денег в октябре</span></div></section>
+  <div class="paygrid">
+  <div class="panel glass"><h3 class="ph">Доход за октябрь</h3><div class="bars">${Object.entries(inc).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="bar"><span>${k}</span><div class="tr"><i style="width:${v/incMax*100}%"></i></div><b>${rub(v)}</b></div>`).join('')}</div>
+    <h3 class="ph" style="margin-top:8px">Дети: в среднем на занятии</h3><div class="cols">${wk.map(([k,v])=>`<span style="height:${v/wMax*100}%" title="неделя с ${dlabel(k)}: ${v}"><b>${v}</b><small>${dlabel(k)}</small></span>`).join('')}</div></div>
+  <div class="panel glass"><h3 class="ph">Посещаемость курсов</h3><div style="display:grid;gap:14px">${crs.map(x=>`<div style="display:grid;gap:6px"><div class="sect-h" style="align-items:center"><b>${esc(x.c.title)}</b><span class="pill ${x.avg>=85?'ok':x.avg>=70?'pay':'check'}">${x.avg}%</span></div>
+    <div class="cols sm">${x.per.map((v,i)=>`<span style="height:${x.r?v/x.r*100:0}%" title="${dlabel(x.ss[i].iso)}: ${v} из ${x.r}"><b>${v}</b><small>${dlabel(x.ss[i].iso)}</small></span>`).join('')}</div></div>`).join('')}</div></div></div>
+  <div class="panel glass"><div class="sect-h" style="align-items:center"><h3 class="ph">Давно не были: ${lost.length}</h3>${lost.length?'<button class="btn lens sm" id="callBack">Позвать на новый поток</button>':''}</div>
+    <span class="note">Ходили на курс, но больше 3 недель не были и на новый поток не записались.</span>
+    <div class="sess">${lost.map(o=>`<button class="ss" data-cl="${esc(o.key)}">${esc(o.name)} · ${dlabel(o.last)}</button>`).join('')}</div></div>
+  <span class="note">Пример на тестовых данных. Когда подключим базу, цифры будут настоящие, а отчёт можно будет скачать в таблицу.</span>`}
+bind.base=()=>{
+  document.querySelectorAll('[data-bv]').forEach(b=>b.onclick=()=>{st.bv=b.dataset.bv;render()});
+  document.querySelectorAll('[data-cf]').forEach(b=>b.onclick=()=>{st.cf=b.dataset.cf;render()});
+  document.querySelectorAll('[data-cl]').forEach(b=>b.onclick=()=>clientSheet(b.dataset.cl));
+  if($('cq'))$('cq').onchange=$('cq').onsearch=()=>{st.cq=$('cq').value;render();$('cq').focus()};
+  if($('cq'))$('cq').onkeyup=e=>{if(e.key==='Enter'){st.cq=$('cq').value;render();$('cq').focus()}};
+  if($('csv'))$('csv').onclick=()=>{const rows=[['Имя','Контакт','Что','Курсов','Посещений','Последний раз','Оплатила','Долг']].concat(clients().map(o=>[o.name,o.contact,ctag(o).join(', '),o.courses.length,o.visits,o.last||'',cPaid(o),cOwe(o)]));
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(';')).join('\n')],{type:'text/csv'}));a.download='ab-dance-baza.csv';a.click();toast('База скачана, откроется в Excel или Google Таблицах')};
+  if($('addCl'))$('addCl').onclick=()=>{openSheet(`<span class="eyebrow">База</span><h2>Новая клиентка</h2><form id="clForm" style="display:grid;gap:12px" novalidate>
+    <div class="row" role="group"><button type="button" class="chip lens on" data-ck="0">Взрослая</button><button type="button" class="chip lens" data-ck="1">Ребёнок</button></div>
+    <div class="fld"><label for="clN">Имя</label><input id="clN" placeholder="Имя"></div><div class="fld"><label for="clC">Телеграм или телефон</label><input id="clC" placeholder="@username"></div>
+    <div class="err" id="clErr"></div><button class="btn pri lens" type="submit">Добавить</button></form>`);let kid=0;
+    document.querySelectorAll('[data-ck]').forEach(b=>b.onclick=()=>{kid=+b.dataset.ck;document.querySelectorAll('[data-ck]').forEach(x=>x.classList.toggle('on',x===b));$('clN').placeholder=kid?'Имя и возраст ребёнка':'Имя';$('clC').previousElementSibling.textContent=kid?'Контакт родителя':'Телеграм или телефон'});
+    $('clForm').onsubmit=e=>{e.preventDefault();const n=$('clN').value.trim(),c=$('clC').value.trim();if(!n||!c){$('clErr').textContent='Нужны имя и контакт.';return}MANUAL.push({name:n,contact:c,kid});closeSheet();render();toast('Добавлено в базу')}};
+  document.querySelectorAll('[data-vk]').forEach(b=>b.onclick=()=>{st.vk=b.dataset.vk;render()});
+  const curSet=()=>{const on=document.querySelector('[data-vk].on').dataset.vk,[a,iso]=on.split('|');return a==='kids'?KVIS[iso]:VISITS[a][iso]};
+  document.querySelectorAll('[data-vc]').forEach(b=>b.onclick=()=>{const s=curSet(),c=b.dataset.vc;s.has(c)?s.delete(c):s.add(c);render()});
+  if($('allIn'))$('allIn').onclick=()=>{const s=curSet();document.querySelectorAll('[data-vc]').forEach(b=>s.add(b.dataset.vc));render();toast('Отмечены все')};
+  const gk=()=>document.querySelector('[data-vk].on').dataset.vk;
+  if($('gP'))$('gP').onclick=()=>{GUEST[gk()]=(GUEST[gk()]||0)+1;render()};
+  if($('gM'))$('gM').onclick=()=>{GUEST[gk()]=Math.max(0,(GUEST[gk()]||0)-1);render()};
+  if($('callBack'))$('callBack').onclick=msgForm};
+
+/* ---------- заявки: по статусу оплаты ---------- */
+function vInbox(){
+  const P={check:'чек на проверке',pay:'ждём оплату',wait:'лист ожидания',ok:'оплачено',no:'отклонена'};
+  const G=[['check','Проверить оплату'],['pay','Ждут оплату'],['ok','Оплачено'],['wait','Лист ожидания'],['no','Отклонены']],f=st.inF||'all';
+  const card=r=>`<article class="req glass"><div style="min-width:0;display:grid;gap:3px">
+      <div><span class="who">${esc(r.who)}</span> <span class="pill ${r.st}">${P[r.st]}</span></div>
+      <div class="what">${esc(r.what)}${r.d!=null?` · <b>${WD[r.d]} ${WEEK[r.d]} окт, ${r.s}–${hm(m(r.s)+(r.dur||60))}</b>`:''}</div>
+      <div class="when">${esc(r.contact)} · ${r.ago}${r.sum?' · предоплата '+rub(r.sum):r.st==='check'?' · оплата на месте':''}${r.receipt?' · чек приложен':''}</div></div>
+      <div class="row">${
+        r.st==='check'?`<button class="btn pri lens" id="ok_${r.id}" data-ok="${r.id}">${r.sum?'Оплата пришла':'Подтвердить'}</button><button class="btn lens" id="no_${r.id}" data-no="${r.id}">${r.sum?'Не пришла':'Отклонить'}</button>`:
+        r.st==='pay'?`<button class="btn lens" id="rem_${r.id}" data-rem="${r.id}">Напомнить</button><button class="btn ghost lens" id="no_${r.id}" data-no="${r.id}">Снять бронь</button>`:
+        r.st==='wait'?`<button class="btn pri lens" id="off_${r.id}" data-off="${r.id}">Предложить место</button>`:''}</div>
+    </article>`;
+  const cnt=k=>requests.filter(r=>r.st===k).length;
+  return `<section class="sect"><div class="sect-h"><h2>Заявки</h2><span class="note">Дублируются менеджеру в бот</span></div>
+  <div class="row">${[['all','Все'],...G].filter(([k])=>k==='all'||cnt(k)).map(([k,l])=>`<button class="chip lens ${f===k?'on':''}" data-inf="${k}">${l}${k==='all'?'':' · '+cnt(k)}</button>`).join('')}</div>
+  ${G.filter(([k])=>(f==='all'||f===k)&&cnt(k)).map(([k,l])=>`<div style="display:grid;gap:10px"><h3 class="ph">${l} · ${cnt(k)}</h3>${requests.filter(r=>r.st===k).map(card).join('')}</div>`).join('')||'<div class="note">Заявок нет.</div>'}</section>`}
+const bindInboxBase=bind.inbox;bind.inbox=()=>{bindInboxBase();document.querySelectorAll('[data-inf]').forEach(b=>b.onclick=()=>{st.inF=b.dataset.inf;render()})};
 
 try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
 const MANAGER_IDS=[7043604610,221314723];
